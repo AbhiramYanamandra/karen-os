@@ -1,0 +1,67 @@
+{
+  "project": "karen-os",
+  "task": "startup-validation",
+  "manifest_revision": "public-candidate-1",
+  "status": "PARTIAL",
+  "architecture_sha256": "<manifest architecture pin>",
+  "sources": [
+    {
+      "id": "manifest",
+      "located": false,
+      "read": "none",
+      "revision_verified": false
+    },
+    {
+      "id": "codex_entry",
+      "located": false,
+      "read": "none",
+      "revision_verified": false
+    },
+    {
+      "id": "claude_entry",
+      "located": false,
+      "read": "none",
+      "revision_verified": false
+    },
+    {
+      "id": "policy",
+      "located": false,
+      "read": "none",
+      "revision_verified": false
+    },
+    {
+      "id": "project",
+      "located": false,
+      "read": "none",
+      "revision_verified": false
+    },
+    {
+      "id": "receipt_format",
+      "located": false,
+      "read": "none",
+      "revision_verified": false
+    },
+    {
+      "id": "task",
+      "located": false,
+      "read": "none",
+      "revision_verified": false
+    }
+  ],
+  "policy_checks": {
+    "ui": "unknown",
+    "security": "unknown",
+    "push": "unknown",
+    "paid": "unknown",
+    "missing_context": "unknown",
+    "handoff": "unknown"
+  },
+  "capabilities": {
+    "read": "unverified",
+    "hash": "unverified",
+    "write": "unverified",
+    "network": "unverified"
+  },
+  "gaps": [],
+  "summary": "Replace placeholders with observed facts. JSON only; maximum 250 words including field names and values."
+}

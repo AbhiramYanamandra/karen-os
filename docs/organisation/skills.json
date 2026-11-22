@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "revision": "0.1",
+  "status": "local-trial",
+  "entries": [],
+  "entry_requirements": [
+    "id",
+    "purpose",
+    "triggers",
+    "source",
+    "maintainer",
+    "sha256",
+    "compatible_runtimes",
+    "tools",
+    "permissions",
+    "data_access",
+    "outputs",
+    "resource_class",
+    "dependencies",
+    "licence",
+    "approval_status"
+  ]
+}

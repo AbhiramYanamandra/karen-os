@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "project_id": "karen-os",
+  "revision": "public-candidate-1",
+  "reviewed_on": "2026-11-22",
+  "architecture_disposition": "public-design-candidate-review-pending",
+  "freshness": "Compare hashes on every startup and before consequential action. Check current owner directions for revocation. Drift requires review, not automatic repinning.",
+  "sources": [
+    {
+      "id": "owner_vision",
+      "path": "docs/vision.md",
+      "sha256": "d9c1bf990a77ce6646dec57e068de723292b9877972c9bc815e0003060253d80",
+      "required": true,
+      "load_when": "Priorities, product direction, UX, or requirements conflict",
+      "startup_read": "on-demand"
+    },
+    {
+      "id": "architecture",
+      "path": "docs/architecture/platform-specification.md",
+      "sha256": "504ea007d0f928e4a89b8aab844d7281d1bd2b996b4769c3dfd9009f2f76e14c",
+      "required": true,
+      "load_when": "Design, implementation, security, consequential action, or policy detail",
+      "startup_read": "on-demand"
+    },
+    {
+      "id": "acceptance",
+      "path": "docs/architecture/design-status.md",
+      "sha256": "d81c822422e7ac50e20e8984985dabfc55a0e10f97ff389ecbfa145a3815e4ce",
+      "required": true,
+      "load_when": "Baseline change, approval scope ambiguity, or consequential action",
+      "startup_read": "on-demand"
+    },
+    {
+      "id": "policy",
+      "path": "docs/organisation/policy.md",
+      "sha256": "77a4f537eddade5e0437bf39b8cd77c4ef5c5c802ac61f7255149725192207ec",
+      "required": true,
+      "load_when": "Every startup; read completely",
+      "startup_read": "complete"
+    },
+    {
+      "id": "contract",
+      "path": "docs/organisation/execution-contract.md",
+      "sha256": "b8fcce8b86fc89fce0bce28bf054e231a087b1f63402d82e7eac1eed4babdc4e",
+      "required": true,
+      "load_when": "Actionable execution, integration, or handoff",
+      "startup_read": "on-demand"
+    },
+    {
+      "id": "sops",
+      "path": "docs/organisation/sops.md",
+      "sha256": "59274ef1a1348b4740b4faab6459972206a756378b226e67afc03be05ae132e0",
+      "required": true,
+      "load_when": "Task intake, design, execution, verification, or recovery",
+      "startup_read": "on-demand"
+    },
+    {
+      "id": "project",
+      "path": "docs/projects/karen-os/instructions.md",
+      "sha256": "4041303132b41d178c95a1cc0958848beca6eab53d1c0516aaa25b67d856b5bf",
+      "required": true,
+      "load_when": "Every startup; read completely",
+      "startup_read": "complete"
+    },
+    {
+      "id": "skills",
+      "path": "docs/organisation/skills.json",
+      "sha256": "6ef0ce5082faf729d0e7a4a6c8b4600f5452f5873bfcb94b215b8134f65bfe3e",
+      "required": true,
+      "load_when": "Relevant skill selection; metadata before bodies",
+      "startup_read": "on-demand"
+    },
+    {
+      "id": "templates",
+      "path": "docs/templates/records.md",
+      "sha256": "d5054f372de036231de6bd06c50f8c7bf4085ce4f4be90d1dee44c80e7baa3f8",
+      "required": true,
+      "load_when": "Creating task, proposal, approval, or handoff",
+      "startup_read": "on-demand"
+    },
+    {
+      "id": "codex_entry",
+      "path": "AGENTS.md",
+      "sha256": "fc59e5760b62bbe04de0143de0f396d458c81e74e9e5f5281f5d684854bbc04c",
+      "required": true,
+      "load_when": "Every startup; read completely",
+      "startup_read": "complete"
+    },
+    {
+      "id": "claude_entry",
+      "path": "CLAUDE.md",
+      "sha256": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+      "required": true,
+      "load_when": "Every startup; read completely",
+      "startup_read": "complete"
+    },
+    {
+      "id": "receipt_format",
+      "path": "context/receipt-template.json",
+      "required": true,
+      "sha256": "23bc1881788fb8e38ac71b74bf32cd112b11011962d13fa8df25195455187978",
+      "startup_read": "complete",
+      "load_when": "Every receipt; read completely",
+      "validation_only": true
+    },
+    {
+      "id": "context_amendment",
+      "path": "docs/architecture/export-changes.md",
+      "required": true,
+      "sha256": "0518413cc817d2de32cee7ca1e77c49708f7c11c33461ec1a62bfa38b9b629bb",
+      "startup_read": "on-demand",
+      "load_when": "Context-loading procedure or authority change"
+    },
+    {
+      "id": "startup_reader",
+      "path": "scripts/startup.py",
+      "required": true,
+      "sha256": "bf4e909d4305f0aee46116dce6f18b21039fd9bf5bf1728a42883f98cf528bf8",
+      "startup_read": "on-demand",
+      "load_when": "Tool audit or startup-reader integrity"
+    },
+    {
+      "id": "context_checker",
+      "path": "scripts/check_context.py",
+      "required": true,
+      "sha256": "b407bc15a19db52c0177ac6dda37758346192f6cb2a011a0d072c45ef30b6f16",
+      "startup_read": "on-demand",
+      "load_when": "Tool audit or startup-reader integrity"
+    }
+  ],
+  "startup_receipt_word_limit": 250,
+  "task_source": "Required for actionable work and machine validation; absent in read-only exploration.",
+  "task_revisions": {
+    "docs/tasks/startup-validation.md": "c26d23614241084df76498a9fadafa319692a60e0e355422155b4d88df4e38cd"
+  }
+}
