@@ -550,7 +550,9 @@ karen-os/
 │   ├── templates/records.md          Task, proposal, approval and handoff templates
 │   ├── templates/github/             Labels, issue form, PR template, starter CI for projects
 │   ├── tasks/startup-validation.md   Synthetic fixture task for validation runs
-│   └── reviews/candidate-audit.md    Pre-publication privacy and validation audit
+│   └── reviews/
+│       ├── candidate-audit.md        Pre-publication privacy and validation audit
+│       └── pilot-macropad.md         First engineering pilot: timeline, measurements, lessons
 ├── scripts/
 │   ├── startup.py                    Reads core and project context, assesses receipts
 │   ├── check_context.py              Verifies manifest, hashes and entry files
@@ -595,12 +597,11 @@ flowchart LR
 
 ### Next up
 
-Recently done: KAREN OS adopted the issue-to-PR pipeline and the Macropad followed. Both repositories have required CI, a protected `main` and automatic branch cleanup, and the Macropad's open work is now a prioritised issue queue.
+Recently done: KAREN OS adopted the issue-to-PR pipeline and the Macropad followed. Both repositories have required CI, a protected `main` and automatic branch cleanup, and the Macropad's open work is now a prioritised issue queue. The first [pilot log](docs/reviews/pilot-macropad.md) records how it went.
 
 1. **Finish the Macropad pilot.** The pad checks for the firmware fix and the Mac app's first slice are the gate for the next slice.
-2. **Write the pilot log.** Coordination needed, time taken, reliability, and what the agents got wrong, recorded in this repository.
-3. **Feed the lessons back.** Turn what the pilot exposed into changes to the standard, the SOPs and the project template.
-4. **Try a cloud agent.** Have an agent outside this Mac pick up a `status:ready` issue, clone KAREN OS from GitHub and open a pull request, to prove the "from anywhere" path.
+2. **Feed the lessons back.** Turn the [pilot log](docs/reviews/pilot-macropad.md)'s proposed follow-ups into changes to the standard, the SOPs and the project template, one issue each.
+3. **Try a cloud agent.** Have an agent outside this Mac pick up a `status:ready` issue, clone KAREN OS from GitHub and open a pull request, to prove the "from anywhere" path.
 
 ### First pilot candidate
 
@@ -684,6 +685,7 @@ A passing hash check proves the files are consistent. It does not prove that any
 | What is public and what stays private | [docs/PUBLIC_PRIVATE.md](docs/PUBLIC_PRIVATE.md) |
 | How other project repositories use KAREN OS | [docs/architecture/external-projects.md](docs/architecture/external-projects.md) |
 | How the public export was reviewed | [docs/reviews/candidate-audit.md](docs/reviews/candidate-audit.md) |
+| How the first pilot went | [docs/reviews/pilot-macropad.md](docs/reviews/pilot-macropad.md) |
 
 ## Contributing, security and licence
 
