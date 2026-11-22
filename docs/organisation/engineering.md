@@ -13,7 +13,7 @@ GitHub holds the queue, the review and the history. The work happens in a local 
 5. **Work.** Run the KAREN OS startup check, read the issue and any linked plan completely, and follow drift checks and STOP conditions. Commit in small, logical steps.
 6. **Pull request.** Push the branch and open a PR using the template, with `Closes #<issue>`. Open it as a draft until CI passes and the self-check is done, then mark it ready and move the issue to `status:in-review`.
 7. **Review and merge.** The owner reviews, tests and merges. Merging is the code approval and closes the issue. Agents never merge.
-8. **After merge.** Delete the branch. File deferred or follow-up work as new issues.
+8. **After merge.** GitHub deletes the branch automatically. The agent runs `git fetch --prune` and deletes its local copy of the branch. File deferred or follow-up work as new issues.
 
 If a STOP condition or owner decision blocks the work, comment on the issue with what is needed, set `status:blocked` or `status:needs-owner`, and push what is safe as a draft PR.
 
@@ -74,9 +74,16 @@ Link long records rather than pasting them. Any review the agent did itself is l
 
 Every project has a GitHub Actions workflow on `pull_request` and on pushes to the default branch. It runs the build, the tests, any linters, and project checks. Use read-only permissions by default, pin actions to a major version, and need no secrets for PR checks. Failing CI blocks review. Fix the cause, and never disable or skip a check to make it pass.
 
-## Default branch protection
+## Repository setup
 
-The owner configures a ruleset on the default branch: require a pull request, require the CI checks to pass, and block force pushes and deletion. It requires no approving review, because agents act through the owner's account and GitHub does not let an author approve their own PR. The owner's merge is the approval.
+Every project's GitHub repository has these before agents work in it. Settings changes are owner actions; an agent may apply them only when the owner asks.
+
+1. **Labels** from `docs/templates/github/labels.json`.
+2. **Templates** in `.github/`: the pull request template and the Task issue form from `docs/templates/github/`.
+3. **CI workflow** that runs the project's checks, as described above.
+4. **Ruleset on the default branch:** require a pull request, require the CI checks to pass, and block force pushes and deletion. It requires no approving review, because agents act through the owner's account and GitHub does not let an author approve their own PR. The owner's merge is the approval.
+5. **Automatically delete head branches** turned on, so merged branches disappear from GitHub without manual cleanup.
+6. **Project record** in `.karen/project.json` declaring the `pipeline` and `karen_os_repository`.
 
 ## Definition of done
 
