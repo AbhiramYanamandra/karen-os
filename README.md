@@ -579,8 +579,8 @@ flowchart LR
     classDef done fill:#eaf7ee,stroke:#2ea043,color:#0f3d1c
     classDef now fill:#1f6feb,stroke:#0b3d91,color:#ffffff
     classDef later fill:#f6f8fa,stroke:#8c959f,color:#57606a
-    class P1,P2 done
-    class P2B,P3 now
+    class P1,P2,P2B done
+    class P3 now
     class P4,P5,P6,P7 later
 ```
 
@@ -588,8 +588,8 @@ flowchart LR
 | --- | --- | --- |
 | 1 · Architecture | Vision, organisation, responsibilities, autonomy and operating principles | Largely complete. Some decisions remain open. |
 | 2 · Shared context and contract | Consistent instructions, permissions, task records and handoffs for every agent | Local foundation complete |
-| 2b · External project integration | Independent project repositories load the shared core without moving into this one | In progress. Reader support built; first project next. |
-| 3 · Engineering pilot | Ship one genuinely useful feature through the full approved workflow | Next |
+| 2b · External project integration | Independent project repositories load the shared core without moving into this one | Done. The Macropad is connected and passed fresh Claude Code and Codex sessions. Four untested paths are tracked in [#16](https://github.com/AbhiramYanamandra/karen-os/issues/16). |
+| 3 · Engineering pilot | Ship one genuinely useful feature through the full approved workflow | In progress in the Macropad. Work is merged and the pad checks are open. See the [pilot log](docs/reviews/pilot-macropad.md); its lessons are issues [#9 to #16](https://github.com/AbhiramYanamandra/karen-os/issues/?q=is%3Aissue+is%3Aopen+label%3Astatus%3Aneeds-owner). |
 | 4 · Reuse and Project Factory | Extract proven patterns, components, templates and project setup | Future |
 | 5 · Chief of staff | Optional Muse intake, status reporting and delegation | Future |
 | 6 · Personal operations | Briefings, personal workflows, supported integrations, usage visibility | Future, with small pieces pulled forward |
@@ -603,9 +603,9 @@ Recently done: KAREN OS adopted the issue-to-PR pipeline and the Macropad follow
 2. **Feed the lessons back.** Turn the [pilot log](docs/reviews/pilot-macropad.md)'s proposed follow-ups into changes to the standard, the SOPs and the project template, one issue each.
 3. **Try a cloud agent.** Have an agent outside this Mac pick up a `status:ready` issue, clone KAREN OS from GitHub and open a pull request, to prove the "from anywhere" path.
 
-### First pilot candidate
+### Next personal feature: the daily review
 
-The leading candidate is a private evening review. A small standard-library script would read task records from the private instance and the Git state of chosen repositories. It would print what was verified, drafted, merged and blocked, and what carries over. Any source it can't read is labelled unavailable. It has daily value, needs a backend proposal but no UI design, can be tested with synthetic fixtures, keeps private data local and costs almost no model usage. A career-workflow feature and a Macropad app feature are the alternatives. The decision is pending.
+The first pilot ran in the Macropad. The next feature is for my own daily use: a [daily review](https://github.com/AbhiramYanamandra/karen-os/issues/17) that shows, across my repositories, what merged, what's waiting for my review, what's blocked or needs me, what's ready for an agent, and the state of my local checkouts. GitHub issues and pull requests are now the task record, so it needs no private data store. It's read-only, uses only the standard library and costs almost no model usage. It starts with a short proposal for my approval.
 
 ### Deliberately deferred
 
