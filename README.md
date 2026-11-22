@@ -10,7 +10,7 @@ KAREN OS coordinates Claude Code, Codex, ChatGPT and future tools so they share 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-1f6feb)](LICENSE)
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![Dependencies: none](https://img.shields.io/badge/dependencies-standard%20library%20only-2ea043)
-![Stage: foundation](https://img.shields.io/badge/stage-foundation%20built%2C%20pilot%20next-d29922)
+![Stage: pilot](https://img.shields.io/badge/stage-pilot%20in%20progress-d29922)
 
 [Vision](#the-vision) · [How it works](#how-it-is-organised) · [Where it is today](#where-it-is-today) · [Roadmap](#roadmap) · [Try it](#run-it-locally) · [Docs](#documentation-map)
 
@@ -393,9 +393,9 @@ flowchart LR
 
 - **Issues are the work queue.** Each one is a task record with an outcome, scope and acceptance criteria. I set the priority (`P0` to `P3`) and mark it `status:ready` when an agent may start.
 - **Any agent can pick one up**, on my Mac or in a cloud session. It claims the issue, works on a `<type>/<issue>-<short-description>` branch and opens a pull request with a description, test steps, evidence and anything it couldn't verify.
-- **CI is the gate and my merge is the approval.** Agents may push branches and open pull requests. They never merge and never write to `main`. A ruleset on `main` enforces that.
+- **CI is the gate and my merge is the approval.** Agents may push branches and open pull requests. They never merge and never write to `main`. A ruleset on `main` enforces that in every repository.
 
-The rules, adapted from Microsoft's [Code-With Engineering Playbook](https://microsoft.github.io/code-with-engineering-playbook/), are in [docs/organisation/engineering.md](docs/organisation/engineering.md). Templates for labels, issues, pull requests and CI are in [docs/templates/github/](docs/templates/github/).
+The rules, adapted from Microsoft's [Code-With Engineering Playbook](https://microsoft.github.io/code-with-engineering-playbook/), are in [docs/organisation/engineering.md](docs/organisation/engineering.md). Templates for labels, issues, pull requests and CI are in [docs/templates/github/](docs/templates/github/). Every project's repository gets the same setup before agents work in it: those labels and templates, a CI workflow, the ruleset on `main`, and automatic deletion of merged branches. The standard lists it as a checklist.
 
 ### Handing work between agents
 
@@ -507,10 +507,10 @@ The foundation is built. A working personal assistant is not. I'm keeping that d
 | Cross-agent manual handoff | Fixture-tested here. Exercised in both directions in the private predecessor, not yet rerun on this checkout. |
 | Public GitHub repository, Apache-2.0 | Published |
 | Automated CI | GitHub Actions runs every check on each push and pull request, on Python 3.10 and 3.13. The badge above shows the latest result. |
-| Engineering standard and issue-to-PR pipeline | Adopted 23 November 2026. KAREN OS and connected projects use GitHub issues, pull requests, CI and owner merge. |
+| Engineering standard and issue-to-PR pipeline | Adopted 23 November 2026 in KAREN OS and the Macropad: GitHub issues, pull requests, required CI, protected `main`, owner merge, merged branches deleted automatically |
 | ChatGPT and ChatGPT Work context | Not validated |
 | Use from other project repositories (Level 2) | Working. The Macropad repository is connected and passed fresh Claude Code and Codex sessions. |
-| A real engineering pilot, end to end | In progress in the Macropad: a firmware fix and the first slice of a native Mac app, each awaiting the pad check |
+| A real engineering pilot, end to end | In progress in the Macropad. A firmware fix and the first slice of a native Mac app are merged; their pad checks are open issues |
 | Private instance location and loader | Not decided, not built |
 | Briefings, resource monitor, Project Factory, design system | Planned |
 | Autonomous coordination and dispatch | Planned, deliberately last |
@@ -521,7 +521,10 @@ The deterministic suite has 57 tests. It uses only Python's standard library and
 
 ```text
 karen-os/
-├── .github/workflows/checks.yml      CI: the same checks on every push
+├── .github/
+│   ├── workflows/checks.yml          CI: the same checks on every push and pull request
+│   ├── pull_request_template.md      What every pull request must say
+│   └── ISSUE_TEMPLATE/task.yml       The Task issue form
 ├── AGENTS.md                         Shared startup entry for every coding agent
 ├── CLAUDE.md                         Imports AGENTS.md so Claude Code shares it
 ├── context/
@@ -592,12 +595,12 @@ flowchart LR
 
 ### Next up
 
-Recently done: the Macropad repository is connected as the first Level 2 project and passed fresh Claude Code and Codex sessions, and KAREN OS adopted the issue-to-PR pipeline.
+Recently done: KAREN OS adopted the issue-to-PR pipeline and the Macropad followed. Both repositories have required CI, a protected `main` and automatic branch cleanup, and the Macropad's open work is now a prioritised issue queue.
 
-1. **Put the Macropad on the pipeline.** Labels, issue and PR templates, CI for its firmware and Mac app checks, its open plans as GitHub issues, and slice 1 of the Mac app reviewed as its first pull request.
-2. **Protect `main` in both repositories.** A ruleset that requires a pull request and passing CI.
-3. **Finish the pilot and measure it.** Pad checks, then a pilot log: coordination needed, time taken, reliability, and what the agents got wrong.
-4. **Feed the lessons back.** Turn what the pilot exposed into changes to the standard, the SOPs and the project template.
+1. **Finish the Macropad pilot.** The pad checks for the firmware fix and the Mac app's first slice are the gate for the next slice.
+2. **Write the pilot log.** Coordination needed, time taken, reliability, and what the agents got wrong, recorded in this repository.
+3. **Feed the lessons back.** Turn what the pilot exposed into changes to the standard, the SOPs and the project template.
+4. **Try a cloud agent.** Have an agent outside this Mac pick up a `status:ready` issue, clone KAREN OS from GitHub and open a pull request, to prove the "from anywhere" path.
 
 ### First pilot candidate
 
