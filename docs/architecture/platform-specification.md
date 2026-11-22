@@ -453,7 +453,7 @@ Every meaningful change has a versioned proposal stating the problem, current be
 
 ### GitHub issue to reviewed delivery
 
-This workflow applies after the authorised remote and shared-context stages in section 6. Local architecture review uses Git history, document diffs, and explicit owner decisions beforehand. No GitHub issue or PR is required for this documentation revision.
+Active from 23 November 2026 (decision D17). The operational rules are in `docs/organisation/engineering.md`: GitHub issues are the work queue and task record, agents work on `<type>/<issue>-<short-description>` branches locally or in cloud sessions, every change arrives as a pull request with `Closes #<issue>`, CI gates review, and the owner's merge is the code approval. Agents may push work branches and open pull requests; they never merge or write to the default branch. Design approvals stay version-bound records as in section 11; the pull request is the approval for code.
 
 The issue links the proposal revision, criteria, dependencies, and approval evidence. The worker claims the task and creates an isolated branch or worktree from a known base. The PR links the issue and approved design, explains actual behaviour, records checks and screenshots where useful, and includes material architecture documentation changes.
 
@@ -781,6 +781,7 @@ Review the architecture as a baseline, then resolve only the decisions needed fo
 | D14 | Publication: review the intended public account, licence, author identity, clean history, visibility and access. No remote creation or push is authorised by this document. | Resolved 22 November 2026. Published at github.com/AbhiramYanamandra/karen-os under Apache-2.0 from a single clean commit. Later pushes still need owner approval. |
 | D15 | Context: select and validate supported ChatGPT conversation and Work mechanisms, pack freshness checks, and local runtime discovery. Manual packs are the proposed fallback. | Pending |
 | D16 | Phase 1 structure: accept the minimal tree and defer additional records and adapters until separately scoped work needs them. | Pending |
+| D17 | Delivery pipeline: adopt GitHub issues as the work queue, pull requests as review, CI as the gate and the owner's merge as code approval, with standing agent authority for branches, pull requests and issue updates. | Resolved 23 November 2026 by the owner. Rules in `docs/organisation/engineering.md`; branch protection is an owner-configured repository setting. |
 
 ### Review disposition
 

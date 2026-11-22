@@ -21,7 +21,7 @@ Record what ran and its limits. Test observable behaviour; a static suite cannot
 | --- | --- |
 | Contributing and security guidance | Included because privacy and reproducible local checks matter now. |
 | Code of conduct | Defer adoption until maintainers and an escalation route are defined; no contact is invented. |
-| Issue and PR templates | Defer until the public workflow is approved; use concise ordinary descriptions initially. |
+| Issue and PR templates | Adopted 23 November 2026. Use the Task issue form and the pull request template in `.github/`. Branches, commits and reviews follow `docs/organisation/engineering.md`. |
 | Automated test workflow | `.github/workflows/checks.yml` runs the context check, the explore read and the unit tests on Python 3.10 and 3.13, with read-only permissions and no secrets. No release service is enabled. |
 | Roadmap | README and the architecture's phased roadmap are sufficient at this maturity. |
 

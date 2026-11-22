@@ -1,0 +1,23 @@
+# Starter CI for a project connected to KAREN OS. Replace the example steps
+# with the project's real build, test and lint commands.
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Build and test
+        run: |
+          echo "Replace with the project's checks"

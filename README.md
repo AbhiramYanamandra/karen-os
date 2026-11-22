@@ -370,6 +370,33 @@ The two blue steps are mine. Everything else can be delegated.
 
 **A coding agent doesn't approve its own work.** Verification happens on every change, and a separate review pass happens when the risk justifies it. That reviewer may eventually be a different provider. A standing review panel for every small change would burn time and usage without improving the result, so there isn't one.
 
+### The delivery pipeline
+
+The pipeline lives on GitHub and the work happens wherever an agent runs. Every project, KAREN OS included, works the same way:
+
+```mermaid
+flowchart LR
+    I["Issue<br/>I triage on my phone"] --> C["Agent claims it<br/>status:in-progress"]
+    C --> B["Branch and work<br/>local or cloud"]
+    B --> P["Pull request<br/>Closes #N"]
+    P --> CI{{"CI checks"}}
+    CI -->|fail| B
+    CI -->|pass| R{{"I review<br/>and test"}}
+    R -->|changes| B
+    R -->|merge| M["main<br/>issue closed"]
+
+    classDef step fill:#f6f8fa,stroke:#57606a,color:#1f2328
+    classDef gate fill:#1f6feb,stroke:#0b3d91,color:#ffffff
+    class I,C,B,P,M step
+    class CI,R gate
+```
+
+- **Issues are the work queue.** Each one is a task record with an outcome, scope and acceptance criteria. I set the priority (`P0` to `P3`) and mark it `status:ready` when an agent may start.
+- **Any agent can pick one up**, on my Mac or in a cloud session. It claims the issue, works on a `<type>/<issue>-<short-description>` branch and opens a pull request with a description, test steps, evidence and anything it couldn't verify.
+- **CI is the gate and my merge is the approval.** Agents may push branches and open pull requests. They never merge and never write to `main`. A ruleset on `main` enforces that.
+
+The rules, adapted from Microsoft's [Code-With Engineering Playbook](https://microsoft.github.io/code-with-engineering-playbook/), are in [docs/organisation/engineering.md](docs/organisation/engineering.md). Templates for labels, issues, pull requests and CI are in [docs/templates/github/](docs/templates/github/).
+
 ### Handing work between agents
 
 When Claude Code stops partway through a task, because of a usage limit, a closed laptop or my choice, Codex can pick it up from durable records rather than the old conversation.
@@ -480,14 +507,15 @@ The foundation is built. A working personal assistant is not. I'm keeping that d
 | Cross-agent manual handoff | Fixture-tested here. Exercised in both directions in the private predecessor, not yet rerun on this checkout. |
 | Public GitHub repository, Apache-2.0 | Published |
 | Automated CI | GitHub Actions runs every check on each push and pull request, on Python 3.10 and 3.13. The badge above shows the latest result. |
+| Engineering standard and issue-to-PR pipeline | Adopted 23 November 2026. KAREN OS and connected projects use GitHub issues, pull requests, CI and owner merge. |
 | ChatGPT and ChatGPT Work context | Not validated |
-| Use from other project repositories (Level 2) | Reader support built and unit-tested. The first real project, the Macropad firmware, is next. |
-| A real engineering pilot, end to end | Not started |
+| Use from other project repositories (Level 2) | Working. The Macropad repository is connected and passed fresh Claude Code and Codex sessions. |
+| A real engineering pilot, end to end | In progress in the Macropad: a firmware fix and the first slice of a native Mac app, each awaiting the pad check |
 | Private instance location and loader | Not decided, not built |
 | Briefings, resource monitor, Project Factory, design system | Planned |
 | Autonomous coordination and dispatch | Planned, deliberately last |
 
-The deterministic suite has 53 tests. It uses only Python's standard library and makes no model calls. It runs locally on macOS with Python 3.13, and CI runs it on Linux with Python 3.10 and 3.13. Python 3.10 is the supported minimum. Python 3.9 reached end of life in October 2025, and GitHub no longer provides it on current runners.
+The deterministic suite has 57 tests. It uses only Python's standard library and makes no model calls. It runs locally on macOS with Python 3.13, and CI runs it on Linux with Python 3.10 and 3.13. Python 3.10 is the supported minimum. Python 3.9 reached end of life in October 2025, and GitHub no longer provides it on current runners.
 
 ### Repository layout
 
@@ -511,11 +539,13 @@ karen-os/
 │   │   ├── policy.md                 Mandatory core policy, read at every startup
 │   │   ├── execution-contract.md     The ten-step agent contract
 │   │   ├── sops.md                   Startup, intake, design, verification, handoff
+│   │   ├── engineering.md            Issues, branches, commits, PRs, CI, read at every startup
 │   │   ├── skills.json               Reviewed skills registry (empty on purpose)
 │   │   └── startup-coverage.md       What startup loading does and doesn't prove
 │   ├── projects/karen-os/
 │   │   └── instructions.md           Project-level instructions, read at startup
 │   ├── templates/records.md          Task, proposal, approval and handoff templates
+│   ├── templates/github/             Labels, issue form, PR template, starter CI for projects
 │   ├── tasks/startup-validation.md   Synthetic fixture task for validation runs
 │   └── reviews/candidate-audit.md    Pre-publication privacy and validation audit
 ├── scripts/
@@ -523,7 +553,7 @@ karen-os/
 │   ├── check_context.py              Verifies manifest, hashes and entry files
 │   ├── prepare_startup_fixtures.py   Builds isolated read-only probe fixtures
 │   └── collect_startup_evidence.py   Extracts startup evidence from agent CLI traces
-├── tests/                            53 deterministic tests (context, startup, handoff, projects)
+├── tests/                            57 deterministic tests (context, startup, handoff, projects)
 └── examples/instance-config.example.json   Proposed private-instance config shape
 ```
 
@@ -562,12 +592,12 @@ flowchart LR
 
 ### Next up
 
-Recently done: the project documents state the personal-first direction, CI runs the deterministic checks on every push, and the startup reader has a tested `--project` mode for independent repositories.
+Recently done: the Macropad repository is connected as the first Level 2 project and passed fresh Claude Code and Codex sessions, and KAREN OS adopted the issue-to-PR pipeline.
 
-1. **Connect the Macropad firmware repository.** It's the first Level 2 project. It gets a pointer block in a new `AGENTS.md`, a `CLAUDE.md` that imports it, and a `.karen/project.json` that lists its existing `plans/` folder.
-2. **Check it in real sessions.** A fresh Claude Code session, then a fresh Codex session, inside that repository must load the shared rules, keep its local rules and see its plans.
-3. **Choose the first pilot.** One personally useful workflow, approved with a proposal that fits its risk. It will most likely run inside the Macropad repository or another real project.
-4. **Ship it through KAREN OS and measure it.** Record how much manual coordination it needed, how much agent work was reusable, how long it took and how reliable the output was. Then fix whatever real use exposes.
+1. **Put the Macropad on the pipeline.** Labels, issue and PR templates, CI for its firmware and Mac app checks, its open plans as GitHub issues, and slice 1 of the Mac app reviewed as its first pull request.
+2. **Protect `main` in both repositories.** A ruleset that requires a pull request and passing CI.
+3. **Finish the pilot and measure it.** Pad checks, then a pilot log: coordination needed, time taken, reliability, and what the agents got wrong.
+4. **Feed the lessons back.** Turn what the pilot exposed into changes to the standard, the SOPs and the project template.
 
 ### First pilot candidate
 
@@ -647,6 +677,7 @@ A passing hash check proves the files are consistent. It does not prove that any
 | The rules every agent follows | [docs/organisation/policy.md](docs/organisation/policy.md) |
 | The ten-step execution contract | [docs/organisation/execution-contract.md](docs/organisation/execution-contract.md) |
 | How tasks, designs, verification and handoffs run | [docs/organisation/sops.md](docs/organisation/sops.md) |
+| How issues, branches, pull requests and CI work | [docs/organisation/engineering.md](docs/organisation/engineering.md) |
 | What is public and what stays private | [docs/PUBLIC_PRIVATE.md](docs/PUBLIC_PRIVATE.md) |
 | How other project repositories use KAREN OS | [docs/architecture/external-projects.md](docs/architecture/external-projects.md) |
 | How the public export was reviewed | [docs/reviews/candidate-audit.md](docs/reviews/candidate-audit.md) |

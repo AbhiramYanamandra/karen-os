@@ -65,9 +65,15 @@ A Level 2 project gets at most three small additions. Nothing it already has is 
   "project_id": "macropad",
   "integration_level": 2,
   "karen_os_path": "~/Desktop/Personal_Projects/karen-os",
-  "karen_manifest_revision": "personal-first-1",
+  "karen_os_repository": "AbhiramYanamandra/karen-os",
+  "karen_manifest_revision": "engineering-1",
   "project_instructions": "AGENTS.md",
-  "task_location": "plans"
+  "task_location": "plans",
+  "pipeline": {
+    "tracker": "github",
+    "repository": "AbhiramYanamandra/macropad",
+    "default_branch": "main"
+  }
 }
 ```
 
@@ -80,6 +86,10 @@ A Level 2 project gets at most three small additions. Nothing it already has is 
 | `project_instructions` | Yes | The project's own instruction file, relative to the project root |
 | `karen_os_path` | No | Where the `karen-os` checkout lives. Agents read it to find the reader. |
 | `task_location` | No | The project's existing task or plan folder. The reader lists its Markdown file names, never their contents. |
+| `karen_os_repository` | No | GitHub `owner/name` of KAREN OS. A cloud or remote agent without the local checkout clones it from here. |
+| `pipeline` | No | Declares the GitHub pipeline from `docs/organisation/engineering.md`: `tracker` (always `github`), `repository` (`owner/name`) and `default_branch`. Declaring it turns on the standard's standing agent authority for this project: push work branches, open pull requests, update issues. Never merge. |
+
+The reader validates these fields and reports them, but makes no network call. Agents use the GitHub CLI or a GitHub connection for issues and pull requests.
 
 Example pointer block, illustrative only:
 
@@ -89,7 +99,10 @@ Example pointer block, illustrative only:
 This project uses the KAREN OS shared rules. Before acting, read
 `karen_os_path` from `.karen/project.json` and run
 `python3 -B <karen_os_path>/scripts/startup.py read --project .`
-Follow the shared core it returns. If the command fails or reports the
+If that path does not exist, as in a cloud session, clone
+`karen_os_repository` and run the reader from the clone.
+Follow the shared core it returns, including the engineering standard
+for issues, branches, commits and pull requests. If the command fails or reports the
 project as invalid, say the shared rules are unavailable and do read-only
 work only. If it reports stale, tell the owner before acting. Rules in this
 file may add restrictions to the shared rules but never remove them. This
@@ -186,7 +199,23 @@ Order: lightweight CI and the reader `--project` extension with unit tests (done
 
 ## First project
 
-The owner chose the Macropad firmware repository (`rp2040`) on 22 November 2026. It is local-only with no remote, has no existing agent instruction files, and already keeps numbered plans in `plans/`, which becomes its `task_location`. It is the easy integration case. The harder case, a project with detailed existing instructions such as Career Ops, waits until this one has proven the design. Career Ops is a public repository, so it gets extra privacy review before any change.
+The owner chose the Macropad firmware repository (`rp2040`) on 22 November 2026. When chosen it was local-only with no remote (published as `AbhiramYanamandra/macropad` on 22 November 2026), had no agent instruction files, and already kept numbered plans in `plans/`, which became its `task_location`. It is the easy integration case. The harder case, a project with detailed existing instructions such as Career Ops, waits until this one has proven the design. Career Ops is a public repository, so it gets extra privacy review before any change.
+
+## Delivery pipeline (23 November 2026)
+
+Owner decision D17: GitHub issues are each project's work queue, readable and prioritised from a phone. Any agent, local or cloud, claims a `status:ready` issue, works on a `<type>/<issue>-<short-description>` branch and opens a pull request with `Closes #<issue>`. CI gates the review and the owner's merge is the code approval. Projects opt in with the `pipeline` field and copy the templates in `docs/templates/github/`. The full rules are in `docs/organisation/engineering.md`.
+
+```mermaid
+flowchart LR
+    I["Issue<br/>owner triage"] --> C["Agent claims<br/>status:in-progress"]
+    C --> B["Branch and work<br/>local or cloud"]
+    B --> P["Pull request<br/>Closes #N"]
+    P --> CI{{"CI checks"}}
+    CI -->|fail| B
+    CI -->|pass| R{{"Owner review<br/>and test"}}
+    R -->|changes| B
+    R -->|merge| M["main<br/>issue closed"]
+```
 
 ## Decisions
 
@@ -197,6 +226,7 @@ The owner chose the Macropad firmware repository (`rp2040`) on 22 November 2026.
 | Reader `--project` extension | Implemented locally |
 | First Level 2 project | Macropad (`rp2040`). Exact files are shown to the owner before they are written. |
 | Native-session acceptance tests | Partly passed, 22 November 2026. See results below. |
+| Delivery pipeline | GitHub issues, pull requests, CI and owner merge (D17), 23 November 2026 |
 
 ## Native-session results (22 November 2026)
 

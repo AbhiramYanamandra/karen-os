@@ -15,7 +15,7 @@ Public candidate procedure. These procedures expand architecture SOP01–SOP05 a
 1. For private work, use an authorised private workspace outside this public tree. Public platform tasks must be reviewed for publication; `docs/tasks/` here contains only synthetic validation source. Record outcome, owner instruction, criteria, exclusions, sensitivity, dependencies, action types, resource bound, and owner.
 2. Classify impact independently from file count. Low risk means reversible local work with known behaviour and no meaningful UX, security, permission, sensitive-data, or spending change. A small authentication change requires design review.
 3. Classify substantial UX, backend, architecture, infrastructure, or data changes as design-required. Mark uncertain risk unresolved and hold dependent implementation. Identify the precise unresolved decision, while continuing independent reads or drafts.
-4. Record required design and action approvals separately. Intake passes when scope, risk, criteria, ownership, and gates are explicit. No issue or remote action is implied by a local task record.
+4. Record required design and action approvals separately. Intake passes when scope, risk, criteria, ownership, and gates are explicit. Where a GitHub pipeline is declared, intake happens in a GitHub issue that follows `docs/organisation/engineering.md`; otherwise no issue or remote action is implied by a local task record.
 
 ## Design approval
 
@@ -27,10 +27,10 @@ Public candidate procedure. These procedures expand architecture SOP01–SOP05 a
 ## Implementation and verification
 
 1. Recheck current context, approvals, scope, available permissions, resources, dependencies, task owner, and uncertain external actions. Claim the task only if unowned or the prior worker is confirmed stopped.
-2. Select an isolated branch or worktree where appropriate. Small single-worker local foundation edits may use the existing checkout with the initial dirty state documented. Never discard the owner's work.
+2. Select an isolated branch or worktree where appropriate, named `<type>/<issue>-<short-description>` under the engineering standard. Small single-worker local foundation edits may use the existing checkout with the initial dirty state documented. Never discard the owner's work.
 3. Perform bounded work, checkpoint on interruption or quota exhaustion, and use deterministic local tools where sufficient. No paid fallback. Stop repeated failures under the bounded recovery rules in architecture section 10.
 4. Verify observable acceptance criteria. Record actual commands, artefact revisions, results, limitations, and a separate review pass. Do not turn a successful static check into a passing runtime test.
-5. Prepare a reviewable diff and handoff. Consequential writes require their own current owner approval, even if tools permit them. A preparation or validation task grants no implicit commit, remote, publication, spending or deployment authority.
+5. Prepare a reviewable diff and handoff. Consequential writes require their own current owner approval, even if tools permit them. A preparation or validation task grants no implicit commit, remote, publication, spending or deployment authority beyond the standing branch, pull-request and issue authority in the engineering standard. Agents never merge.
 
 ## Handoff and recovery
 

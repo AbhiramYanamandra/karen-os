@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "karen-os",
-  "revision": "personal-first-1",
-  "reviewed_on": "2026-11-22",
+  "revision": "engineering-1",
+  "reviewed_on": "2026-11-23",
   "architecture_disposition": "published-personal-first-architecture-review-pending",
   "freshness": "Compare hashes on every startup and before consequential action. Check current owner directions for revocation. Drift requires review, not automatic repinning.",
   "sources": [
@@ -17,7 +17,7 @@
     {
       "id": "architecture",
       "path": "docs/architecture/platform-specification.md",
-      "sha256": "4da381309d502d3c3a31499b7865536a98e2c9f15413527bceecb00b1a816668",
+      "sha256": "828a049a3d7a967873f830975b465f660dab980d220ddcd8c20a7655454d29c4",
       "required": true,
       "load_when": "Design, implementation, security, consequential action, or policy detail",
       "startup_read": "on-demand"
@@ -25,7 +25,7 @@
     {
       "id": "acceptance",
       "path": "docs/architecture/design-status.md",
-      "sha256": "01ad19c56128a90435ef20bc321ae013ebd9c0b23194bfcb9268c4a5d9259b29",
+      "sha256": "4b2602d14125c32c6b263523451b8ca4708f2bb765d2ede4fd778bc34de0b696",
       "required": true,
       "load_when": "Baseline change, approval scope ambiguity, or consequential action",
       "startup_read": "on-demand"
@@ -33,7 +33,7 @@
     {
       "id": "policy",
       "path": "docs/organisation/policy.md",
-      "sha256": "77a4f537eddade5e0437bf39b8cd77c4ef5c5c802ac61f7255149725192207ec",
+      "sha256": "f801c19e97d360a830568b682e140b6351e4ab3b2dcf3a8e177312302b38e3c8",
       "required": true,
       "load_when": "Every startup; read completely",
       "startup_read": "complete"
@@ -49,15 +49,23 @@
     {
       "id": "sops",
       "path": "docs/organisation/sops.md",
-      "sha256": "59274ef1a1348b4740b4faab6459972206a756378b226e67afc03be05ae132e0",
+      "sha256": "4922811a0c877ea3f8f45059e07c60ea3d8b16c57bee28e9eb9fb7a81451616b",
       "required": true,
       "load_when": "Task intake, design, execution, verification, or recovery",
       "startup_read": "on-demand"
     },
     {
+      "id": "engineering",
+      "path": "docs/organisation/engineering.md",
+      "sha256": "d46fb62af55ddb39e209a7ecb2defca4a21b2f191425160769f7299093bb2d38",
+      "required": true,
+      "load_when": "Every startup; read completely. Governs issues, branches, commits, pull requests, CI and releases",
+      "startup_read": "complete"
+    },
+    {
       "id": "project",
       "path": "docs/projects/karen-os/instructions.md",
-      "sha256": "4041303132b41d178c95a1cc0958848beca6eab53d1c0516aaa25b67d856b5bf",
+      "sha256": "ffac8d17408aaf5ac270161edf172546108f257ce5a21e4b002c1d639de4f34e",
       "required": true,
       "load_when": "Every startup; read completely",
       "startup_read": "complete"
@@ -115,7 +123,7 @@
       "id": "startup_reader",
       "path": "scripts/startup.py",
       "required": true,
-      "sha256": "ba4f56b94c0a72dd91a7ee7878d170eb84c10ba55ecdbc3b8bc79bbe96b90cc6",
+      "sha256": "f6d537e70195b3be7c6682d660c4a42afb48ad21f8b79722b903c63d73eb2e52",
       "startup_read": "on-demand",
       "load_when": "Tool audit or startup-reader integrity"
     },

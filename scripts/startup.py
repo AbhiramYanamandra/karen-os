@@ -76,7 +76,35 @@ def project_record(project_root):
     for key in ('task_location', 'karen_os_path'):
         if key in record and (not isinstance(record[key], str) or not record[key]):
             errors.append('project record field must be a nonempty string: ' + key)
+    if 'karen_os_repository' in record and not repository_name(record['karen_os_repository']):
+        errors.append('project record karen_os_repository must look like owner/name')
+    if 'pipeline' in record:
+        errors += pipeline_errors(record['pipeline'])
     return record, errors
+
+
+def repository_name(value):
+    """True for a GitHub owner/name pair; no network lookup."""
+    if not isinstance(value, str) or value.count('/') != 1:
+        return False
+    allowed = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.')
+    owner, name = value.split('/')
+    return bool(owner) and bool(name) and set(owner + name) <= allowed and name not in ('.', '..')
+
+
+def pipeline_errors(pipeline):
+    """Validate the optional GitHub pipeline declaration in a project record."""
+    if not isinstance(pipeline, dict):
+        return ['project record pipeline must be an object']
+    errors = []
+    if pipeline.get('tracker') != 'github':
+        errors.append('project record pipeline.tracker must be github')
+    if not repository_name(pipeline.get('repository')):
+        errors.append('project record pipeline.repository must look like owner/name')
+    branch = pipeline.get('default_branch')
+    if not isinstance(branch, str) or not branch or any(c.isspace() for c in branch) or branch.startswith('-'):
+        errors.append('project record pipeline.default_branch must be a branch name')
+    return errors
 
 
 def read_project(root, project):
@@ -92,7 +120,7 @@ def read_project(root, project):
     records = [r for r in shared['sources'] if r['id'] not in KAREN_ONLY_SOURCES]
     result = dict(protocol=PROTOCOL, mode='project', project=None, project_root=str(project_root),
                   manifest_revision=manifest['revision'], context_errors=shared['context_errors'],
-                  project_status='invalid', project_errors=[], project_warnings=[], tasks=[], sources=records)
+                  project_status='invalid', project_errors=[], project_warnings=[], tasks=[], pipeline=None, karen_os_repository=None, sources=records)
     if not project_root.is_dir():
         result['project_errors'].append('project directory not found')
         return result
@@ -102,6 +130,8 @@ def read_project(root, project):
         if record is None or errors:
             return result
         result['project'] = record['project_id']
+        result['pipeline'] = record.get('pipeline')
+        result['karen_os_repository'] = record.get('karen_os_repository')
         for source_id, relative in (('project_record', PROJECT_RECORD), ('project_instructions', record['project_instructions'])):
             path = local_path(project_root, relative)
             row = dict(id=source_id, path=relative, located=path.is_file())
