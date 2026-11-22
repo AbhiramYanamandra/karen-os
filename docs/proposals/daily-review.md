@@ -1,118 +1,105 @@
-# Proposal: daily review command
+# Proposal: daily review
 
-Revision 1, 23 November 2026. Issue #17. Status: **awaiting owner approval**. Change type: backend (specification section 11).
+Revision 2, 23 November 2026. Issue #17. Status: **awaiting owner approval**. Change type: backend (specification section 11).
+
+Revision 1, a GitHub-only Python command, was replaced after owner feedback on PR #20. The owner wants the review in chat with an assistant, covering GitHub, calendar, email, workouts, meals and sleep, with a top 3 for the day, every morning and evening. Muse (Meta AI) is the first assistant. Any other assistant must be able to take over without a redesign.
 
 ## Summary
 
-A read-only local command, `python3 -B scripts/daily_review.py`, prints one plain-text review covering the configured GitHub repositories and local checkouts: what merged, what needs the owner, what an agent could take next, failing CI on default branches, and local Git state. It reads GitHub through the `gh` CLI the owner already has signed in, and local state through `git`. It writes nothing, stores nothing, costs nothing, and labels any source it cannot read as unavailable. The list of repositories and checkouts lives in a personal config file outside this repository.
+The product is a **model-agnostic review spec**, not a program and not a Muse integration. A short public spec defines what the review checks, how it ranks the top 3, what the morning and evening outputs look like, and the rules every assistant must follow. A prompt template turns the spec into instructions any chat assistant can follow. Each assistant is an **adapter**: whichever one can read the owner's sources is given the prompt. Changing assistants means pasting the same prompt somewhere else. Nothing else changes.
+
+KAREN OS keeps the parts that must not depend on any one assistant: the spec, the prompt template, a stdlib checker that tells whether an assistant's output meets the spec, and, only if a trial shows it is needed, a deterministic GitHub collector.
 
 ## Decisions needed
 
-Each has a recommendation. Approving the proposal as written accepts all of them.
+Approving the proposal as written accepts all of the recommendations.
 
 | # | Decision | Recommendation | Alternative |
 |---|---|---|---|
-| R1 | How to read GitHub | `gh` CLI via `subprocess`. Auth, tokens and rate limits stay in `gh`. No token handling in our code. | REST API via `urllib` with a token from an environment variable. No `gh` dependency, but our code then handles a credential. |
-| R2 | Where the config lives | `~/.config/karen-os/daily-review.json` (or `$XDG_CONFIG_HOME`), overridable with `--config`. JSON, because `tomllib` is missing on Python 3.10, which CI tests. | A file in the KAREN OS checkout, ignored by git. Easier to find, easier to commit by accident. |
-| R3 | Default time window | Last 24 hours, with `--since 3d` for Mondays or after a break. | "Since last run". Needs a state file, so it is no longer stateless. |
-| R4 | Local Git freshness | No `git fetch`. Local state is shown "as of last fetch", with that fetch's age. Strictly read-only. | An opt-in `--fetch`. Updates remote-tracking refs, which counts as a repository change. |
-| R5 | Exit codes | `0` all sources read, `3` review printed but some sources unavailable, `2` config or usage error. | Always `0` when anything printed. |
+| R1 | What the product is | The spec plus prompt template; assistants are replaceable adapters. Already the owner's direction (model agnostic). | A Muse-specific integration. Faster, but it ties the review to one vendor. |
+| R2 | Top-3 ranking | 1. Hard commitments due today or tomorrow. 2. Things blocking other people or agents (PRs waiting for the owner, `status:needs-owner`). 3. Health basics not yet done (workout planned, sleep debt). 4. Highest-priority `status:ready` work that fits a free block. Ties go to whatever fits the next free block. | Let each assistant rank freely. Less consistent, and harder to check. |
+| R3 | Workouts, meals and sleep | Read them from a connected source when the assistant has one (for example a workout log). Otherwise the evening review asks one short question ("sleep last night? meals today?"), and the next morning uses the answer. Never inferred. | Require a connected source for each, and leave them out until one exists. |
+| R4 | Sensitive data | Email, calendar and health data reach an assistant only after the owner consents to that assistant, recorded in the private instance (`docs/PUBLIC_PRIVATE.md`). Muse already has the owner's calendar and email. Health data and private repositories need a separate yes. | A single blanket consent. Policy does not allow it. |
+| R5 | Deterministic GitHub collector | Not built now. Built only if the trial shows the assistant's GitHub connector cannot see labels, drafts or CI. Revision 1's design (commit `54fb7c5` on this branch) is the reference if it is needed. | Build it now anyway. Wasted if the connector is enough. |
+| R6 | Timing | The owner asks for each review, morning and evening. Scheduled delivery stays decision D06. | Use an assistant's own scheduler. It is fine as an adapter detail, but the spec does not depend on one. |
 
-## Sections and sources
+## The spec (what implementation writes)
 
-Every section header names its source, for example `Merged in the last 24h (GitHub via gh)`.
+Location: `docs/daily-review/spec.md` and `docs/daily-review/prompt-template.md`. Generic, with synthetic examples only.
 
-| Section | Source | Query |
-|---|---|---|
-| Merged recently | GitHub | `gh pr list -R <repo> --state merged --search "merged:>=<date>" --json number,title,mergedAt,url` |
-| Waiting for review | GitHub | `gh pr list -R <repo> --state open --json number,title,isDraft,createdAt,url,statusCheckRollup`. Non-draft PRs are listed with their check state. Drafts are counted as in progress. |
-| Needs the owner | GitHub | `gh issue list -R <repo> --label status:needs-owner` and `--label status:blocked` |
-| Ready for an agent | GitHub | `gh issue list -R <repo> --label status:ready`, sorted `P0` to `P3`, then oldest first, matching the engineering standard's pick order |
-| Failing CI | GitHub | `gh repo view --json defaultBranchRef`, then `gh run list -R <repo> --branch <default> --json workflowName,conclusion,createdAt,url`. Shows the latest run per workflow if it failed. |
-| Local Git | `git` | `git status --porcelain=v1 --branch` (uncommitted, ahead or behind) and `git for-each-ref refs/heads` (unpushed branches, branches whose upstream is gone, branches idle for over 14 days) |
+**Sources**, each one optional and named in the output:
 
-All queries above were run against this repository on 23 November 2026 and returned the expected fields.
+| Source | Items |
+|---|---|
+| GitHub | PRs merged since the last review; open non-draft PRs; issues labelled `status:needs-owner` or `status:blocked`; `status:ready` issues, `P0` first; failing CI on default branches |
+| Calendar | Today's commitments with times; free blocks of 90 minutes or more |
+| Email | Messages needing a reply or action: sender, one line, why |
+| Workouts | Planned or done today; last session |
+| Meals | Logged or reported today |
+| Sleep | Last night, from a source or self-reported |
 
-## Command and options
+**Morning output:** Today, Needs me, Ready for agents, Health, then Top 3 for today, each item placed in a free block with a one-line reason. Under 200 words.
 
-```
-python3 -B scripts/daily_review.py [--config PATH] [--since 24h|3d|YYYY-MM-DD]
-                                   [--repo OWNER/NAME ...] [--format text|json]
-```
+**Evening output:** Done today, Slipped from the morning top 3 and why, Health check-in (asks only for what no source supplied), Tomorrow's first commitment, Proposed top 3 for tomorrow. Under 200 words.
 
-- `--repo` limits a run to some configured repositories.
-- `--format json` produces the same data as JSON, for a later briefing feature (D06 stays pending, so nothing consumes it yet).
+**Rules for every assistant:**
 
-Config example (synthetic):
+1. Start by stating which sources it could read this time. Any source it could not read is shown as `unavailable`, never guessed or filled from memory.
+2. Every item names its source.
+3. Read-only: no replies, calendar changes, GitHub writes or logging on the owner's behalf unless the owner asks in that conversation.
+4. No health advice beyond the facts, unless asked.
+5. Follow the formats above so outputs compare from day to day and across assistants.
 
-```json
-{
-  "repositories": ["example-owner/alpha", "example-owner/beta"],
-  "checkouts": ["~/code/alpha", "~/code/beta"],
-  "stale_branch_days": 14
-}
-```
+## Prompt template
 
-## Architecture
+The template has placeholders filled from the owner's private instance: `{repositories}`, `{workout_source}`, and so on. The filled-in prompt never enters the public repository. Draft for the morning:
 
-One script with four small parts, standard library only:
+> **Daily review, morning.** Use my {sources}. Repositories: {repositories}.
+> First list which sources you could read; mark the others unavailable.
+> 1. Today: commitments with times, free blocks of 90+ minutes.
+> 2. Needs me: emails needing action (sender, one line, why), open non-draft PRs, issues labelled status:needs-owner or status:blocked.
+> 3. Ready for agents: status:ready issues, P0 first.
+> 4. Health: workout planned or done, meals so far, last night's sleep.
+> 5. Top 3 for today, ranked by: commitments due today or tomorrow; what blocks others; health basics; priority work that fits a free block. Place each in a free block with one line on why.
+> Name the source of every item. Never guess. Read-only. Under 200 words.
 
-1. **Config**: loads and validates the JSON. Missing file means exit `2` with a message showing where it looked and a sample.
-2. **Sources**: `GitHubSource` and `GitSource`. Each calls an injected `run(argv) -> (code, stdout, stderr)` function, so tests replace it with fixtures. Each returns a `Section` with `items`, `source`, and either `ok` or `unavailable: <reason>`.
-3. **Review**: builds the ordered list of sections.
-4. **Render**: text (default) or JSON.
+The evening template follows the evening output above.
 
-```mermaid
-sequenceDiagram
-  participant O as Owner
-  participant C as daily_review.py
-  participant G as gh CLI
-  participant L as git
-  O->>C: run
-  C->>C: load ~/.config/karen-os/daily-review.json
-  loop each repository
-    C->>G: pr list / issue list / run list (read-only)
-    G-->>C: JSON, or error, which becomes "unavailable"
-  end
-  loop each checkout
-    C->>L: status / for-each-ref (read-only)
-    L-->>C: text, or error, which becomes "unavailable"
-  end
-  C-->>O: review on stdout
-```
+## Conformance checker
+
+`scripts/check_daily_review.py <output.txt>`, standard library only. It checks a pasted assistant output against the spec: the required sections are present, a source line exists, each source is either read or marked unavailable, there are exactly three top items, and it is under the word limit. It cannot check whether the facts are true. It shows whether a new assistant follows the contract, which is what makes switching assistants safe. Tests use synthetic sample outputs (passing and failing) and need no network.
+
+## Trial before implementation is final
+
+After approval, the owner runs the drafted prompts in Muse for three to five days and notes:
+
+- whether it sees GitHub labels, drafts and CI (this decides R5);
+- whether it ever invents items;
+- which health sources it can read (this tunes R3);
+- whether the formats are useful, or sections should be cut.
+
+Findings adjust the spec before the implementation PR merges.
 
 ## Failure handling
 
 | Failure | Result |
 |---|---|
-| `gh` not installed or not signed in | Every GitHub section is unavailable, with the reason. Git sections still run. |
-| One repository not found, no access, rate-limited or network down | That repository's rows are unavailable. Others still show. |
-| Checkout path missing or not a Git repository | That checkout is unavailable. |
-| Unexpected JSON shape | That section is unavailable with "unexpected response". Never a partial guess. |
-| Bad config | Exit `2` before any query runs. |
+| Assistant cannot read a source | That section shows `unavailable`. The review continues. |
+| No health source | Evening check-in question; nothing inferred. |
+| Assistant ignores the format | The checker fails; the owner tightens the prompt or switches adapter. |
+| Assistant retired or replaced | Paste the same filled prompt into the new assistant and run the checker on its first outputs. |
 
-Each external call has a 20-second timeout. The script never retries in a loop.
+## Privacy and cost
 
-## Privacy and permissions
+- The public repo holds only the generic spec, template, checker and synthetic samples. Repository lists, health answers, outputs and consent records stay in the private instance.
+- No KAREN OS code calls a model or a paid API. Cost is whatever the owner's assistant subscription already covers. Zero additional spend.
+- Sending data to Meta (or any later assistant) is an owner decision per R4. Public repositories are already public. Private repositories and health data need explicit consent.
 
-- Read-only by construction: only `gh ... list`, `gh repo view`, `gh run list`, `git status` and `git for-each-ref`. Tests assert that no other subcommands are called.
-- Output goes to stdout only. No cache, log or state file.
-- The personal config stays outside the public repository. Committed fixtures use synthetic names (`example-owner/alpha`).
-- Network traffic goes only to GitHub, using the owner's existing `gh` session. No model calls and no paid services.
+## Implementation, rollout and rollback
 
-## Tests
-
-- `tests/test_daily_review.py`, using `unittest`.
-- Recorded `gh` JSON responses in `tests/fixtures/daily_review/`, sanitised to synthetic names, served by a fake `run`.
-- Git parsing tested against recorded porcelain output. One test builds a temporary local repository with `git`, with no network access.
-- Cases: every section populated, every section empty, `gh` missing, one repository failing, malformed JSON, missing config, priority sort order, `--since` parsing, and the allow-list of read-only commands.
-- CI is unchanged. The existing `unittest discover` picks the tests up and needs no network or credentials.
-
-## Rollout and rollback
-
-- Rollout: one implementation PR (script, tests, fixtures, README section), expected to be under 400 lines excluding fixtures.
-- Rollback: revert that PR. The command stores no state and changes nothing, so there is nothing to migrate or clean up. The personal config file can stay or be deleted.
+- One PR: the spec, prompt templates (morning and evening), checker with tests, and a README section on running the review in any assistant. Expected well under 400 lines.
+- Rollback: revert that PR. Nothing runs automatically and no state is stored, so the owner just stops using the prompt.
 
 ## Out of scope
 
-Scheduling, notifications, email or chat briefings, dashboards (D06), any GitHub write, paid or model calls, and a private instance store (D08). Detecting stale `status:in-progress` claims that have no PR could be a later issue.
+Scheduled or pushed delivery (D06), any write on the owner's behalf, a private instance store or loader (D08), health advice, and a KAREN OS chat interface. Local checkout state was dropped because the owner did not select it.
