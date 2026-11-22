@@ -1,0 +1,21 @@
+[
+  {"name": "P0", "color": "b60205", "description": "Urgent: broken or blocking, do first"},
+  {"name": "P1", "color": "d93f0b", "description": "High: important to the project's next step"},
+  {"name": "P2", "color": "fbca04", "description": "Normal"},
+  {"name": "P3", "color": "c2e0c6", "description": "Low: nice to have"},
+  {"name": "type:feat", "color": "1d76db", "description": "New behaviour"},
+  {"name": "type:fix", "color": "d73a4a", "description": "Bug fix"},
+  {"name": "type:hotfix", "color": "b60205", "description": "Urgent fix to released behaviour"},
+  {"name": "type:refactor", "color": "5319e7", "description": "Restructure without changing behaviour"},
+  {"name": "type:docs", "color": "0075ca", "description": "Documentation only"},
+  {"name": "type:test", "color": "bfd4f2", "description": "Tests only"},
+  {"name": "type:chore", "color": "cfd3d7", "description": "Maintenance, dependencies, tooling"},
+  {"name": "type:ci", "color": "006b75", "description": "Pipeline and workflow changes"},
+  {"name": "type:release", "color": "0e8a16", "description": "Release preparation"},
+  {"name": "status:ready", "color": "0e8a16", "description": "Owner approved: an agent may start"},
+  {"name": "status:in-progress", "color": "1d76db", "description": "Claimed: a worker is on it"},
+  {"name": "status:in-review", "color": "5319e7", "description": "PR open and waiting for the owner"},
+  {"name": "status:blocked", "color": "3b3b3b", "description": "Waiting on another issue or external fact"},
+  {"name": "status:needs-owner", "color": "e99695", "description": "Needs an owner decision, triage or approval"},
+  {"name": "hardware-check", "color": "bfdadc", "description": "Needs a physical or manual test by the owner"}
+]

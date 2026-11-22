@@ -88,6 +88,44 @@ class ExternalProject(unittest.TestCase):
         self.assertTrue(any('integration_level' in e for e in errors))
         self.assertTrue(any('project_id' in e for e in errors))
 
+    def test_pipeline_reported(self):
+        self.record['pipeline'] = dict(tracker='github', repository='owner/synthetic-app', default_branch='main')
+        self.record['karen_os_repository'] = 'owner/karen-os'
+        self.write_record()
+        result = self.load()
+        self.assertEqual(result['project_status'], 'ok')
+        self.assertEqual(result['pipeline']['repository'], 'owner/synthetic-app')
+        self.assertEqual(result['karen_os_repository'], 'owner/karen-os')
+
+    def test_pipeline_absent_is_none(self):
+        result = self.load()
+        self.assertEqual(result['project_status'], 'ok')
+        self.assertIsNone(result['pipeline'])
+
+    def test_invalid_pipeline_reported(self):
+        bad = [
+            ('not an object', 'pipeline must be an object'),
+            (dict(tracker='gitlab', repository='o/n', default_branch='main'), 'tracker'),
+            (dict(tracker='github', repository='https://github.com/o/n', default_branch='main'), 'repository'),
+            (dict(tracker='github', repository='o/..', default_branch='main'), 'repository'),
+            (dict(tracker='github', repository='o/n', default_branch='my branch'), 'default_branch'),
+            (dict(tracker='github', repository='o/n', default_branch='--force'), 'default_branch'),
+        ]
+        for pipeline, expected in bad:
+            with self.subTest(pipeline=pipeline):
+                self.record['pipeline'] = pipeline
+                self.write_record()
+                result = self.load()
+                self.assertEqual(result['project_status'], 'invalid')
+                self.assertTrue(any(expected in e for e in result['project_errors']), result['project_errors'])
+
+    def test_invalid_karen_os_repository_reported(self):
+        self.record['karen_os_repository'] = 'karen-os'
+        self.write_record()
+        result = self.load()
+        self.assertEqual(result['project_status'], 'invalid')
+        self.assertTrue(any('karen_os_repository' in e for e in result['project_errors']))
+
     def test_instructions_path_cannot_escape_project(self):
         self.record['project_instructions'] = '../sibling-app/AGENTS.md'
         self.write_record()
