@@ -148,7 +148,7 @@ Each layer can narrow the one above it. None can widen it.
 - **Public projects.** The pointer block and `.karen/project.json` contain no private paths, credentials, preferences or instance data. Private-instance records are never referenced from a public project.
 - **Unreachable core.** If `karen_os_path` is wrong, `karen-os` has moved, or the agent cannot run the reader, the pointer block tells it to report the shared rules as unavailable and stay read-only. It does not guess.
 - **Drift.** A pinned revision that no longer matches the manifest is reported as stale. The owner reviews and updates the pin. Nothing repins automatically.
-- **Unverified capability.** Whether Codex can read `karen-os` from inside another workspace under its default sandbox is not confirmed. The acceptance test settles it. If reads are blocked, the fallback is a per-project `--add-dir` for Claude Code and a reviewed Codex sandbox setting, each needing owner approval.
+- **Cross-workspace reads.** Both Claude Code and Codex, under their default settings, read `karen-os` from inside the Macropad repository on 22 November 2026. If a future version blocks such reads, the fallback is a per-project `--add-dir` for Claude Code and a reviewed Codex sandbox setting, each needing owner approval.
 
 ## Acceptance test
 
