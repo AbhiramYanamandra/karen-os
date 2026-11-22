@@ -8,7 +8,7 @@ KAREN OS coordinates Claude Code, Codex, ChatGPT and future tools so they share 
 
 [![checks](https://github.com/AbhiramYanamandra/karen-os/actions/workflows/checks.yml/badge.svg)](https://github.com/AbhiramYanamandra/karen-os/actions/workflows/checks.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-1f6feb)](LICENSE)
-![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776ab)
+![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776ab)
 ![Dependencies: none](https://img.shields.io/badge/dependencies-standard%20library%20only-2ea043)
 ![Stage: foundation](https://img.shields.io/badge/stage-foundation%20built%2C%20pilot%20next-d29922)
 
@@ -479,7 +479,7 @@ The foundation is built. A working personal assistant is not. I'm keeping that d
 | Strict machine receipts and a handoff fixture validator | Implemented and tested |
 | Cross-agent manual handoff | Fixture-tested here. Exercised in both directions in the private predecessor, not yet rerun on this checkout. |
 | Public GitHub repository, Apache-2.0 | Published |
-| Automated CI | GitHub Actions runs every check on each push and pull request, on Python 3.9 and 3.13. The badge above shows the latest result. |
+| Automated CI | GitHub Actions runs every check on each push and pull request, on Python 3.10 and 3.13. The badge above shows the latest result. |
 | ChatGPT and ChatGPT Work context | Not validated |
 | Use from other project repositories (Level 2) | Reader support built and unit-tested. The first real project, the Macropad firmware, is next. |
 | A real engineering pilot, end to end | Not started |
@@ -487,7 +487,7 @@ The foundation is built. A working personal assistant is not. I'm keeping that d
 | Briefings, resource monitor, Project Factory, design system | Planned |
 | Autonomous coordination and dispatch | Planned, deliberately last |
 
-The deterministic suite has 53 tests. It uses only Python's standard library and makes no model calls. It was tested on macOS with Python 3.13. Python 3.9 is the minimum API level the code targets.
+The deterministic suite has 53 tests. It uses only Python's standard library and makes no model calls. It runs locally on macOS with Python 3.13, and CI runs it on Linux with Python 3.10 and 3.13. Python 3.10 is the supported minimum. Python 3.9 reached end of life in October 2025, and GitHub no longer provides it on current runners.
 
 ### Repository layout
 
@@ -623,7 +623,7 @@ Success isn't counted in agents, connectors, test files or commits. It is measur
 
 ## Run it locally
 
-There is nothing to install. The checks need Python 3.9 or newer and use no provider account or network access.
+There is nothing to install. The checks need Python 3.10 or newer and use no provider account or network access.
 
 ```sh
 git clone https://github.com/AbhiramYanamandra/karen-os.git

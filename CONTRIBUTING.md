@@ -22,7 +22,7 @@ Record what ran and its limits. Test observable behaviour; a static suite cannot
 | Contributing and security guidance | Included because privacy and reproducible local checks matter now. |
 | Code of conduct | Defer adoption until maintainers and an escalation route are defined; no contact is invented. |
 | Issue and PR templates | Defer until the public workflow is approved; use concise ordinary descriptions initially. |
-| Automated test workflow | `.github/workflows/checks.yml` runs the context check, the explore read and the unit tests on Python 3.9 and 3.13, with read-only permissions and no secrets. No release service is enabled. |
+| Automated test workflow | `.github/workflows/checks.yml` runs the context check, the explore read and the unit tests on Python 3.10 and 3.13, with read-only permissions and no secrets. No release service is enabled. |
 | Roadmap | README and the architecture's phased roadmap are sufficient at this maturity. |
 
 Contribute only material you have authority to submit. Confirm the approved outbound and contribution terms before accepting external contributions. Do not assume that the licensing recommendation has already granted rights.
