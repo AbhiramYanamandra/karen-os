@@ -196,4 +196,18 @@ The owner chose the Macropad firmware repository (`rp2040`) on 22 November 2026.
 | How projects locate `karen-os` | `karen_os_path` in `.karen/project.json`, 22 November 2026 |
 | Reader `--project` extension | Implemented locally |
 | First Level 2 project | Macropad (`rp2040`). Exact files are shown to the owner before they are written. |
-| Native-session acceptance tests | Pending. Claude Code first; Codex once its usage resets. |
+| Native-session acceptance tests | Partly passed, 22 November 2026. See results below. |
+
+## Native-session results (22 November 2026)
+
+The owner ran a fresh session in each tool inside the Macropad repository and asked "What rules apply here, and what are my open plans?"
+
+| Check | Claude Code 2.1.330 | Codex 0.171.0 |
+| --- | --- | --- |
+| Found the pointer and ran the reader | Yes | Yes. It read `.karen/project.json` first, then ran the reader with the expanded path. |
+| Reader status | `ok`, revision `personal-first-1` | `ok`, revision `personal-first-1` |
+| Kept the local rule (this project and the KAREN OS core only) | Yes | Yes |
+| Reported plans correctly | Yes. 007 is the only TODO; 003 to 006 await device checks. | Yes, the same |
+| Read `karen-os` from inside another workspace | Yes | Yes. This settles the unverified sandbox-read question for the default Codex sandbox. |
+
+Not yet exercised natively: the stale pin, the unreachable core, refusing a weakening rule, and the decoy sibling. The unit tests cover the reader side of each. Claude Code's first attempt was held by the owner's own global pre-command hook until the session stated its purpose. That hook is local machine configuration, not part of KAREN OS.
