@@ -17,7 +17,7 @@
     {
       "id": "architecture",
       "path": "docs/architecture/platform-specification.md",
-      "sha256": "828a049a3d7a967873f830975b465f660dab980d220ddcd8c20a7655454d29c4",
+      "sha256": "c3e84ed00948e6b836d1f8b4929cde0d0dbe1fcbdf43b26c675fcf1f26d01236",
       "required": true,
       "load_when": "Design, implementation, security, consequential action, or policy detail",
       "startup_read": "on-demand"
@@ -25,7 +25,7 @@
     {
       "id": "acceptance",
       "path": "docs/architecture/design-status.md",
-      "sha256": "4b2602d14125c32c6b263523451b8ca4708f2bb765d2ede4fd778bc34de0b696",
+      "sha256": "0e5295b70395dd796b19f4e2342c288bed5fba772ce942567262a172e4821963",
       "required": true,
       "load_when": "Baseline change, approval scope ambiguity, or consequential action",
       "startup_read": "on-demand"
