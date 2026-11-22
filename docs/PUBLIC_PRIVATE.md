@@ -31,9 +31,9 @@ The current reader is source-local. It rejects references outside its selected r
 
 ## One authority, without a synchronisation service
 
-During preparation, the existing working source remains authoritative. This candidate is a publication artifact: only the documented sanitisation and release-preparation overlays are permitted here. No independent feature work or competing decisions happen here. Functional changes must be proposed to the working authority and require a fresh privacy-reviewed export. The working source is not edited during this preparation task. Exact mapping is retained privately, not distributed with the source.
+The authority transfer is complete (22 November 2026). This public repository is now the active development repository and is canonical for reusable code, policy, architecture and templates. The earlier working source is frozen as a private archive. Agents must not import its code, Git history or private records, and must not modify it. Exact mapping is retained privately, not distributed with the source.
 
-If the owner later promotes a public repository, approve one explicit authority transfer. The public platform becomes canonical for reusable code, generic policy, architecture and templates. Freeze the earlier working source as a private archive instead of maintaining a second editable platform fork.
+Personalisation is expected here. Publishable descriptions of the owner's workflows, preferences and standards can live in this repository. The private records those workflows use cannot.
 
 An instance pins a public platform revision and keeps private preferences, stricter restrictions and runtime records separately. Public platform changes follow reviewed source changes. Instance operators review upgrades and reconcile snapshots before dependent actions. Private overrides cannot silently relax approvals, data permissions or spending boundaries. There is no automatic bidirectional record or policy synchronisation.
 

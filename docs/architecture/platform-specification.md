@@ -1,6 +1,6 @@
 # KAREN OS platform architecture candidate
 
-Public export derived from technical architecture v0.2. Publication review pending.
+Public export derived from technical architecture v0.2. Published on GitHub under Apache-2.0 on 22 November 2026. Architecture review of the mechanisms remains pending. Development is personal-first; see the [owner vision](../vision.md).
 
 This is a sanitised design derivative, not an inherited private Git history or a deployment approval. Sections 1–24 and their stable technical IDs retain the design's scope. Private provenance is retained outside this candidate. See [export changes](export-changes.md) and [public/private boundary](../PUBLIC_PRIVATE.md).
 
@@ -79,7 +79,7 @@ Chief of staff, orchestration, and execution are separate responsibilities. They
 
 ### Initial scope and exclusions
 
-The initial technical pilot is one manageable example application application feature, subject to confirmation of the project and scope. A sample interface redesign and a sample reminder application are examples of later uses. A potential career-workflow integration is a candidate integration, not an inspected or validated dependency.
+The initial technical pilot is one manageable feature from a workflow the owner actually uses, subject to confirmation of the project and scope (D01). A sample interface redesign and a sample reminder application are examples of later uses. A potential career-workflow integration is a candidate integration, not an inspected or validated dependency.
 
 Initial delivery excludes a custom dashboard, public services, full personal-data ingestion, autonomous financial transactions, autonomous job submissions, always-on workers, and an automatic deployment pipeline. Those require separate scope and approval.
 
@@ -746,13 +746,16 @@ AGREED foundation-first sequence • PROPOSED gated milestones
 | --- | --- | --- |
 | 1 Architecture baseline | This specification, diagrams, ADRs, open decisions, and acceptance plan. | Owner review of principles versus proposed mechanisms. No implementation. |
 | 2 Execution contract and shared context | SOPs, schemas, context adapters, approved organisational knowledge structure. Repository creation only after separate authorisation and section 6 gates. | AC01–AC04 and AC13–AC20 as applicable. Fresh direct sessions and handoff work before orchestration. Remote tests wait for authorised remote adoption. |
+| 2b External project integration | PROPOSED, in progress. Independent project repositories load the shared core through a pointer block and `.karen/project.json`. The startup-reader `--project` option is implemented and unit-tested. Projects never move into this repository (owner decision, 22 November 2026). See [external project integration](external-projects.md). | Synthetic-project acceptance test passes in fresh Claude Code and Codex sessions; one real project integrated with owner approval. |
 | 3 Engineering pilot | One bounded example application feature through proposal, checks, PR, review, and owner release decision. Use a basic manual resource view now. | AC05–AC07 and AC09. Validate recovery, authority, and cost before expansion. |
 | 4 Reuse and Project Factory | Extract approved tokens, patterns, templates, and repeatable project setup. | AC11. New project demonstrably uses the approved conventions. |
 | 5 Chief of staff integration | Restricted Muse intake → proposal or issue, then read-only status and approval notifications. | AC10 and relevant AC12 checks. Direct paths continue during outage. |
 | 6 Personal operations and monitoring | Morning and evening briefings, broader supported telemetry, scoped personal sources. | AC07–AC09. Accurate source-backed reports with missing data exposed. |
 | 7 Advanced supervised automation | Consider bounded dispatch, private remote execution, recovery automation, optional gateway, and only a justified dashboard. | All applicable tests pass. Measured benefit, approved costs, and unchanged Level 2 authority. |
 
-The context foundation exists as local utilities and procedures. Public release still requires privacy, licence, identity and design review. Any engineering pilot, integration, briefing schedule or spending remains a separately authorised future action.
+The context foundation exists as local utilities and procedures, and the public repository is published. Any engineering pilot, integration, briefing schedule or spending remains a separately authorised future action.
+
+Personal-first ordering (owner direction, 22 November 2026). The phases describe a capability progression, not a rule that personal usefulness waits for Phase 6. The near-term sequence is: state the personal-first direction in project documents, add lightweight deterministic CI, make the shared core usable from independent project repositories (Phase 2b), select one personally useful pilot, then deliver it through this workflow while measuring manual coordination, reusable agent work, elapsed time and output reliability. A small personal workflow, such as a daily review, may arrive before Phases 4 and 5 when it needs no new infrastructure. Basic scripts and supported scheduling for bounded tasks do not wait for Phase 7.
 
 ## 23 Open decisions for review
 
@@ -762,8 +765,8 @@ Review the architecture as a baseline, then resolve only the decisions needed fo
 
 | ID | Decision and proposed default | Owner disposition |
 | --- | --- | --- |
-| D01 | Pilot: confirm example application and choose one bounded feature. The navigation pattern is an example, not committed scope. | Pending |
-| D02 | Knowledge: review public platform authority and separate private-instance storage; choose operator-controlled private location without building a new service now. | Pending |
+| D01 | Pilot: choose one bounded feature from a workflow the owner actually uses. Personal usefulness now guides selection; the navigation pattern is an example, not committed scope. | Pending. Candidate proposed: a private evening review digest. |
+| D02 | Knowledge: review public platform authority and separate private-instance storage; choose operator-controlled private location without building a new service now. | Partly resolved. The public repository is canonical for platform engineering; the earlier working source is a frozen private archive. The private instance location is still pending. |
 | D03 | Authority: review section 8, including owner approval for merge and release, the fast path, and material-change rules. | Pending |
 | D04 | Muse: identify exact product, account, channel, and available connectors. Start with intake and read-only status. | Pending |
 | D05 | Resources: inventory existing subscriptions, API billing, permitted automation, and tool entitlements. Keep added spend at zero. | Pending |
@@ -775,13 +778,13 @@ Review the architecture as a baseline, then resolve only the decisions needed fo
 | D11 | Design: accept Figma as preferred and an explicitly approved browser prototype as the fallback. | Pending |
 | D12 | Gateway: defer OmniRoute by default. Authorise a later bounded evaluation only if native workflow evidence shows a need. | Pending |
 | D13 | Documentation: approve canonical ownership, acceptance evidence, supersession, and extraction procedure in section 6. | Pending |
-| D14 | Publication: review the intended public account, licence, author identity, clean history, visibility and access. No remote creation or push is authorised by this document. | Pending |
+| D14 | Publication: review the intended public account, licence, author identity, clean history, visibility and access. No remote creation or push is authorised by this document. | Resolved 22 November 2026. Published at github.com/AbhiramYanamandra/karen-os under Apache-2.0 from a single clean commit. Later pushes still need owner approval. |
 | D15 | Context: select and validate supported ChatGPT conversation and Work mechanisms, pack freshness checks, and local runtime discovery. Manual packs are the proposed fallback. | Pending |
 | D16 | Phase 1 structure: accept the minimal tree and defer additional records and adapters until separately scoped work needs them. | Pending |
 
 ### Review disposition
 
-Public architecture review: pending. Mechanism approvals and practical integration evidence remain open. No checkout, test result or version number authorises publication or personal-instance actions.
+Publication: completed under D14. Public architecture review: pending. Mechanism approvals and practical integration evidence remain open. No checkout, test result or version number authorises publication or personal-instance actions.
 
 Architecture approval does not mark integration tests as passed or authorise implementation. the context-foundation phase can refine the execution contract after review. No response is inferred as approval.
 

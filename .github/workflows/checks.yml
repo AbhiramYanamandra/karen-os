@@ -1,0 +1,30 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic:
+    name: Context, startup and tests (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Verify pinned context
+        run: python3 -B scripts/check_context.py
+      - name: Load the shared core read-only
+        run: python3 -B scripts/startup.py read --explore > /dev/null
+      - name: Run the deterministic test suite
+        run: python3 -B -m unittest discover -s tests -v

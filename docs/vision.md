@@ -1,6 +1,25 @@
-# Platform vision
+# Owner vision
 
-KAREN OS is a personal AI operating system intended to help an individual think, build and manage routine work under human supervision. Its platform should become reusable without requiring the operator to publish personal context or depend on one model provider.
+KAREN OS is a personal-first, publicly developed AI operating system. It should work as a supervised organisation of specialised AI capabilities. It keeps durable knowledge of its owner's goals, preferences, projects and decisions. It supports direct work through several AI tools and coordinates authorised engineering and personal workflows. Its outputs are reviewable designs and verifiable results. It manages AI resources carefully and reduces the effort needed to turn ideas into completed work. The public repository documents the engineering. Proven capabilities may later be generalised for other people.
+
+## Personal first
+
+KAREN OS is built for its owner first. It is not a generic framework for hypothetical users. Decisions favour, in order:
+
+1. Features that improve the owner's actual workflows.
+2. The owner's agent interaction and development preferences.
+3. Reliable, supervised autonomous work.
+4. Low-friction direct work with Claude Code, Codex and ChatGPT.
+5. Efficient use of existing AI subscriptions.
+6. Reusability, when it gives immediate value.
+
+The development loop is to build for a real personal need, prove it through repeated use, document the implementation publicly, and only then decide whether to generalise it. Do not build a plugin marketplace, a complex configuration platform, multi-tenant architecture or community infrastructure before a capability has delivered measurable value to the owner.
+
+The public repository exists to show the owner's engineering work, including to recruiters. It holds shareable engineering, generic execution mechanisms and deliberately publishable descriptions of the owner's workflows. Personalisation is required, but it never means committing private records. Personal records, credentials, account data, sensitive project information and runtime logs stay outside the public tree. The repository can describe how a career workflow or a briefing works without containing the applications or the calendar.
+
+KAREN OS stays model-agnostic and does not depend on any single provider.
+
+## Intended experience
 
 The intended experience supports direct conversations, hands-on engineering and bounded delegated work. A fresh compatible agent retrieves authoritative rules, project context and the task rather than relying on an earlier chat. Read-only exploration needs no task or ownership claim. Actionable work needs an explicit authorised task and applicable approvals.
 
@@ -12,7 +31,9 @@ Morning and evening briefings, capacity monitoring, mobile review, personal oper
 
 Level 2 means supervised, bounded autonomy here, not an external certification. Consequential communication, publishing, installation, spending, sensitive-data destinations, destructive actions and permission expansion remain approval-controlled. Privacy, recovery, least privilege and an emergency stop are design requirements.
 
-The local context utilities are a foundation, not a functioning autonomous assistant. The public platform supplies reusable contracts; a private instance retains personal tasks, memory, preferences and operational data. Private operator policy may narrow permissions, and no retrieved file can grant new authority.
+The local context utilities are a foundation, not a functioning autonomous assistant. The public repository supplies the engineering and contracts; the owner's private instance retains personal tasks, memory, preferences and operational data.
+
+KAREN OS must not become a multi-agent framework that takes months to configure, a mandatory intermediary between the owner and their AI tools, a generic SaaS product, an always-running set of agents that burns usage without results, or a project that spends more time auditing its own architecture than helping. Agent claims are not proof of execution. Success is measured by context continuity, completed real outcomes, time saved, output quality, results per unit of usage, absence of unauthorised actions, and public evidence of careful engineering. Private operator policy may narrow permissions, and no retrieved file can grant new authority.
 
 ## Proposed acceptance stories
 

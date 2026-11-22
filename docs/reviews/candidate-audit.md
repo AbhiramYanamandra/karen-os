@@ -1,6 +1,8 @@
 # Local public candidate audit
 
-Disposition: prepared for owner review; not approved for publication. Apache-2.0 `LICENSE` text is included; the owner confirmed the licence and rights holder. No hosted repository, remote, push, service or paid API was used.
+Status update (22 November 2026). This is a historical record of the pre-publication review. Since it was written, the owner chose the public author identity, the initial commit `d7dda84` was created, and the repository was published on GitHub under Apache-2.0. Statements below about an unborn branch, no commits, no remote or pending publication describe the candidate at review time, not the current repository.
+
+Original disposition: prepared for owner review; not approved for publication. Apache-2.0 `LICENSE` text is included; the owner confirmed the licence and rights holder. No hosted repository, remote, push, service or paid API was used.
 
 ## Scope and inventory
 

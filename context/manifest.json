@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "project_id": "karen-os",
-  "revision": "public-candidate-1",
+  "revision": "personal-first-1",
   "reviewed_on": "2026-11-22",
-  "architecture_disposition": "public-design-candidate-review-pending",
+  "architecture_disposition": "published-personal-first-architecture-review-pending",
   "freshness": "Compare hashes on every startup and before consequential action. Check current owner directions for revocation. Drift requires review, not automatic repinning.",
   "sources": [
     {
       "id": "owner_vision",
       "path": "docs/vision.md",
-      "sha256": "d9c1bf990a77ce6646dec57e068de723292b9877972c9bc815e0003060253d80",
+      "sha256": "021b05eea5ee22c151a9cc2b9fd3b210d35a7e1053f64b210f645b61a06fc666",
       "required": true,
       "load_when": "Priorities, product direction, UX, or requirements conflict",
       "startup_read": "on-demand"
@@ -17,7 +17,7 @@
     {
       "id": "architecture",
       "path": "docs/architecture/platform-specification.md",
-      "sha256": "504ea007d0f928e4a89b8aab844d7281d1bd2b996b4769c3dfd9009f2f76e14c",
+      "sha256": "4da381309d502d3c3a31499b7865536a98e2c9f15413527bceecb00b1a816668",
       "required": true,
       "load_when": "Design, implementation, security, consequential action, or policy detail",
       "startup_read": "on-demand"
@@ -25,7 +25,7 @@
     {
       "id": "acceptance",
       "path": "docs/architecture/design-status.md",
-      "sha256": "d81c822422e7ac50e20e8984985dabfc55a0e10f97ff389ecbfa145a3815e4ce",
+      "sha256": "01ad19c56128a90435ef20bc321ae013ebd9c0b23194bfcb9268c4a5d9259b29",
       "required": true,
       "load_when": "Baseline change, approval scope ambiguity, or consequential action",
       "startup_read": "on-demand"
@@ -115,7 +115,7 @@
       "id": "startup_reader",
       "path": "scripts/startup.py",
       "required": true,
-      "sha256": "bf4e909d4305f0aee46116dce6f18b21039fd9bf5bf1728a42883f98cf528bf8",
+      "sha256": "ba4f56b94c0a72dd91a7ee7878d170eb84c10ba55ecdbc3b8bc79bbe96b90cc6",
       "startup_read": "on-demand",
       "load_when": "Tool audit or startup-reader integrity"
     },

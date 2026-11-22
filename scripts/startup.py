@@ -52,6 +52,87 @@ def read(root, task=None):
                 context_errors=snapshot['errors'], sources=records)
 
 
+PROJECT_RECORD = '.karen/project.json'
+KAREN_ONLY_SOURCES = {'project', 'claude_entry'}
+
+
+def project_record(project_root):
+    """Validate an external project's record; return (record, errors)."""
+    path = local_path(project_root, PROJECT_RECORD)
+    if not path.is_file():
+        return None, ['missing project record: ' + PROJECT_RECORD]
+    try:
+        record = json.loads(path.read_text())
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        return None, ['malformed project record: ' + str(error)]
+    errors = []
+    if not isinstance(record, dict) or record.get('schema_version') != 1:
+        return None, ['unsupported project record schema']
+    for key in ('project_id', 'karen_manifest_revision', 'project_instructions'):
+        if not isinstance(record.get(key), str) or not record[key]:
+            errors.append('project record field must be a nonempty string: ' + key)
+    if record.get('integration_level') not in (1, 2, 3):
+        errors.append('project record integration_level must be 1, 2 or 3')
+    for key in ('task_location', 'karen_os_path'):
+        if key in record and (not isinstance(record[key], str) or not record[key]):
+            errors.append('project record field must be a nonempty string: ' + key)
+    return record, errors
+
+
+def read_project(root, project):
+    """Shared core from this checkout plus one external project's declared context.
+
+    Reads only the project's record, the instruction file it names and the
+    file names in its declared task folder. Writes nothing.
+    """
+    root = Path(root).resolve()
+    project_root = Path(project).expanduser().resolve()
+    manifest, _ = core(root)
+    shared = read(root)
+    records = [r for r in shared['sources'] if r['id'] not in KAREN_ONLY_SOURCES]
+    result = dict(protocol=PROTOCOL, mode='project', project=None, project_root=str(project_root),
+                  manifest_revision=manifest['revision'], context_errors=shared['context_errors'],
+                  project_status='invalid', project_errors=[], project_warnings=[], tasks=[], sources=records)
+    if not project_root.is_dir():
+        result['project_errors'].append('project directory not found')
+        return result
+    try:
+        record, errors = project_record(project_root)
+        result['project_errors'] += errors
+        if record is None or errors:
+            return result
+        result['project'] = record['project_id']
+        for source_id, relative in (('project_record', PROJECT_RECORD), ('project_instructions', record['project_instructions'])):
+            path = local_path(project_root, relative)
+            row = dict(id=source_id, path=relative, located=path.is_file())
+            if path.is_file():
+                data = path.read_bytes()
+                text = data.decode('utf-8')
+                row.update(content=text, sha256=sha(data), revision_verified=False, revision_basis='project file',
+                           first_line=1, last_line=len(text.splitlines()))
+            else:
+                result['project_errors'].append('missing project instructions: ' + relative)
+            records.append(row)
+        if 'task_location' in record:
+            folder = local_path(project_root, record['task_location'])
+            if folder.is_dir():
+                result['tasks'] = sorted(p.name for p in folder.iterdir() if p.is_file() and p.suffix == '.md')
+            else:
+                result['project_warnings'].append('task location not found: ' + record['task_location'])
+    except (ValueError, UnicodeDecodeError) as error:
+        result['project_errors'].append('invalid project context: ' + str(error))
+        return result
+    if result['project_errors']:
+        return result
+    if record['karen_manifest_revision'] != manifest['revision']:
+        result['project_warnings'].append('stale: project pins KAREN OS revision ' + record['karen_manifest_revision']
+                                          + ' but the current revision is ' + manifest['revision'])
+        result['project_status'] = 'stale'
+    else:
+        result['project_status'] = 'ok'
+    return result
+
+
 def word_count(text):
     return len(re.findall(r'[\w]+(?:-[\w]+)*', text))
 
@@ -191,13 +272,14 @@ def main():
     mode = p.add_mutually_exclusive_group(required=True)
     mode.add_argument('--task')
     mode.add_argument('--explore', action='store_true')
+    mode.add_argument('--project', help='external project directory; returns the shared core plus its declared context')
     p.add_argument('--receipt')
     p.add_argument('--evidence')
     args = p.parse_args()
     if args.action == 'read':
-        result = read(args.root, args.task)
+        result = read_project(args.root, args.project) if args.project else read(args.root, args.task)
     else:
-        if args.explore:
+        if args.explore or args.project:
             p.error('machine assessment requires an explicit task')
         if not args.receipt or not args.evidence:
             p.error('assess requires --receipt and --evidence')
