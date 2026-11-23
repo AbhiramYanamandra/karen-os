@@ -6,6 +6,8 @@ Applies to every code or documentation change in KAREN OS and in connected proje
 
 GitHub holds the queue, the review and the history. The work happens in a local checkout or a cloud agent session.
 
+`scripts/pipeline.py` does the routine steps, one shell call each, so agents spend effort on the work rather than the paperwork. Run it from the project's checkout (other projects call it from the KAREN OS checkout): `claim <issue>` (step 3 and 4), `pr <issue>` (step 6, opens the draft; add `--refs` for design gates), `ready <pr>` (waits for CI, records the times, marks the PR ready and moves the issue to `status:in-review`), and `cleanup` (step 8). Pass `--agent` and `--machine` to `claim` without personal details such as the hostname. Each step also moves the item's card on the board, one way from label to card; `sync` adds missing items from the repositories listed in `context/board.json` and corrects any card whose Status disagrees with its label. The script refuses merges, approvals, closing issues, pushes to the default branch and settings changes. Do a step by hand only when the script cannot run, and keep the same order.
+
 1. **Issue.** Every piece of work is a GitHub issue in the project's repository, written with the task template: outcome, why, scope, out of scope, acceptance criteria, and a link to any detailed plan. The issue is the task record. Only issues labelled `status:ready` may be started. An agent that files an issue labels it `status:needs-owner`. When the owner asks an agent directly for work that has no issue, the agent files the issue first and stops; it starts only after the owner marks it `status:ready`. Work the owner dispatches through the daily review (epic #17) starts from a `status:ready` issue the same way. A GitHub Projects board (such as [Engineering HQ](../architecture/github-projects.md)) only shows and plans issues: moving a card or changing its Status never authorises work, and when a card and its issue's label disagree, the label wins. Whoever changes an issue's `status:*` label also moves its card.
 2. **Pick.** Work on the issue the owner names. Otherwise take the open `status:ready` issue with the highest priority (`P0` first), then the oldest. Skip `status:blocked`, `status:needs-owner` and anything already claimed.
 3. **Claim.** Replace `status:ready` with `status:in-progress` and comment with the agent, the session or machine, and the branch name. One worker per issue. Check for an existing claim before starting.
@@ -69,6 +71,8 @@ One issue per PR. Split large plans into slices, each with its own issue and PR.
 - **Risk and rollback.**
 
 Link long records rather than pasting them. Any review the agent did itself is labelled a self-review.
+
+The PR template has no checkboxes for the agent to tick. CI's **PR metadata** job (`scripts/check_pr.py`) checks what a machine can: the branch name, a `Closes #<issue>` or `Refs #<issue>` link, and that the diff adds no home-directory paths or common secret patterns. A line that must show such an example carries `pr-check: allow`. Judgement items (docs updated, follow-ups filed, self-review labelled) are prompts in the template, answered only where they apply.
 
 ## Continuous integration
 
