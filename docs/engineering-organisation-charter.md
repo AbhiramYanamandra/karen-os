@@ -124,7 +124,7 @@ A real company does not rely on engineers voluntarily following every convention
 
 The charter itself is **PR 0 / design gate**, not an implementation claim. Follow-on issues and PRs should each close one concrete slice and avoid changing unrelated daily-review work:
 
-1. **PR A — skill inventory and trusted catalogue:** read actual installed skill files safely; compare aliases/duplicates/compatibility and Ponytail, Unslop, Figma, TDD, code-review, thermonuclear, security candidates; record provenance, risks, owner approvals and targeted minimum set.
+1. **PR A — skill inventory and trusted catalogue:** read actual installed skill files safely; compare aliases/duplicates/compatibility and Ponytail, Unslop, Figma, TDD, code-review, thermonuclear, security candidates; record provenance, risks, owner approvals and targeted minimum set. Audit: [skill-catalogue-audit.md](organisation/skill-catalogue-audit.md) ([#44](https://github.com/AbhiramYanamandra/karen-os/issues/44)).
 2. **PR B — lifecycle profiles and stage resolution:** machine-readable schema for issue type/risk/stage, mandatory vs recommended skills, applicability and missing-skill handling; deterministic validation and tests; no central AI router required.
 3. **PR C — project integration and enforceable gates:** extend existing startup/pipeline/PR checks carefully, validate design-approval references, skill-load receipts and project lint/testing hooks; require checks in a product repo only after they work there. Never claim skill prose is machine-verifiable.
 4. **PR D — secure discovery and onboarding:** safe candidate review, pinning/version updates, quarantine/revocation, compatibility checks and simulated malicious/incompatible skill tests, with owner approvals.
