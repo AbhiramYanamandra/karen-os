@@ -47,6 +47,12 @@ KAREN OS should take coordination work off me. If running it ever takes more eff
 17. [Run it locally](#run-it-locally)
 18. [Documentation map](#documentation-map)
 
+## Engineering organisation: owner intent and accountability
+
+KAREN OS is **the organisation**, not an optional wiki or a required central manager. The owner acts as CEO; Claude Code, Codex and other agents work as engineers inside independent project repositories. KAREN OS supplies the common engineering standard, lifecycle, approved tools and skills, and accountable quality gates. Project-specific design rules and tests still apply. Objective deviations should fail checks; subjective quality is reviewed; the owner remains responsible for material design approval, merge and consequential publication.
+
+The detailed, durable handoff for this model—including LookAtMe design-first delivery, mandatory Ponytail/Unslop preferences, skill discovery, evidence limits and phased PRs—is the **[Engineering Organisation Charter](docs/engineering-organisation-charter.md)**, tracked in [epic #43](https://github.com/AbhiramYanamandra/karen-os/issues/43). **It is a proposed implementation baseline, not a claim that skill enforcement is already built.** Current pinned rules remain in force until separately reviewed changes are approved.
+
 ## Engineering HQ (GitHub Projects)
 
 [**KAREN OS | Engineering HQ**](https://github.com/users/AbhiramYanamandra/projects/1) is one public GitHub Project that shows open issues and pull requests from KAREN OS, the Macropad and LookAtMe side by side. Its four views are a status board, an all-work table, a Needs My Attention list and a roadmap. The repositories stay separate: the Project links to their items and never copies them.
