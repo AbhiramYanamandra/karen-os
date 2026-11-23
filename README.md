@@ -47,6 +47,14 @@ KAREN OS should take coordination work off me. If running it ever takes more eff
 17. [Run it locally](#run-it-locally)
 18. [Documentation map](#documentation-map)
 
+## Engineering HQ (GitHub Projects)
+
+[**KAREN OS | Engineering HQ**](https://github.com/users/AbhiramYanamandra/projects/1) is one public GitHub Project that shows open issues and pull requests from KAREN OS, the Macropad and LookAtMe side by side. Its four views are a status board, an all-work table, a Needs My Attention list and a roadmap. The repositories stay separate: the Project links to their items and never copies them.
+
+![GitHub Projects architecture: the Project shows issues and PRs from independent repositories; moving a card never starts an agent](docs/assets/github-projects-architecture.svg)
+
+The Project is for planning and visibility. **Moving a card does not authorise work.** Only an issue labelled `status:ready` can be started, and the owner still merges every PR. Direct Claude Code and Codex work, and the planned daily digest, work without the board. The configuration, what was verified and the remaining UI steps are in [the GitHub Projects design](docs/architecture/github-projects.md) ([issue #29](https://github.com/AbhiramYanamandra/karen-os/issues/29)).
+
 ## The vision
 
 ### Personal first, public second
@@ -512,7 +520,8 @@ The foundation is built. A working personal assistant is not. I'm keeping that d
 | Use from other project repositories (Level 2) | Working. The Macropad repository is connected and passed fresh Claude Code and Codex sessions. |
 | A real engineering pilot, end to end | In progress in the Macropad. A firmware fix and the first slice of a native Mac app are merged; their pad checks are open issues |
 | Private instance location and loader | Personal layer chosen: Notion, free plan. Loader not built. |
-| Daily review: briefings, goals, usage-aware dispatch, LinkedIn drafts | Designed in [PR #20](https://github.com/AbhiramYanamandra/karen-os/pull/20); build tracked in epic [#17](https://github.com/AbhiramYanamandra/karen-os/issues/17) |
+| Daily review: briefings, goals, usage-aware dispatch, LinkedIn drafts | Design approved: [PR #20](https://github.com/AbhiramYanamandra/karen-os/pull/20) merged 23 November 2026. Build tracked in epic [#17](https://github.com/AbhiramYanamandra/karen-os/issues/17) |
+| Cross-repository planning board (GitHub Projects) | [Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) created 23 November 2026 with KAREN OS and Macropad items and four views. New karen-os issues and PRs are added automatically; Macropad items are added by hand (GitHub Free allows one auto-add workflow) |
 | Resource monitor, Project Factory, design system | Planned |
 
 The deterministic suite has 57 tests. It uses only Python's standard library and makes no model calls. It runs locally on macOS with Python 3.13, and CI runs it on Linux with Python 3.10 and 3.13. Python 3.10 is the supported minimum. Python 3.9 reached end of life in October 2025, and GitHub no longer provides it on current runners.
@@ -536,6 +545,7 @@ karen-os/
 │   ├── architecture/
 │   │   ├── platform-specification.md Full architecture, requirements, ADRs, roadmap
 │   │   ├── external-projects.md      Proposal for use from other project repos
+│   │   ├── github-projects.md        Cross-repo GitHub Projects board: role, views, limits
 │   │   ├── design-status.md          Binds the architecture's exact digest
 │   │   └── export-changes.md         Changes made when the public export was created
 │   ├── organisation/
@@ -547,6 +557,7 @@ karen-os/
 │   │   └── startup-coverage.md       What startup loading does and doesn't prove
 │   ├── projects/karen-os/
 │   │   └── instructions.md           Project-level instructions, read at startup
+│   ├── assets/                       Architecture SVGs and their logo sources (LOGOS.md)
 │   ├── templates/records.md          Task, proposal, approval and handoff templates
 │   ├── templates/github/             Labels, issue form, PR template, starter CI for projects
 │   ├── tasks/startup-validation.md   Synthetic fixture task for validation runs

@@ -57,7 +57,7 @@
     {
       "id": "engineering",
       "path": "docs/organisation/engineering.md",
-      "sha256": "db59ffffdcb284778381b175052a33164b9a8e5799a00c5bb76fc090f518fe75",
+      "sha256": "9af990cc56b5de0d7a3d1abcb4b4e50604518694bb6cdbb333160dde8a9cc5b8",
       "required": true,
       "load_when": "Every startup; read completely. Governs issues, branches, commits, pull requests, CI and releases",
       "startup_read": "complete"
