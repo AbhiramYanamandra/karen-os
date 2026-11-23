@@ -3,9 +3,27 @@
   "issue": "https://github.com/AbhiramYanamandra/karen-os/issues/44",
   "reviewed_on": "2026-11-23",
   "reviewer": "Claude Code (agent self-review; not an independent review)",
-  "note": "Candidate inventory only. It is not the approved registry: docs/organisation/skills.json is unchanged and still has no entries. 'state' is where a candidate is in review; 'recommendation' is the agent's proposal. Only an owner_approval record may move a candidate to approved, installed or revoked.",
+  "note": "Candidate inventory only. It is not the approved registry: docs/organisation/skills.json is unchanged and still has no entries. 'state' is where a candidate is in review; 'recommendation' is the agent's proposal. Only an owner_decision may move a candidate to approved, rejected or revoked. A schema-valid owner_decision is not proof that the owner made it: see 'Owner decisions' in skill-catalogue-audit.md.",
   "states": ["discovered", "under-review", "approved", "rejected", "revoked"],
+  "owner_only_states": ["approved", "rejected", "revoked"],
   "recommendations": ["approve", "approve-with-conditions", "reject", "hold"],
+  "owner_decision_schema": {
+    "approve": {
+      "sets_state": "approved",
+      "required": ["decision", "by", "date", "reference", "approved_sha256", "scope"],
+      "rules": "approved_sha256 must equal the entry's tree_sha256. The approval covers that exact content and the stated scope (stages or projects) only. Any content change returns the entry to under-review."
+    },
+    "reject": {
+      "sets_state": "rejected",
+      "required": ["decision", "by", "date", "reference", "reason"],
+      "rules": "Rejects the candidate as reviewed. No hash binding: a later revision can be re-proposed as a new review."
+    },
+    "revoke": {
+      "sets_state": "revoked",
+      "required": ["decision", "by", "date", "reference", "reason", "revokes", "revoked_sha256"],
+      "rules": "Withdraws an earlier approval. 'revokes' cites that approve decision's reference, and revoked_sha256 is the hash it approved. Takes effect from 'date'; it does not uninstall anything, and the skill may not be loaded for KAREN work afterwards. Re-approval needs a new approve decision."
+    }
+  },
   "locations": {
     "shared-agents-skills": "User-level shared skill folder installed by the Skills CLI. Claude Code reaches it through symlinks in its user skill folder.",
     "claude-user-skills": "Claude Code user skill folder, holding real directories that are not symlinks.",
@@ -32,7 +50,7 @@
       "state": "under-review",
       "recommendation": "approve-with-conditions",
       "rationale": "Pure editing rules, no tools. Local copy differs from upstream, so pin one reviewed revision before approval.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "tdd",
@@ -52,7 +70,7 @@
       "state": "under-review",
       "recommendation": "approve",
       "rationale": "Short failing-test-first bug workflow that explicitly allows skipping impractical tests and demands before/after evidence.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "ecc:tdd-workflow",
@@ -72,7 +90,7 @@
       "state": "under-review",
       "recommendation": "reject",
       "rationale": "Duplicates tdd. Requires a checkpoint commit per stage and 80% coverage for every change, which is heavier than the engineering standard asks for.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "diagnosing-bugs",
@@ -92,7 +110,7 @@
       "state": "under-review",
       "recommendation": "approve",
       "rationale": "Requires a reproducible red signal before hypotheses, redacts secrets, and removes debug logs before done.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "principle-prove-it-works",
@@ -112,7 +130,7 @@
       "state": "under-review",
       "recommendation": "approve-with-conditions",
       "rationale": "Matches KAREN's evidence rule: check the real artefact, not a proxy. Pin the current upstream revision and resolve the missing adapter link first.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "ecc:verification-loop",
@@ -132,7 +150,7 @@
       "state": "under-review",
       "recommendation": "reject",
       "rationale": "Its fixed npm phases do not fit Python projects such as KAREN OS, and its secret scan is weaker than scripts/check_pr.py. Project checks already cover this.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "thermo-nuclear-code-quality-review",
@@ -152,7 +170,7 @@
       "state": "under-review",
       "recommendation": "approve-with-conditions",
       "rationale": "Strict structural review with clear blockers. Use it only for the substantial or high-impact profile that PR B defines, and pair it with a correctness and security review.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "code-review",
@@ -172,7 +190,7 @@
       "state": "under-review",
       "recommendation": "approve-with-conditions",
       "rationale": "Separates standards findings from spec findings, which suits issue-based PRs. The spec source must be the GitHub issue, not the setup skill's tracker.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "ecc:security-review",
@@ -192,7 +210,7 @@
       "state": "under-review",
       "recommendation": "approve-with-conditions",
       "rationale": "Useful OWASP-style checklist. Use it as a checklist only: 'npm audit fix' and 'npm update' change dependencies and need their own approval.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "ecc:security-scan",
@@ -212,7 +230,7 @@
       "state": "under-review",
       "recommendation": "reject",
       "rationale": "Runs third-party code without a pinned version, can rewrite configuration, and can incur API spending. These need separate approval and conflict with zero default spend.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "ecc:security-bounty-hunter",
@@ -232,7 +250,7 @@
       "state": "under-review",
       "recommendation": "reject",
       "rationale": "Targets other people's systems and builds working exploits. That needs a separately authorised security-testing engagement, not routine engineering.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "find-skills",
@@ -252,12 +270,12 @@
       "state": "under-review",
       "recommendation": "reject",
       "rationale": "Treats install counts and stars as trust and installs with -g -y. KAREN requires a full package review and owner approval before any install. Replace it with the PR D discovery procedure.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
-      "id": "ui-ux-pro-max",
-      "source": "unknown: no lock entry, licence file or source link in either copy",
-      "location": "claude-user-skills and shared-agents-skills (two different copies)",
+      "id": "ui-ux-pro-max@claude-user-skills",
+      "source": "unknown: no lock entry, licence file or source link",
+      "location": "claude-user-skills",
       "version": "unknown",
       "skill_md_sha256": "98a17c9139cf9c4b8694d4602f191ad147c8a9fe0f6f6c82f61b0fe8b98a9998",
       "tree_sha256": "a6077f9c0c558c62ad030d6f5407b6029092332e6dd2801484ac14f0a5fee8dc",
@@ -266,13 +284,33 @@
       "dependencies": ["python3 standard library"],
       "tools": ["python3 scripts/search.py", "python3 scripts/design_system.py"],
       "privileges": {"scripts": 15, "network": false, "credentials": false, "writes_outside_task": false, "installs": false},
-      "compatibility": "Hashes are for the Claude Code copy. The shared copy has a different, shorter SKILL.md (sha256 798785fa...); every other file is the same. Claude Code and other agents therefore load different instructions. Scripts import only standard-library modules and read bundled CSV data.",
-      "duplicates": ["ui-ux-pro-max (shared-agents-skills copy)", "design", "ui-styling", "ecc:design-system"],
+      "compatibility": "SKILL.md is 55 KB. Only SKILL.md differs from the other variant; the 67 other files are identical. Scripts import only standard-library modules and read bundled CSV data. Which variant each runtime loads under the name 'ui-ux-pro-max' is not established.",
+      "duplicates": ["ui-ux-pro-max@shared-agents-skills", "design", "ui-styling", "ecc:design-system"],
       "stage": "ui-design",
       "state": "under-review",
       "recommendation": "hold",
-      "rationale": "The content looks low-risk and states that it installs nothing. Hold until the source and licence are established and one copy is chosen.",
-      "owner_approval": null
+      "rationale": "Unresolved. Neither variant is preferred. Hold until provenance, licence and per-runtime resolution are established.",
+      "owner_decision": null
+    },
+    {
+      "id": "ui-ux-pro-max@shared-agents-skills",
+      "source": "unknown: no lock entry, licence file or source link",
+      "location": "shared-agents-skills",
+      "version": "unknown",
+      "skill_md_sha256": "798785faea346cf824b761b36cf5f47335cfaeb9c4f5082a0355247cb4e302a1",
+      "tree_sha256": "266d7be8b1809c2570cd4ab171b250295c7348c918752d71bc39ea0097cc720b",
+      "upstream_match": null,
+      "licence": "unknown",
+      "dependencies": ["python3 standard library"],
+      "tools": ["python3 scripts/search.py", "python3 scripts/design_system.py"],
+      "privileges": {"scripts": 15, "network": false, "credentials": false, "writes_outside_task": false, "installs": false},
+      "compatibility": "SKILL.md is 28 KB. Only SKILL.md differs from the other variant. Which variant each runtime loads under the name 'ui-ux-pro-max' is not established.",
+      "duplicates": ["ui-ux-pro-max@claude-user-skills", "design", "ui-styling", "ecc:design-system"],
+      "stage": "ui-design",
+      "state": "under-review",
+      "recommendation": "hold",
+      "rationale": "Unresolved. Neither variant is preferred. Hold until provenance, licence and per-runtime resolution are established.",
+      "owner_decision": null
     },
     {
       "id": "design",
@@ -287,12 +325,12 @@
       "tools": ["python3 generator scripts", "pip install"],
       "privileges": {"scripts": 8, "network": true, "credentials": true, "writes_outside_task": false, "installs": true},
       "compatibility": "Generator scripts load .env files from the skill folder and the agent's user configuration folders, then send prompts to Google Gemini.",
-      "duplicates": ["ui-ux-pro-max", "ui-styling", "brand", "banner-design", "slides", "design-system"],
+      "duplicates": ["ui-ux-pro-max@claude-user-skills", "ui-ux-pro-max@shared-agents-skills", "ui-styling", "brand", "banner-design", "slides", "design-system"],
       "stage": "ui-design",
       "state": "under-review",
       "recommendation": "reject",
       "rationale": "Reads credentials from user configuration and sends data to an external paid model provider. That needs a sensitive-data destination and spending approval.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "ui-styling",
@@ -307,12 +345,12 @@
       "tools": ["npx shadcn@<version> add"],
       "privileges": {"scripts": 4, "network": true, "credentials": false, "writes_outside_task": false, "installs": true},
       "compatibility": "shadcn_add.py runs npx to add components to a project.",
-      "duplicates": ["ui-ux-pro-max", "design"],
+      "duplicates": ["ui-ux-pro-max@claude-user-skills", "ui-ux-pro-max@shared-agents-skills", "design"],
       "stage": "ui-implementation",
       "state": "under-review",
       "recommendation": "hold",
       "rationale": "Project-specific and stack-specific. Approve per project that uses shadcn, not as a company default.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "ponytail",
@@ -332,7 +370,7 @@
       "state": "discovered",
       "recommendation": "hold",
       "rationale": "Named in the charter as the required coding-stage skill, but nothing exists to review. The owner must supply its source.",
-      "owner_approval": null
+      "owner_decision": null
     },
     {
       "id": "figma",
@@ -352,7 +390,7 @@
       "state": "discovered",
       "recommendation": "hold",
       "rationale": "Editable Figma design depends on the connector's write tools and account. Test it in a runtime and get owner approval of the connector scope first.",
-      "owner_approval": null
+      "owner_decision": null
     }
   ]
 }

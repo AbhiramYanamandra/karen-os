@@ -531,7 +531,7 @@ The foundation is built. A working personal assistant is not. I'm keeping that d
 | Cross-repository planning board (GitHub Projects) | [Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) created 23 November 2026 with four views, showing KAREN OS, the Macropad and LookAtMe. New karen-os issues and PRs are added automatically (GitHub Free allows one auto-add workflow); `pipeline.py sync` adds the other repositories' items and sets each card from its label |
 | Resource monitor, Project Factory, design system | Planned |
 
-The deterministic suite has 134 tests. It uses only Python's standard library and makes no model calls. It runs locally on macOS with Python 3.13, and CI runs it on Linux with Python 3.10 and 3.13. Python 3.10 is the supported minimum. Python 3.9 reached end of life in October 2025, and GitHub no longer provides it on current runners.
+The deterministic suite has 143 tests. It uses only Python's standard library and makes no model calls. It runs locally on macOS with Python 3.13, and CI runs it on Linux with Python 3.10 and 3.13. Python 3.10 is the supported minimum. Python 3.9 reached end of life in October 2025, and GitHub no longer provides it on current runners.
 
 ### Repository layout
 
@@ -589,7 +589,7 @@ karen-os/
 │   ├── linkedin_post.py              Drafts, owner approval and approved-only posting
 │   ├── prepare_startup_fixtures.py   Builds isolated read-only probe fixtures
 │   └── collect_startup_evidence.py   Extracts startup evidence from agent CLI traces
-├── tests/                            134 deterministic tests (context, startup, handoff, projects,
+├── tests/                            143 deterministic tests (context, startup, handoff, projects,
 │                                     pipeline, PR check, digest, LinkedIn, skill candidates)
 └── examples/instance-config.example.json   Proposed private-instance config shape
 ```
@@ -715,7 +715,7 @@ cd karen-os
 
 python3 -B scripts/check_context.py            # verify every pinned source matches its hash
 python3 -B scripts/startup.py read --explore   # print the core context an agent loads
-python3 -B -m unittest discover -s tests -v    # run the 134 deterministic tests
+python3 -B -m unittest discover -s tests -v    # run the 143 deterministic tests
 ```
 
 To work with an agent, open the repository in Claude Code or Codex and ask a question. The agent follows [AGENTS.md](AGENTS.md), loads the core through the startup reader, explains its context, and stays read-only until you give it an authorised task.
