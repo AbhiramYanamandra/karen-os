@@ -1,0 +1,11 @@
+{
+  "description": "Engineering HQ board used by scripts/pipeline.py. Status is set one way, from status:* labels to cards. Add a repository here once it has the repository setup in docs/organisation/engineering.md.",
+  "owner": "AbhiramYanamandra",
+  "project_number": 1,
+  "status_field": "Status",
+  "repositories": [
+    "AbhiramYanamandra/karen-os",
+    "AbhiramYanamandra/macropad",
+    "AbhiramYanamandra/LookAtMe"
+  ]
+}
