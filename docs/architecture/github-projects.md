@@ -86,7 +86,7 @@ The original Todo, In Progress and Done options were kept and renamed where need
 
 | View | Layout | Filter | Checked |
 | --- | --- | --- | --- |
-| Board | Board, columns by Status | none | 25 Backlog, 2 Ready, 1 In Progress, 2 Review |
+| Board | Board, columns by Status | none | 24 Backlog, 2 Ready, 2 In Progress, 2 Review (after #29 was claimed) |
 | All Work | Table: Title, Repository, Status, Labels, Assignees, Linked PRs, Parent issue, Milestone, Target date, Updated | none | 30 items from both repositories |
 | Needs My Attention | Table: Title, Repository, Labels, Status, Linked PRs, Updated | `is:open label:"status:needs-owner","status:blocked","status:in-review"` | 26 items (20 rows plus 6 sub-issues under #17) |
 | Roadmap | Roadmap | `is:issue no:parent-issue` | 22 top-level issues; no bars until a Target date is set |
