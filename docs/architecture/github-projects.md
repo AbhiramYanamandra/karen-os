@@ -143,7 +143,7 @@ These had to be done in GitHub's web UI because the API has no mutation for them
 2. **Auto-add to project** is on for `karen-os` with filter `is:issue,pr is:open`. The account is on Free, so `macropad` has no auto-add workflow.
 3. **Roadmap date fields** are Start date and Target date, saved as the view default. Saving needs the view's **View → Save view** button and then **Save** in the confirmation dialog. "Save changes to new view" in the tab menu creates an extra tab instead.
 
-Auto-add only adds items created or updated after it was switched on. It will first show on the next new karen-os issue or PR.
+Auto-add only adds items created or updated after it was switched on. Verified: karen-os issue #31, filed on 23 November 2026, was added automatically and set to Backlog.
 
 ## Other GitHub features reviewed
 
