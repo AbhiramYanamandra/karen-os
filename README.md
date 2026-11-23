@@ -53,7 +53,7 @@ KAREN OS should take coordination work off me. If running it ever takes more eff
 
 ![GitHub Projects architecture: the Project shows issues and PRs from independent repositories; moving a card never starts an agent](docs/assets/github-projects-architecture.svg)
 
-The Project is for planning and visibility. **Moving a card does not authorise work.** Only an issue labelled `status:ready` can be started, and the owner still merges every PR. Direct Claude Code and Codex work, and the planned daily digest, work without the board. The configuration, what was verified and the remaining UI steps are in [the GitHub Projects design](docs/architecture/github-projects.md) ([issue #29](https://github.com/AbhiramYanamandra/karen-os/issues/29)).
+The Project is for planning and visibility. **Moving a card does not authorise work.** Only an issue labelled `status:ready` can be started, and the owner still merges every PR. Direct Claude Code and Codex work, and the daily digest script, work without the board. The pipeline script keeps the cards in step with labels, one way: `python3 -B scripts/pipeline.py sync`. The configuration, what was verified and the remaining UI steps are in [the GitHub Projects design](docs/architecture/github-projects.md) ([issue #29](https://github.com/AbhiramYanamandra/karen-os/issues/29)).
 
 ## The vision
 
@@ -211,7 +211,7 @@ flowchart LR
 | Claude Code into this repository | Works today. `CLAUDE.md` imports `AGENTS.md`. |
 | Codex into this repository | Works today. Codex reads `AGENTS.md` directly. |
 | ChatGPT and ChatGPT Work | Not validated yet. The fallback is a manually prepared context pack. |
-| Muse | Chief of staff for the [daily review](#the-daily-review) (designed, not built). Swappable for any assistant, and never on the critical path: direct work in Claude Code or Codex always works. |
+| Muse | Chief of staff for the [daily review](#the-daily-review). The prompts are written; the trial in Muse hasn't run yet ([#37](https://github.com/AbhiramYanamandra/karen-os/issues/37)). Swappable for any assistant, and never on the critical path: direct work in Claude Code or Codex always works. |
 
 ### What happens when an agent opens the repository
 
@@ -402,6 +402,7 @@ flowchart LR
 - **Issues are the work queue.** Each one is a task record with an outcome, scope and acceptance criteria. I set the priority (`P0` to `P3`) and mark it `status:ready` when an agent may start.
 - **Any agent can pick one up**, on my Mac or in a cloud session. It claims the issue, works on a `<type>/<issue>-<short-description>` branch and opens a pull request with a description, test steps, evidence and anything it couldn't verify.
 - **CI is the gate and my merge is the approval.** Agents may push branches and open pull requests. They never merge and never write to `main`. A ruleset on `main` enforces that in every repository.
+- **The routine steps are one command each.** `scripts/pipeline.py` claims an issue and creates its branch, opens the draft PR, waits for CI and marks the PR ready, deletes merged branches, and keeps the board in step. It refuses to merge, approve, close issues or push to `main`. CI also checks every PR's branch name and issue link, and that it adds no home-directory paths or secrets (`scripts/check_pr.py`).
 
 The rules, adapted from Microsoft's [Code-With Engineering Playbook](https://microsoft.github.io/code-with-engineering-playbook/), are in [docs/organisation/engineering.md](docs/organisation/engineering.md). Templates for labels, issues, pull requests and CI are in [docs/templates/github/](docs/templates/github/). Every project's repository gets the same setup before agents work in it: those labels and templates, a CI workflow, the ruleset on `main`, and automatic deletion of merged branches. The standard lists it as a checklist.
 
@@ -514,17 +515,17 @@ The foundation is built. A working personal assistant is not. I'm keeping that d
 | Strict machine receipts and a handoff fixture validator | Implemented and tested |
 | Cross-agent manual handoff | Fixture-tested here. Exercised in both directions in the private predecessor, not yet rerun on this checkout. |
 | Public GitHub repository, Apache-2.0 | Published |
-| Automated CI | GitHub Actions runs every check on each push and pull request, on Python 3.10 and 3.13. The badge above shows the latest result. |
-| Engineering standard and issue-to-PR pipeline | Adopted 23 November 2026 in KAREN OS and the Macropad: GitHub issues, pull requests, required CI, protected `main`, owner merge, merged branches deleted automatically |
+| Automated CI | GitHub Actions runs every check on each push and pull request, on Python 3.10 and 3.13, plus a PR metadata check on pull requests (branch name, issue link, no home paths or secrets). The badge above shows the latest result. |
+| Engineering standard and issue-to-PR pipeline | Adopted 23 November 2026 in KAREN OS and the Macropad: GitHub issues, pull requests, required CI, protected `main`, owner merge, merged branches deleted automatically. Routine steps are scripted in `scripts/pipeline.py` (23 November 2026) |
 | ChatGPT and ChatGPT Work context | Not validated |
 | Use from other project repositories (Level 2) | Working. The Macropad repository is connected and passed fresh Claude Code and Codex sessions. |
 | A real engineering pilot, end to end | In progress in the Macropad. A firmware fix and the first slice of a native Mac app are merged; their pad checks are open issues |
 | Private instance location and loader | Personal layer chosen: Notion, free plan. Loader not built. |
-| Daily review: briefings, goals, usage-aware dispatch, LinkedIn drafts | Design approved: [PR #20](https://github.com/AbhiramYanamandra/karen-os/pull/20) merged 23 November 2026. Build tracked in epic [#17](https://github.com/AbhiramYanamandra/karen-os/issues/17) |
-| Cross-repository planning board (GitHub Projects) | [Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) created 23 November 2026 with KAREN OS and Macropad items and four views. New karen-os issues and PRs are added automatically; Macropad items are added by hand (GitHub Free allows one auto-add workflow) |
+| Daily review: briefings, goals, usage-aware dispatch, LinkedIn drafts | Partly built (epic [#17](https://github.com/AbhiramYanamandra/karen-os/issues/17)). Built and tested: the read-only engineering digest, the Notion data model and setup guide, the briefing prompts, and approved-only LinkedIn posting. Not running yet: these need my Notion workspace ([#35](https://github.com/AbhiramYanamandra/karen-os/issues/35)), the Muse trial and plan calendar ([#37](https://github.com/AbhiramYanamandra/karen-os/issues/37)) and a LinkedIn connection ([#39](https://github.com/AbhiramYanamandra/karen-os/issues/39)). Dispatch ([#26](https://github.com/AbhiramYanamandra/karen-os/issues/26)) and Hevy ([#28](https://github.com/AbhiramYanamandra/karen-os/issues/28)) are not started |
+| Cross-repository planning board (GitHub Projects) | [Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) created 23 November 2026 with four views, showing KAREN OS, the Macropad and LookAtMe. New karen-os issues and PRs are added automatically (GitHub Free allows one auto-add workflow); `pipeline.py sync` adds the other repositories' items and sets each card from its label |
 | Resource monitor, Project Factory, design system | Planned |
 
-The deterministic suite has 57 tests. It uses only Python's standard library and makes no model calls. It runs locally on macOS with Python 3.13, and CI runs it on Linux with Python 3.10 and 3.13. Python 3.10 is the supported minimum. Python 3.9 reached end of life in October 2025, and GitHub no longer provides it on current runners.
+The deterministic suite has 127 tests. It uses only Python's standard library and makes no model calls. It runs locally on macOS with Python 3.13, and CI runs it on Linux with Python 3.10 and 3.13. Python 3.10 is the supported minimum. Python 3.9 reached end of life in October 2025, and GitHub no longer provides it on current runners.
 
 ### Repository layout
 
@@ -537,6 +538,7 @@ karen-os/
 ├── AGENTS.md                         Shared startup entry for every coding agent
 ├── CLAUDE.md                         Imports AGENTS.md so Claude Code shares it
 ├── context/
+│   ├── board.json                    Repositories shown on the Engineering HQ board
 │   ├── manifest.json                 Pinned sources, SHA-256 hashes, read triggers
 │   └── receipt-template.json         Format for machine-validation receipts
 ├── docs/
@@ -562,16 +564,25 @@ karen-os/
 │   ├── templates/github/             Labels, issue form, PR template, starter CI for projects
 │   ├── tasks/startup-validation.md   Synthetic fixture task for validation runs
 │   ├── proposals/daily-review.md     Daily review design (epic #17)
-│   ├── assets/                       Architecture images
+│   ├── daily-review/
+│   │   ├── notion-workspace.md       Notion data model, dashboard and setup guide
+│   │   ├── engineering-digest.md     Using the read-only engineering digest
+│   │   ├── prompts.md                Portable morning, evening and weekly prompts
+│   │   └── linkedin.md               Approved-only posting: checks, threat model, setup
 │   └── reviews/
 │       ├── candidate-audit.md        Pre-publication privacy and validation audit
 │       └── pilot-macropad.md         First engineering pilot: timeline, measurements, lessons
 ├── scripts/
 │   ├── startup.py                    Reads core and project context, assesses receipts
 │   ├── check_context.py              Verifies manifest, hashes and entry files
+│   ├── pipeline.py                   Claim, PR, ready, cleanup and board sync
+│   ├── check_pr.py                   CI check: branch name, issue link, no secrets
+│   ├── daily_digest.py               Read-only engineering digest across repositories
+│   ├── linkedin_post.py              Drafts, owner approval and approved-only posting
 │   ├── prepare_startup_fixtures.py   Builds isolated read-only probe fixtures
 │   └── collect_startup_evidence.py   Extracts startup evidence from agent CLI traces
-├── tests/                            57 deterministic tests (context, startup, handoff, projects)
+├── tests/                            127 deterministic tests (context, startup, handoff, projects,
+│                                     pipeline, PR check, digest, LinkedIn)
 └── examples/instance-config.example.json   Proposed private-instance config shape
 ```
 
@@ -636,6 +647,8 @@ The next feature is for my own daily use. I run KAREN OS like a CEO with a small
 
 Scripts collect the facts and AI only makes judgement calls, so usage stays small. Everything runs on free plans or subscriptions I already have: Notion, Google, GitHub, Muse, and Composio for LinkedIn. Each one can be swapped. The full design, including authority rules, the Notion data model and failure handling, is in [docs/proposals/daily-review.md](docs/proposals/daily-review.md). The build is epic [#17](https://github.com/AbhiramYanamandra/karen-os/issues/17), one sub-issue per slice.
 
+**Where it stands (23 November 2026).** The parts that don't need my accounts are built and tested: the [engineering digest](docs/daily-review/engineering-digest.md), the [Notion workspace design](docs/daily-review/notion-workspace.md), the [briefing prompts](docs/daily-review/prompts.md) and [approved-only LinkedIn posting](docs/daily-review/linkedin.md). Nothing runs on a schedule yet, and no Notion, calendar or LinkedIn account is connected. Those steps are mine: [#35](https://github.com/AbhiramYanamandra/karen-os/issues/35), [#37](https://github.com/AbhiramYanamandra/karen-os/issues/37) and [#39](https://github.com/AbhiramYanamandra/karen-os/issues/39). Usage-aware dispatch ([#26](https://github.com/AbhiramYanamandra/karen-os/issues/26)) comes next.
+
 ### Deliberately deferred
 
 Project Factory automation, design-system extraction, remote and cloud execution, request-level model routing (OmniRoute), always-on servers and custom dashboards all wait until a real workflow shows they are needed. The daily review pulls in only what it needs: an assistant briefing, Notion as the dashboard, and local usage-aware dispatch.
@@ -694,7 +707,7 @@ cd karen-os
 
 python3 -B scripts/check_context.py            # verify every pinned source matches its hash
 python3 -B scripts/startup.py read --explore   # print the core context an agent loads
-python3 -B -m unittest discover -s tests -v    # run the 57 deterministic tests
+python3 -B -m unittest discover -s tests -v    # run the 127 deterministic tests
 ```
 
 To work with an agent, open the repository in Claude Code or Codex and ask a question. The agent follows [AGENTS.md](AGENTS.md), loads the core through the startup reader, explains its context, and stays read-only until you give it an authorised task.
