@@ -72,6 +72,8 @@ One issue per PR. Split large plans into slices, each with its own issue and PR.
 
 Link long records rather than pasting them. Any review the agent did itself is labelled a self-review.
 
+The PR template has no checkboxes for the agent to tick. CI's **PR metadata** job (`scripts/check_pr.py`) checks what a machine can: the branch name, a `Closes #<issue>` or `Refs #<issue>` link, and that the diff adds no home-directory paths or common secret patterns. A line that must show such an example carries `pr-check: allow`. Judgement items (docs updated, follow-ups filed, self-review labelled) are prompts in the template, answered only where they apply.
+
 ## Continuous integration
 
 Every project has a GitHub Actions workflow on `pull_request` and on pushes to the default branch. It runs the build, the tests, any linters, and project checks. Use read-only permissions by default, pin actions to a major version, and need no secrets for PR checks. Failing CI blocks review. Fix the cause, and never disable or skip a check to make it pass.
