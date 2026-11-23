@@ -48,7 +48,7 @@ The attempt is saved as *uncertain* **before** the publisher runs. A crash, time
 - duplicate posts from blind retries
 - scheduled or automatic posting
 
-**It does not stop** a process running as the owner that fakes a terminal **and** reads the Keychain key. The second step is why the key is stored so that macOS asks the owner each time it is read (setup step 1). Click **Allow**, never **Always Allow**. A compromised Mac is out of scope. The store file is integrity-checked through the signature, not hidden.
+**It does not stop** a process running as the owner that fakes a terminal **and** reads the Keychain key. The second step is why the key is stored so that macOS asks the owner each time it is read (setup step 1). Click **Allow**, never **Always Allow**. **If that dialog appears when you didn't just run `approve` or `post` yourself, click Deny**, then run `list` to see which draft it was for. The typed code is not a secret, because it comes from the text's hash and `draft` prints it, so this dialog is the real check. A compromised Mac is out of scope. The store file is integrity-checked through the signature, not hidden.
 
 ## Setup (owner)
 
@@ -66,7 +66,7 @@ Check it:
 security find-generic-password -s karen-os-approval -a karen-os -w > /dev/null
 ```
 
-macOS should show a permission dialog. Click **Allow**, not Always Allow. If no dialog appears, the gate relies on the terminal check alone. Say so in #39. To start over, run `security delete-generic-password -s karen-os-approval -a karen-os`. Doing so invalidates every existing approval, which is safe.
+macOS should show a permission dialog. Click **Allow**, not Always Allow. From then on, the dialog appears whenever you approve or post. If it appears at any other time, click **Deny**. If no dialog appears, the gate relies on the terminal check alone. Say so in #39. To start over, run `security delete-generic-password -s karen-os-approval -a karen-os`. Doing so invalidates every existing approval, which is safe.
 
 ### 2. Verify the provider before connecting
 
