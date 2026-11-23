@@ -6,7 +6,7 @@ Applies to every code or documentation change in KAREN OS and in connected proje
 
 GitHub holds the queue, the review and the history. The work happens in a local checkout or a cloud agent session.
 
-1. **Issue.** Every piece of work is a GitHub issue in the project's repository, written with the task template: outcome, why, scope, out of scope, acceptance criteria, and a link to any detailed plan. The issue is the task record. Only issues labelled `status:ready` may be started. An agent that files an issue labels it `status:needs-owner`.
+1. **Issue.** Every piece of work is a GitHub issue in the project's repository, written with the task template: outcome, why, scope, out of scope, acceptance criteria, and a link to any detailed plan. The issue is the task record. Only issues labelled `status:ready` may be started. An agent that files an issue labels it `status:needs-owner`. When the owner asks an agent directly for work that has no issue, the agent files the issue first and stops; it starts only after the owner marks it `status:ready`. Work the owner dispatches through the daily review (epic #17) starts from a `status:ready` issue the same way.
 2. **Pick.** Work on the issue the owner names. Otherwise take the open `status:ready` issue with the highest priority (`P0` first), then the oldest. Skip `status:blocked`, `status:needs-owner` and anything already claimed.
 3. **Claim.** Replace `status:ready` with `status:in-progress` and comment with the agent, the session or machine, and the branch name. One worker per issue. Check for an existing claim before starting.
 4. **Branch.** From the current default branch, create `<type>/<issue>-<short-description>`.

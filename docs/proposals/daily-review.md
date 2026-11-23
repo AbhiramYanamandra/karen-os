@@ -1,105 +1,235 @@
-# Proposal: daily review
+# Proposal: the daily review
 
-Revision 2, 23 November 2026. Issue #17. Status: **awaiting owner approval**. Change type: backend (specification section 11).
-
-Revision 1, a GitHub-only Python command, was replaced after owner feedback on PR #20. The owner wants the review in chat with an assistant, covering GitHub, calendar, email, workouts, meals and sleep, with a top 3 for the day, every morning and evening. Muse (Meta AI) is the first assistant. Any other assistant must be able to take over without a redesign.
+Revision 3, 23 November 2026. Epic #17, sub-issues #23 to #28. Status: **awaiting owner approval** (merging PR #20 approves this revision). Change type: backend and integration (specification section 11).
 
 ## Summary
 
-The product is a **model-agnostic review spec**, not a program and not a Muse integration. A short public spec defines what the review checks, how it ranks the top 3, what the morning and evening outputs look like, and the rules every assistant must follow. A prompt template turns the spec into instructions any chat assistant can follow. Each assistant is an **adapter**: whichever one can read the owner's sources is given the prompt. Changing assistants means pasting the same prompt somewhere else. Nothing else changes.
+The daily review is KAREN OS's first personal feature. It's a loop the owner runs twice a day from their phone:
 
-KAREN OS keeps the parts that must not depend on any one assistant: the spec, the prompt template, a stdlib checker that tells whether an assistant's output meets the spec, and, only if a trial shows it is needed, a deterministic GitHub collector.
+**brief → decide → dispatch → notify → approve.**
 
-## Decisions needed
+Every morning the owner's assistant (Muse today) sends a briefing and turns it into a time-blocked plan on a separate "KAREN plan" Google Calendar. The briefing covers:
+- what got done yesterday and what slipped
+- today's calendar and important email
+- across every project: what's waiting for the owner, what hit problems, and the most important issues to start
+- everything ranked against the owner's goals
 
-Approving the proposal as written accepts all of the recommendations.
+The owner then picks issues. Each one goes to whichever local agent, Claude Code or Codex, has the most usage left. The agent works through the normal issue-to-PR pipeline, the owner is notified when the PR is up, and the owner reviews and merges. The evening review closes the loop and carries leftovers into tomorrow.
 
-| # | Decision | Recommendation | Alternative |
-|---|---|---|---|
-| R1 | What the product is | The spec plus prompt template; assistants are replaceable adapters. Already the owner's direction (model agnostic). | A Muse-specific integration. Faster, but it ties the review to one vendor. |
-| R2 | Top-3 ranking | 1. Hard commitments due today or tomorrow. 2. Things blocking other people or agents (PRs waiting for the owner, `status:needs-owner`). 3. Health basics not yet done (workout planned, sleep debt). 4. Highest-priority `status:ready` work that fits a free block. Ties go to whatever fits the next free block. | Let each assistant rank freely. Less consistent, and harder to check. |
-| R3 | Workouts, meals and sleep | Read them from a connected source when the assistant has one (for example a workout log). Otherwise the evening review asks one short question ("sleep last night? meals today?"), and the next morning uses the answer. Never inferred. | Require a connected source for each, and leave them out until one exists. |
-| R4 | Sensitive data | Email, calendar and health data reach an assistant only after the owner consents to that assistant, recorded in the private instance (`docs/PUBLIC_PRIVATE.md`). Muse already has the owner's calendar and email. Health data and private repositories need a separate yes. | A single blanket consent. Policy does not allow it. |
-| R5 | Deterministic GitHub collector | Not built now. Built only if the trial shows the assistant's GitHub connector cannot see labels, drafts or CI. Revision 1's design (commit `54fb7c5` on this branch) is the reference if it is needed. | Build it now anyway. Wasted if the connector is enough. |
-| R6 | Timing | The owner asks for each review, morning and evening. Scheduled delivery stays decision D06. | Use an assistant's own scheduler. It is fine as an adapter detail, but the spec does not depend on one. |
+The design follows four rules:
 
-## The spec (what implementation writes)
+1. **Scripts collect facts. AI only makes judgement calls.** Usage stays small.
+2. **Every product can be swapped.** Muse, Notion, Claude Code, Codex and Composio each do one replaceable job. KAREN OS owns the rules, prompts, scripts and records.
+3. **Zero additional spend.** Everything runs on free plans or subscriptions the owner already has.
+4. **The owner stays in charge.** Nothing merges, publishes or posts without the owner. Direct work with an agent works exactly as before.
 
-Location: `docs/daily-review/spec.md` and `docs/daily-review/prompt-template.md`. Generic, with synthetic examples only.
+This revision replaces revision 2, a prompt-only review, and revision 1, a GitHub-only script. Those are commits `a24b2fd` and `54fb7c5` on this branch. The owner's feedback on PR #20 changed the scope.
 
-**Sources**, each one optional and named in the output:
+## Architecture
 
-| Source | Items |
+![KAREN OS daily review architecture](../assets/daily-review-architecture.svg)
+
+The same architecture as editable text (Mermaid is the canonical diagram format, ADR10):
+
+```mermaid
+flowchart LR
+  OWN(["You · CEO"])
+  subgraph CLOUD["Free services"]
+    MUSE["Muse<br/>chief of staff · AI"]
+    NOTION[("Notion<br/>goals · tasks · plans · digest · drafts")]
+    GCAL["Google Calendar<br/>read events"]
+    KPLAN["KAREN plan calendar<br/>assistant writes blocks"]
+    GMAIL["Gmail<br/>read"]
+    GH[("GitHub<br/>issues · PRs · labels · CI")]
+    LI["LinkedIn<br/>via Composio"]
+  end
+  subgraph MAC["Your Mac, kept awake"]
+    DIG["Digest script<br/>no AI"]
+    RUN["Dispatch runner<br/>no AI"]
+    CC["Claude Code · AI"]
+    CX["Codex · AI"]
+  end
+  MUSE -- "① brief" --> OWN
+  OWN -- "② picks issues" --> MUSE
+  MUSE -- "③ reads" --> GCAL & GMAIL
+  MUSE -- "③ writes plan" --> KPLAN
+  MUSE <-- "④ reads digest, writes plan" --> NOTION
+  MUSE -- "⑤ dispatch label" --> GH
+  GH -- "⑥ read" --> DIG & RUN
+  DIG -- "⑦ digest" --> NOTION
+  RUN -- "most usage left" --> CC & CX
+  CC & CX -- "⑧ PR" --> GH
+  GH -- "PR notification" --> OWN
+  OWN -- "merge · approve post" --> GH
+  NOTION -- "⑨ approved draft" --> LI
+  OWN -. "direct work" .-> CC & CX
+```
+
+## One day
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant S as Scripts (Mac)
+  participant N as Notion
+  participant M as Muse
+  actor O as You
+  participant G as GitHub
+  participant A as Claude Code or Codex
+  S->>G: Read issues, PRs, labels, CI (read-only)
+  S->>N: Write engineering digest and yesterday's changes
+  M->>N: Read digest, goals, tasks, yesterday's plan
+  M->>M: Read Google Calendar and Gmail, rank against goals
+  M->>N: Save today's plan
+  M->>O: Morning brief on your phone
+  M->>M: Write time blocks to KAREN plan calendar
+  O->>M: "Do #12 on karen-os and #5 on macropad"
+  M->>G: Add dispatch label to those issues
+  S->>G: Runner sees the label
+  S->>A: Start the agent with the most usage left
+  A->>G: Claim, branch, work, open PR
+  G-->>O: PR notification (GitHub app)
+  O->>G: Review and merge
+  M->>O: Evening review: done, waiting, slipped, carryovers
+```
+
+## Two ways work starts, one pipeline
+
+Not everything goes through the chief of staff. When the owner opens Claude Code or Codex and asks for something directly, the agent follows the same KAREN OS rules:
+
+```mermaid
+flowchart LR
+  D["You ask Claude Code<br/>or Codex directly"] --> F["Agent files the issue<br/>status:needs-owner"]
+  F --> R{"You review the issue"}
+  R -- "approve" --> RD["status:ready"]
+  R -- "change" --> F
+  C["Chief of staff brief:<br/>you pick ready issues"] --> L["dispatch label"]
+  L --> RN["Runner picks the agent"]
+  RD --> W
+  RN --> W["Claim · branch · work<br/>engineering standard"]
+  W --> P["PR ready for review"]
+  P --> M{"You review and merge"}
+```
+
+- **Direct:** the agent writes the issue first and stops. It only starts once the owner marks the issue `status:ready`. Then it claims the issue, creates a `<type>/<issue>-<short-description>` branch, does the work and opens a PR for review. This is the existing engineering standard. This revision makes the "issue first" step explicit in `docs/organisation/engineering.md`.
+- **Dispatched:** the owner picks issues that are already `status:ready` from the brief, and the runner starts an agent on them.
+- **Both** show up in the next brief, because GitHub is the single record.
+
+## Script or AI
+
+| Piece | Done by | Why |
+|---|---|---|
+| GitHub status: PRs waiting, blocked, needs-owner, ready, failing CI, changes since the last digest | Script (#24) | Facts |
+| Personal tasks ticked off | Script reads Notion | Facts |
+| Free time in the calendar | Assistant | It already reads the calendar, so no extra Google setup |
+| Which emails matter | AI (assistant) | Judgement |
+| Ranking the day and building the time-blocked plan | AI (assistant) | Judgement, starting from rule-based order: goals, deadlines, `P0`–`P3` |
+| Writing plan blocks to the KAREN plan calendar | Assistant | Mechanical, through its calendar connector |
+| Weekly goals on Sunday, daily goals each morning | AI (assistant) | Judgement; the owner sets monthly goals and adjusts |
+| Evening check-in (meals, sleep, what got done) | AI (assistant) | Short conversation |
+| Dispatch: watch labels, read usage, start an agent | Script (#26) | Rules |
+| Claim, branch, open PR, move labels | Script (#21) | Rules |
+| PR checklist | CI (#22) | Rules |
+| The engineering work | AI (Claude Code or Codex) | The real work, and most of the usage |
+| LinkedIn draft | AI, small | The agent that finished the work already has the context |
+| LinkedIn post after approval | Script via Composio (#27) | Mechanical |
+| PR notifications | GitHub app | Built in |
+
+## Notion data model (#23)
+
+Notion holds the personal layer, the private instance from decision D08, on the owner's free plan. The repository documents only the generic shape; the owner's content stays in Notion.
+
+| Database | Key properties | Written by |
+|---|---|---|
+| Goals | Title, level (month, week, day), period, status, parent goal | Owner (monthly); assistant proposes weekly and daily goals for the owner to adjust |
+| Tasks | Title, goal, due, status, source (personal or GitHub issue link) | Owner and assistant |
+| Daily plans | Date, morning plan, evening review, carryovers, check-in notes | Assistant |
+| Engineering digest | Date, repository, section, item, link, observed at | Digest script only |
+| LinkedIn drafts | Text, source PR or project, status (Draft, Approved, Posted), post link | Agent drafts; owner approves; script posts |
+
+## Authority
+
+| Action | Rule |
 |---|---|
-| GitHub | PRs merged since the last review; open non-draft PRs; issues labelled `status:needs-owner` or `status:blocked`; `status:ready` issues, `P0` first; failing CI on default branches |
-| Calendar | Today's commitments with times; free blocks of 90 minutes or more |
-| Email | Messages needing a reply or action: sender, one line, why |
-| Workouts | Planned or done today; last session |
-| Meals | Logged or reported today |
-| Sleep | Last night, from a source or self-reported |
+| Write, move or delete events on the KAREN plan calendar | **New standing authority** for the owner's assistant, no per-event approval. Only that calendar; the owner's main calendar is never changed. |
+| Read calendar, email, Notion and GitHub | Allowed for the assistant the owner has connected |
+| Add the `dispatch` label | The owner, or the assistant on the owner's word in that conversation |
+| Start an agent on a dispatched issue | Runner, for `dispatch` + `status:ready` issues only |
+| Push branches, open PRs, update issue labels | Existing standing authority (engineering standard) |
+| Merge, release, close issues | Owner only, unchanged |
+| Publish to LinkedIn | Owner approves each post in Notion; nothing is posted automatically |
+| Send email or reply for the owner | Not allowed |
+| Paid fallback of any kind | Not allowed |
 
-**Morning output:** Today, Needs me, Ready for agents, Health, then Top 3 for today, each item placed in a free block with a one-line reason. Under 200 words.
+## Dispatch (#26, depends on #21)
 
-**Evening output:** Done today, Slipped from the morning top 3 and why, Health check-in (asks only for what no source supplied), Tomorrow's first commitment, Proposed top 3 for tomorrow. Under 200 words.
+1. **Spike first.** Find how to read remaining session and weekly usage from Claude Code and Codex in a form a script can use. Label each observation *reported*, *estimated* or *unknown*, with its age.
+2. **Selection.** Pick the agent with the larger remaining share. If usage is unknown or both are low, **hold and report** in the next brief. Never fall back to a paid API.
+3. **Run.** Start `claude -p` or `codex exec` headless, in its own worktree, with the issue as the task. Claim and PR steps use the pipeline script (#21). One worker per issue.
 
-**Rules for every assistant:**
+**Why not OmniRoute (decision D12):** it switches models one request at a time, falls back to paid APIs, and handles subscription sign-ins. The owner needs a per-task choice of agent with no paid fallback, which a small KAREN OS script does.
 
-1. Start by stating which sources it could read this time. Any source it could not read is shown as `unavailable`, never guessed or filled from memory.
-2. Every item names its source.
-3. Read-only: no replies, calendar changes, GitHub writes or logging on the owner's behalf unless the owner asks in that conversation.
-4. No health advice beyond the facts, unless asked.
-5. Follow the formats above so outputs compare from day to day and across assistants.
+## Products, cost and how to swap them
 
-## Prompt template
+| Job | Product today | Plan | Swap for |
+|---|---|---|---|
+| Chief of staff (briefs, plans, goals) | Muse | Free | Any assistant that reaches Notion, Google and GitHub |
+| Dashboard and personal memory | Notion | Free personal plan | Another store with an API and phone app |
+| Calendar and email | Google Calendar, Gmail | Free | Any calendar or mail the assistant can reach |
+| Work record and notifications | GitHub | Free (public repositories) | — |
+| Engineers | Claude Code, Codex (local) | Existing subscriptions | Any local coding agent with a headless mode |
+| LinkedIn posting | Composio (LinkedIn only) | Free tier | LinkedIn's own API |
+| Scripts | Python standard library | Free | — |
 
-The template has placeholders filled from the owner's private instance: `{repositories}`, `{workout_source}`, and so on. The filled-in prompt never enters the public repository. Draft for the morning:
-
-> **Daily review, morning.** Use my {sources}. Repositories: {repositories}.
-> First list which sources you could read; mark the others unavailable.
-> 1. Today: commitments with times, free blocks of 90+ minutes.
-> 2. Needs me: emails needing action (sender, one line, why), open non-draft PRs, issues labelled status:needs-owner or status:blocked.
-> 3. Ready for agents: status:ready issues, P0 first.
-> 4. Health: workout planned or done, meals so far, last night's sleep.
-> 5. Top 3 for today, ranked by: commitments due today or tomorrow; what blocks others; health basics; priority work that fits a free block. Place each in a free block with one line on why.
-> Name the source of every item. Never guess. Read-only. Under 200 words.
-
-The evening template follows the evening output above.
-
-## Conformance checker
-
-`scripts/check_daily_review.py <output.txt>`, standard library only. It checks a pasted assistant output against the spec: the required sections are present, a source line exists, each source is either read or marked unavailable, there are exactly three top items, and it is under the word limit. It cannot check whether the facts are true. It shows whether a new assistant follows the contract, which is what makes switching assistants safe. Tests use synthetic sample outputs (passing and failing) and need no network.
-
-## Trial before implementation is final
-
-After approval, the owner runs the drafted prompts in Muse for three to five days and notes:
-
-- whether it sees GitHub labels, drafts and CI (this decides R5);
-- whether it ever invents items;
-- which health sources it can read (this tunes R3);
-- whether the formats are useful, or sections should be cut.
-
-Findings adjust the spec before the implementation PR merges.
+The only real usage is the engineering work, and the owner controls it by choosing what to dispatch. Notion AI, Notion Custom Agents and paid assistant plans are not used.
 
 ## Failure handling
 
 | Failure | Result |
 |---|---|
-| Assistant cannot read a source | That section shows `unavailable`. The review continues. |
-| No health source | Evening check-in question; nothing inferred. |
-| Assistant ignores the format | The checker fails; the owner tightens the prompt or switches adapter. |
-| Assistant retired or replaced | Paste the same filled prompt into the new assistant and run the checker on its first outputs. |
+| A source can't be read | That section says unavailable, with the last known state and its age. Never guessed. |
+| Digest script didn't run (Mac asleep, error) | The brief says the digest is stale and how old it is |
+| Usage unknown | Dispatch holds and reports; nothing starts |
+| Agent fails mid-issue | The issue gets `status:blocked` with a comment; the next brief shows it under "needs you" |
+| Assistant replaced | The same prompt templates (#25) go to the new assistant; data stays in Notion and GitHub |
+| A post isn't approved | It stays a draft |
 
-## Privacy and cost
+## Privacy
 
-- The public repo holds only the generic spec, template, checker and synthetic samples. Repository lists, health answers, outputs and consent records stay in the private instance.
-- No KAREN OS code calls a model or a paid API. Cost is whatever the owner's assistant subscription already covers. Zero additional spend.
-- Sending data to Meta (or any later assistant) is an owner decision per R4. Public repositories are already public. Private repositories and health data need explicit consent.
+- The public repository holds only generic docs, prompt templates, scripts, synthetic fixtures and diagrams.
+- Goals, tasks, plans, check-ins, digests and drafts live in the owner's Notion. Calendar and email stay in Google. Tokens stay in the Keychain or environment, never in Git.
+- The owner has connected Muse to Notion, Google Calendar, Gmail and GitHub, and chose Composio for LinkedIn. Those connections are the owner's consent for these destinations. Health data stays limited to what the owner reports, until #28.
 
-## Implementation, rollout and rollback
+## Delivery plan
 
-- One PR: the spec, prompt templates (morning and evening), checker with tests, and a README section on running the review in any assistant. Expected well under 400 lines.
-- Rollback: revert that PR. Nothing runs automatically and no state is stored, so the owner just stops using the prompt.
+| Order | Issue | Slice |
+|---|---|---|
+| 0 | #20 | This proposal (design gate) |
+| 1 | #22, #21 | CI checks PR metadata; pipeline script (already `P1`) |
+| 2 | #23 | Notion workspace and data model |
+| 3 | #24 | Engineering digest script |
+| 4 | #25 | Briefing prompts, KAREN plan calendar, Muse trial |
+| 5 | #26 | Usage-aware dispatch (spike first) |
+| 6 | #27 | LinkedIn drafts and approved posting |
+| later | #28 | Hevy workouts |
+
+Each slice is its own issue and PR, and the owner merges each one. After this proposal merges, slices #23 to #27 move from `status:blocked` to `status:ready`.
+
+## Open questions resolved by the slices
+
+1. How Claude Code and Codex expose remaining usage to a script (#26, the spike).
+2. Muse's limits in practice: schedule times, calendar write permission, and how it handles the digest page (#25, the trial).
+3. Notion free-plan API limits for the digest (#24).
+
+## Rollback
+
+Every slice is reversible on its own: stop the `launchd` job, remove the `dispatch` label, hide the KAREN plan calendar, archive the Notion pages, or revert the PR. No slice changes the owner's main calendar, sends anything, or merges anything.
 
 ## Out of scope
 
-Scheduled or pushed delivery (D06), any write on the owner's behalf, a private instance store or loader (D08), health advice, and a KAREN OS chat interface. Local checkout state was dropped because the owner did not select it.
+- Always-on servers and cloud agents.
+- Sending email.
+- Changing the owner's main calendar.
+- Paid plans or paid fallback.
+- Health advice.
+- A KAREN OS app or custom dashboard (Notion is the dashboard).
