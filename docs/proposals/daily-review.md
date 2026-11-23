@@ -144,7 +144,7 @@ flowchart LR
 
 ## Notion data model (#23)
 
-Notion holds the personal layer, the private instance from decision D08, on the owner's free plan. The repository documents only the generic shape; the owner's content stays in Notion.
+Notion holds the personal layer, the private instance from decision D08, on the owner's free plan. The repository documents only the generic shape; the owner's content stays in Notion. The full data model, dashboard and setup guide are in [`docs/daily-review/notion-workspace.md`](../daily-review/notion-workspace.md).
 
 | Database | Key properties | Written by |
 |---|---|---|
