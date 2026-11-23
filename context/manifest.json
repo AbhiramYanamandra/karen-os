@@ -57,7 +57,7 @@
     {
       "id": "engineering",
       "path": "docs/organisation/engineering.md",
-      "sha256": "e23366b03eee5d80573808c432730a188426c19d12ecdead80653a3bd45c8d69",
+      "sha256": "5c55da940ac1c9883a9a6cf2949eb8a487bc6b6df267dca6309656f4945f13b2",
       "required": true,
       "load_when": "Every startup; read completely. Governs issues, branches, commits, pull requests, CI and releases",
       "startup_read": "complete"
@@ -89,7 +89,7 @@
     {
       "id": "codex_entry",
       "path": "AGENTS.md",
-      "sha256": "fc59e5760b62bbe04de0143de0f396d458c81e74e9e5f5281f5d684854bbc04c",
+      "sha256": "f2203ef3465dda52be9dffa87ded1c05750d8a5707137047f6ff77f54e0b2f1b",
       "required": true,
       "load_when": "Every startup; read completely",
       "startup_read": "complete"
