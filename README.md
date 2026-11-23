@@ -211,7 +211,7 @@ flowchart LR
 | Claude Code into this repository | Works today. `CLAUDE.md` imports `AGENTS.md`. |
 | Codex into this repository | Works today. Codex reads `AGENTS.md` directly. |
 | ChatGPT and ChatGPT Work | Not validated yet. The fallback is a manually prepared context pack. |
-| Muse | Optional future integration. Never on the critical path. |
+| Muse | Chief of staff for the [daily review](#the-daily-review) (designed, not built). Swappable for any assistant, and never on the critical path: direct work in Claude Code or Codex always works. |
 
 ### What happens when an agent opens the repository
 
@@ -457,9 +457,9 @@ KAREN OS is meant to be one coherent personal environment, not just a coding too
 | Calendar and messages | Commitments, reminders, draft replies, pending decisions | Sending, booking and editing external records need approval |
 | Personal projects | Creative projects, event planning, private experiences | Never contacts anyone without approval |
 
-**Briefings.** A morning briefing and an evening review are the clearest personal wins. The precise schedule, delivery channel and notification rules are still open decisions. Either way the rule doesn't change: missing data shows up as missing, and nothing is made up.
+**Briefings.** A morning briefing and an evening review are the clearest personal wins. They are now designed as [the daily review](#the-daily-review): delivered by my assistant on my phone, written as time blocks to a separate calendar, and built on Notion and GitHub. The rule doesn't change: missing data shows up as missing, and nothing is made up.
 
-**AI resources.** I want to see how much Claude, Codex and ChatGPT capacity I realistically have and stop wasting it on repetitive work. Some providers don't expose reliable quota data. So every figure is labelled as provider-reported, measured locally, manually observed, estimated or unknown. Deterministic scripts handle work that doesn't need a model. Interactive capacity is kept free for me. Work checkpoints when a quota runs out. A gateway such as OmniRoute is an optional future experiment, not part of the core.
+**AI resources.** I want to see how much Claude, Codex and ChatGPT capacity I realistically have and stop wasting it on repetitive work. Some providers don't expose reliable quota data. So every figure is labelled as provider-reported, measured locally, manually observed, estimated or unknown. Deterministic scripts handle work that doesn't need a model. Interactive capacity is kept free for me. Work checkpoints when a quota runs out. The daily review's dispatcher sends each issue to whichever agent has the most usage left and holds when usage is unknown. A request-level gateway such as OmniRoute is not used: it falls back to paid APIs and proxies subscription sign-ins.
 
 **Remote access.** Capturing tasks, reading project records and approving actions from a phone will probably come before any always-on execution. A sleeping Mac can't run local jobs, and KAREN OS won't pretend otherwise. It also won't expose an unprotected service on my machine for convenience.
 
@@ -519,10 +519,10 @@ The foundation is built. A working personal assistant is not. I'm keeping that d
 | ChatGPT and ChatGPT Work context | Not validated |
 | Use from other project repositories (Level 2) | Working. The Macropad repository is connected and passed fresh Claude Code and Codex sessions. |
 | A real engineering pilot, end to end | In progress in the Macropad. A firmware fix and the first slice of a native Mac app are merged; their pad checks are open issues |
-| Private instance location and loader | Not decided, not built |
+| Private instance location and loader | Personal layer chosen: Notion, free plan. Loader not built. |
+| Daily review: briefings, goals, usage-aware dispatch, LinkedIn drafts | Design approved: [PR #20](https://github.com/AbhiramYanamandra/karen-os/pull/20) merged 23 November 2026. Build tracked in epic [#17](https://github.com/AbhiramYanamandra/karen-os/issues/17) |
 | Cross-repository planning board (GitHub Projects) | [Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) created 23 November 2026 with KAREN OS and Macropad items and four views. New karen-os issues and PRs are added automatically; Macropad items are added by hand (GitHub Free allows one auto-add workflow) |
-| Briefings, resource monitor, Project Factory, design system | Planned |
-| Autonomous coordination and dispatch | Planned, deliberately last |
+| Resource monitor, Project Factory, design system | Planned |
 
 The deterministic suite has 57 tests. It uses only Python's standard library and makes no model calls. It runs locally on macOS with Python 3.13, and CI runs it on Linux with Python 3.10 and 3.13. Python 3.10 is the supported minimum. Python 3.9 reached end of life in October 2025, and GitHub no longer provides it on current runners.
 
@@ -561,6 +561,8 @@ karen-os/
 │   ├── templates/records.md          Task, proposal, approval and handoff templates
 │   ├── templates/github/             Labels, issue form, PR template, starter CI for projects
 │   ├── tasks/startup-validation.md   Synthetic fixture task for validation runs
+│   ├── proposals/daily-review.md     Daily review design (epic #17)
+│   ├── assets/                       Architecture images
 │   └── reviews/
 │       ├── candidate-audit.md        Pre-publication privacy and validation audit
 │       └── pilot-macropad.md         First engineering pilot: timeline, measurements, lessons
@@ -602,9 +604,9 @@ flowchart LR
 | 2b · External project integration | Independent project repositories load the shared core without moving into this one | Done. The Macropad is connected and passed fresh Claude Code and Codex sessions. Four untested paths are tracked in [#16](https://github.com/AbhiramYanamandra/karen-os/issues/16). |
 | 3 · Engineering pilot | Ship one genuinely useful feature through the full approved workflow | In progress in the Macropad. Work is merged and the pad checks are open. See the [pilot log](docs/reviews/pilot-macropad.md); its lessons are issues [#9 to #16](https://github.com/AbhiramYanamandra/karen-os/issues/?q=is%3Aissue+is%3Aopen+label%3Astatus%3Aneeds-owner). |
 | 4 · Reuse and Project Factory | Extract proven patterns, components, templates and project setup | Future |
-| 5 · Chief of staff | Optional Muse intake, status reporting and delegation | Future |
-| 6 · Personal operations | Briefings, personal workflows, supported integrations, usage visibility | Future, with small pieces pulled forward |
-| 7 · Advanced automation | Scheduling, dispatch, remote execution, recovery, optional model routing | Future, only with measured benefit |
+| 5 · Chief of staff | Optional Muse intake, status reporting and delegation | Pulled forward for the daily review (epic [#17](https://github.com/AbhiramYanamandra/karen-os/issues/17)): Muse briefs and labels issues for dispatch |
+| 6 · Personal operations | Briefings, personal workflows, supported integrations, usage visibility | Pulled forward for the daily review: briefings, goals, Notion, Google Calendar and Gmail |
+| 7 · Advanced automation | Scheduling, dispatch, remote execution, recovery, optional model routing | Partly pulled forward: usage-aware local dispatch only. Remote execution and model routing stay future. |
 
 ### Next up
 
@@ -614,13 +616,29 @@ Recently done: KAREN OS adopted the issue-to-PR pipeline and the Macropad follow
 2. **Feed the lessons back.** Turn the [pilot log](docs/reviews/pilot-macropad.md)'s proposed follow-ups into changes to the standard, the SOPs and the project template, one issue each.
 3. **Try a cloud agent.** Have an agent outside this Mac pick up a `status:ready` issue, clone KAREN OS from GitHub and open a pull request, to prove the "from anywhere" path.
 
-### Next personal feature: the daily review
+### The daily review
 
-The first pilot ran in the Macropad. The next feature is for my own daily use: a [daily review](https://github.com/AbhiramYanamandra/karen-os/issues/17) that shows, across my repositories, what merged, what's waiting for my review, what's blocked or needs me, what's ready for an agent, and the state of my local checkouts. GitHub issues and pull requests are now the task record, so it needs no private data store. It's read-only, uses only the standard library and costs almost no model usage. It starts with a short proposal for my approval.
+The next feature is for my own daily use. I run KAREN OS like a CEO with a small team: my assistant is the chief of staff, and Claude Code and Codex are the engineers. Twice a day I go through one loop: **brief → decide → dispatch → notify → approve**.
+
+![Daily review architecture](docs/assets/daily-review-architecture.svg)
+
+- **Morning brief on my phone.** My assistant (Muse today, swappable) tells me:
+  - what got done yesterday and what slipped
+  - what's on my calendar, and which emails matter
+  - across every project: which PRs wait for me, which issues hit problems, and what's most important to start
+  - all of it ranked against my monthly, weekly and daily goals
+
+  It writes the day as time blocks to a separate "KAREN plan" calendar.
+- **I decide, it dispatches.** I pick issues. Each goes to whichever of Claude Code or Codex has the most usage left. The agent works through the normal pipeline and opens a PR. GitHub notifies me, and I review and merge.
+- **Evening review.** What got done, what's waiting for me, and what carries over.
+- **Sharing work.** When something worth showing is finished, an agent drafts a LinkedIn post. It's posted only after I approve it.
+- **Direct work still works.** If I ask Claude Code or Codex for something myself, it files the issue first, waits for my approval, then branches, builds and opens a PR. That's the same pipeline, and it shows up in the next brief.
+
+Scripts collect the facts and AI only makes judgement calls, so usage stays small. Everything runs on free plans or subscriptions I already have: Notion, Google, GitHub, Muse, and Composio for LinkedIn. Each one can be swapped. The full design, including authority rules, the Notion data model and failure handling, is in [docs/proposals/daily-review.md](docs/proposals/daily-review.md). The build is epic [#17](https://github.com/AbhiramYanamandra/karen-os/issues/17), one sub-issue per slice.
 
 ### Deliberately deferred
 
-Project Factory automation, design-system extraction, Muse integration, scheduled briefings, remote execution, OmniRoute, dashboards and autonomous dispatch all wait until a real workflow shows they are needed.
+Project Factory automation, design-system extraction, remote and cloud execution, request-level model routing (OmniRoute), always-on servers and custom dashboards all wait until a real workflow shows they are needed. The daily review pulls in only what it needs: an assistant briefing, Notion as the dashboard, and local usage-aware dispatch.
 
 ## Projects it should support
 
@@ -676,7 +694,7 @@ cd karen-os
 
 python3 -B scripts/check_context.py            # verify every pinned source matches its hash
 python3 -B scripts/startup.py read --explore   # print the core context an agent loads
-python3 -B -m unittest discover -s tests -v    # run the 53 deterministic tests
+python3 -B -m unittest discover -s tests -v    # run the 57 deterministic tests
 ```
 
 To work with an agent, open the repository in Claude Code or Codex and ask a question. The agent follows [AGENTS.md](AGENTS.md), loads the core through the startup reader, explains its context, and stays read-only until you give it an authorised task.
