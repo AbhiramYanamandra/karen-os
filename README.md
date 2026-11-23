@@ -520,7 +520,7 @@ The foundation is built. A working personal assistant is not. I'm keeping that d
 | Use from other project repositories (Level 2) | Working. The Macropad repository is connected and passed fresh Claude Code and Codex sessions. |
 | A real engineering pilot, end to end | In progress in the Macropad. A firmware fix and the first slice of a native Mac app are merged; their pad checks are open issues |
 | Private instance location and loader | Not decided, not built |
-| Cross-repository planning board (GitHub Projects) | [Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) created 23 November 2026 with KAREN OS and Macropad items and four views. Turning off Auto-close, turning on auto-add and choosing the Roadmap date field wait for the owner in GitHub's UI |
+| Cross-repository planning board (GitHub Projects) | [Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) created 23 November 2026 with KAREN OS and Macropad items and four views. New karen-os issues and PRs are added automatically; Macropad items are added by hand (GitHub Free allows one auto-add workflow) |
 | Briefings, resource monitor, Project Factory, design system | Planned |
 | Autonomous coordination and dispatch | Planned, deliberately last |
 

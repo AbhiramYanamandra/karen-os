@@ -1,6 +1,6 @@
 # GitHub Projects: Engineering HQ
 
-**Status:** created and configured. [KAREN OS | Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) is a public Project on the owner's personal GitHub account. Its views and items were checked on 23 November 2026. Two workflow changes, listed under [Owner steps in the GitHub UI](#owner-steps-in-the-github-ui), still need the owner. Tracking: [issue #29](https://github.com/AbhiramYanamandra/karen-os/issues/29).
+**Status:** created and configured. [KAREN OS | Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) is a public Project on the owner's personal GitHub account. Its views, items and workflows were checked on 23 November 2026, including the owner's UI steps. Tracking: [issue #29](https://github.com/AbhiramYanamandra/karen-os/issues/29).
 
 ![KAREN OS GitHub Projects architecture: the Project shows issues and pull requests from independent repositories; the owner labels issues ready and merges; moving a card never starts an agent](../assets/github-projects-architecture.svg)
 
@@ -113,16 +113,19 @@ So:
 
 ## Built-in workflows
 
-GitHub created six workflows with the Project, all enabled. The API can list and delete them but can't switch them on or off, so changes are made in the UI.
+GitHub created six workflows with the Project, all enabled. The API can list and delete them but can't switch them on or off, so changes are made in the UI. The settings below were read in the signed-in UI on 23 November 2026.
 
 | Workflow | What it does | Decision |
 | --- | --- | --- |
-| Item added to project | Sets Status to Backlog (formerly Todo) | Keep: Project only |
-| Item closed | Sets Status to Done | Keep: Project only |
-| Pull request merged | Sets Status to Done | Keep: Project only |
-| Pull request linked to issue | Sets the Project Status when a PR is linked | Keep: Project only |
-| Auto-add sub-issues to project | Adds an item's sub-issues to the Project | Keep: no labels or states touched |
-| **Auto-close issue** | **Closes the issue when its card's Status is set to Done** | **Turn off** (owner step). It lets a card move change the real issue. Issues close when the owner merges a PR with `Closes #n`. |
+| Item added to project | Issues and PRs: sets Status to Backlog | On. Project only |
+| Item closed | Sets Status to Done | On. Project only |
+| Pull request merged | Sets Status to Done | On. Project only |
+| Pull request linked to issue | Sets the issue's Status to In Progress when a PR is linked | On. Project only |
+| Auto-add sub-issues to project | Adds an item's sub-issues to the Project | On. No labels or states touched |
+| **Auto-close issue** | **Would close the issue when its card's Status is set to Done** | **Off** (turned off by the owner). A card move must not change the real issue. Issues close when the owner merges a PR with `Closes #n`. |
+| **Auto-add to project** | Adds new or updated items from `karen-os` matching `is:issue,pr is:open` | **On** (set up by the owner) |
+
+Auto-archive items, Code changes requested, Code review approved and Item reopened stay off.
 
 **Auto-add.** GitHub can add new issues and PRs from a repository automatically. Three limits from [GitHub's documentation](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/adding-items-automatically) apply:
 
@@ -130,18 +133,17 @@ GitHub created six workflows with the Project, all enabled. The API can list and
 - It only adds items created or updated after it is switched on. That is why the existing items were added by hand.
 - It can't be created through the API.
 
-Setup on Free: one auto-add workflow for `karen-os` with filter `is:issue,pr is:open`. New Macropad items are added with `gh project item-add` (or by #21's script). Auto-add only adds cards. It never changes labels or authorises work.
+Configured on Free: one auto-add workflow for `karen-os` with filter `is:issue,pr is:open` (verified). New Macropad items are added with `gh project item-add`, from the issue's Projects sidebar, or later by #21's script. Auto-add only adds cards. It never changes labels or authorises work.
 
-## Owner steps in the GitHub UI
+## Owner steps in the GitHub UI (done)
 
-These need the owner signed in to GitHub. Agent tools can't do them: the API has no mutation for them, and the agent's browser is not signed in.
+These had to be done in GitHub's web UI because the API has no mutation for them. All were checked in the signed-in UI on 23 November 2026.
 
-1. **Workflows → Auto-close issue → turn off.**
-2. **Workflows → Auto-add to project → karen-os, filter `is:issue,pr is:open` → turn on.** The account is on Free, so there is no second workflow for `macropad`.
-3. **Roadmap view → Date fields → Start date: Start date, Target date: Target date**, then save the view.
-4. Optional: drag **Board** to be the first view tab, so it opens on phones by default.
+1. **Auto-close issue** is off.
+2. **Auto-add to project** is on for `karen-os` with filter `is:issue,pr is:open`. The account is on Free, so `macropad` has no auto-add workflow.
+3. **Roadmap date fields** are Start date and Target date, saved as the view default. Saving needs the view's **View → Save view** button and then **Save** in the confirmation dialog. "Save changes to new view" in the tab menu creates an extra tab instead.
 
-Until these are done, this document does not claim auto-add or the Roadmap bars work.
+Auto-add only adds items created or updated after it was switched on. It will first show on the next new karen-os issue or PR.
 
 ## Other GitHub features reviewed
 
@@ -167,8 +169,8 @@ The SVG embeds real product logos inline, because GitHub's Mermaid can't show im
 
 - [x] Owner-owned Project exists: <https://github.com/users/AbhiramYanamandra/projects/1>.
 - [x] Issues and PRs from both repositories appear; the repositories are unchanged.
-- [x] Board, All Work and Needs My Attention work; Roadmap filters work but needs owner step 3 and agreed dates for bars.
+- [x] Board, All Work, Needs My Attention and Roadmap work. Roadmap bars appear once an item has agreed dates.
 - [x] Card moves don't authorise work: stated here, on the Project's readme, in the engineering standard and in the diagrams.
 - [x] The digest design (#24) reads GitHub directly and doesn't depend on the Project.
 - [x] No paid plan, personal access token, new secret or new Action.
-- [ ] Owner steps 1–3 done and checked.
+- [x] Owner UI steps done and checked.
