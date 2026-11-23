@@ -48,7 +48,7 @@ class DiffTests(unittest.TestCase):
         self.assertEqual(check_pr.check_diff(diff_adding("Run ~/.config/karen-os/ setup", "/home is fine", "Users/x")), [])
 
     def test_forbidden_content(self):
-        for line, label in ((HOME, "home-directory path"), ("/home/ana/x", "home-directory path"),
+        for line, label in ((HOME, "home-directory path"), ("/" + "home/ana/x", "home-directory path"),
                             ("token = " + GH_TOKEN, "GitHub token"), (PRIVATE_KEY, "private key"),
                             ("NOTION=" + NOTION, "Notion token")):
             problems = check_pr.check_diff(diff_adding(line, path="scripts/x.py"))
