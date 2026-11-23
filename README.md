@@ -47,6 +47,12 @@ KAREN OS should take coordination work off me. If running it ever takes more eff
 17. [Run it locally](#run-it-locally)
 18. [Documentation map](#documentation-map)
 
+## Engineering HQ (GitHub Projects — proposed)
+
+KAREN OS is adding an optional **cross-repository Engineering HQ** with GitHub Projects v2: a board, all-work table, owner-attention view and lightweight roadmap spanning independent KAREN OS and Macropad repositories. The Project is **not provisioned yet**. The architecture and pending setup steps are tracked in [the GitHub Projects design](docs/architecture/github-projects.md) and [issue #29](https://github.com/AbhiramYanamandra/karen-os/issues/29).
+
+Projects provides planning and visibility, **not** a new permission source. The existing issue `status:ready` rules, PR/CI evidence and owner merge approval remain authoritative. Notion holds selected personal goals and plans rather than duplicating writable engineering tasks. Direct Claude Code/Codex work and the daily digest must function without a Projects board.
+
 ## The vision
 
 ### Personal first, public second
