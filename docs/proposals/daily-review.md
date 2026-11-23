@@ -41,6 +41,7 @@ flowchart LR
     KPLAN["KAREN plan calendar<br/>assistant writes blocks"]
     GMAIL["Gmail<br/>read"]
     GH[("GitHub<br/>issues · PRs · labels · CI")]
+    HQ["GitHub Projects<br/>Engineering HQ · planning view"]
     LI["LinkedIn<br/>via Composio"]
   end
   subgraph MAC["Your Mac, kept awake"]
@@ -63,7 +64,13 @@ flowchart LR
   OWN -- "merge · approve post" --> GH
   NOTION -- "⑨ approved draft" --> LI
   OWN -. "direct work" .-> CC & CX
+  GH -- "linked items" --> HQ
+  OWN -- "views, triages" --> HQ
+  HQ -. "✕ card moves never dispatch" .-> RUN
+  linkStyle 21 stroke:#cf222e,stroke-dasharray:6 4
 ```
+
+[KAREN OS | Engineering HQ](https://github.com/users/AbhiramYanamandra/projects/1) is the GitHub Project that shows issues and PRs from every connected repository on one board ([design](../architecture/github-projects.md), issue #29). The owner and the assistant can use it to see and plan work. It authorises nothing: the dispatch runner acts only on a `dispatch` label on a `status:ready` issue, and moving a card never starts an agent. The digest (#24) reads GitHub directly, so the review works even if the board is unavailable.
 
 ## One day
 
@@ -155,6 +162,7 @@ Notion holds the personal layer, the private instance from decision D08, on the 
 | Read calendar, email, Notion and GitHub | Allowed for the assistant the owner has connected |
 | Add the `dispatch` label | The owner, or the assistant on the owner's word in that conversation |
 | Start an agent on a dispatched issue | Runner, for `dispatch` + `status:ready` issues only |
+| Move cards on the Engineering HQ board | Anyone with access. It authorises nothing; the runner never reads card positions |
 | Push branches, open PRs, update issue labels | Existing standing authority (engineering standard) |
 | Merge, release, close issues | Owner only, unchanged |
 | Publish to LinkedIn | Owner approves each post in Notion; nothing is posted automatically |
