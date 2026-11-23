@@ -6,7 +6,19 @@
 
 ## What it is for
 
-The Project is one place to see engineering work across independent repositories. It starts with [karen-os](https://github.com/AbhiramYanamandra/karen-os) and [macropad](https://github.com/AbhiramYanamandra/macropad). Each issue and pull request stays in its own repository; the Project links to it and never copies it. Other repositories join only when the owner adds them.
+The Project is one place to see engineering work across independent repositories. It started with [karen-os](https://github.com/AbhiramYanamandra/karen-os) and [macropad](https://github.com/AbhiramYanamandra/macropad). Each issue and pull request stays in its own repository; the Project links to it and never copies it. Other repositories join only when the owner adds them, tracked in [#31](https://github.com/AbhiramYanamandra/karen-os/issues/31).
+
+**Connected repositories** (23 November 2026):
+
+| Repository | On the board | Engineering standard setup |
+| --- | --- | --- |
+| karen-os | Yes; new items added automatically | Complete |
+| macropad | Yes; new items added by hand (Free allows one auto-add workflow) | Complete |
+| LookAtMe | Yes; new items added by hand | Complete: labels, templates, CI, `protect-main` ruleset, auto-delete, `.karen/project.json` |
+| QuantLabs | Nothing to show yet (empty repository) | Labels and auto-delete only; the rest when its first code lands |
+| wya (`aveturi14/wya`) | Not yet | Waiting for its owner's agreement |
+
+KAIRA and career-ops-panel are deliberately left out (owner decision, #31).
 
 It is a planning and visibility layer. It is not a task store and it is not a permission.
 
