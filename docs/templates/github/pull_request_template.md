@@ -22,11 +22,8 @@ Closes #
 
 ## Risk and rollback
 
-## Checklist
+## Notes for the reviewer
 
-- [ ] Branch is `<type>/<issue>-<short-description>`
-- [ ] CI passes
-- [ ] Docs updated where behaviour, formats or setup changed
-- [ ] No secrets, personal data or home-directory paths
-- [ ] Follow-up work filed as issues
-- [ ] Any review by the authoring agent is labelled a self-review
+<!-- CI checks the branch name, the issue link, and that no home-directory paths or secrets were added. Answer these only where they apply:
+     Docs updated where behaviour, formats or setup changed? Follow-up work filed as issues (link them)?
+     Label any review you did yourself as a self-review. -->
