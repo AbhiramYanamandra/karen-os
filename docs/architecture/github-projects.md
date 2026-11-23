@@ -66,9 +66,9 @@ The digest (#24) reads issues, labels and PRs straight from the GitHub API, so i
 
 **Location and visibility.** Personal account `AbhiramYanamandra`, Project number 1, public. Both source repositories are public too, so the board shows nothing that isn't already visible. Private repositories are not added.
 
-**Fields.** GitHub's built-in fields (Title, Assignees, Status, Labels, Linked pull requests, Milestone, Repository, Reviewers, Parent issue, Sub-issues progress, Created, Updated, Closed) plus one added field:
+**Fields.** GitHub's built-in fields (Title, Assignees, Status, Labels, Linked pull requests, Milestone, Repository, Reviewers, Parent issue, Sub-issues progress, Created, Updated, Closed) plus two added fields:
 
-- **Target date** (date). It is used by the Roadmap and stays empty until the owner agrees a date. There is no Project priority field: `P0`–`P3` labels stay the only priority.
+- **Start date** and **Target date** (dates). The Roadmap uses them for the start and end of each bar; GitHub needs two different fields for that. Both stay empty until the owner agrees dates. There is no Project priority field: `P0`–`P3` labels stay the only priority.
 
 **Status options.** Status is presentation only, set from the issue's label:
 
@@ -87,9 +87,9 @@ The original Todo, In Progress and Done options were kept and renamed where need
 | View | Layout | Filter | Checked |
 | --- | --- | --- | --- |
 | Board | Board, columns by Status | none | 24 Backlog, 2 Ready, 2 In Progress, 2 Review (after #29 was claimed) |
-| All Work | Table: Title, Repository, Status, Labels, Assignees, Linked PRs, Parent issue, Milestone, Target date, Updated | none | 30 items from both repositories |
+| All Work | Table: Title, Repository, Status, Labels, Assignees, Linked PRs, Parent issue, Milestone, Target date, Updated (Start date can be shown from the view's field menu) | none | 30 items from both repositories |
 | Needs My Attention | Table: Title, Repository, Labels, Status, Linked PRs, Updated | `is:open label:"status:needs-owner","status:blocked","status:in-review"` | 26 items (20 rows plus 6 sub-issues under #17) |
-| Roadmap | Roadmap | `is:issue no:parent-issue` | 22 top-level issues; no bars until a Target date is set |
+| Roadmap | Roadmap | `is:issue no:parent-issue` | 22 top-level issues; no bars until dates are set |
 
 **Limits of the attention view.**
 
@@ -126,19 +126,19 @@ GitHub created six workflows with the Project, all enabled. The API can list and
 
 **Auto-add.** GitHub can add new issues and PRs from a repository automatically. Three limits from [GitHub's documentation](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/adding-items-automatically) apply:
 
-- Each auto-add workflow watches one repository, and a GitHub Free account gets one auto-add workflow per Project (Pro gets five).
+- Each auto-add workflow watches one repository, and a GitHub Free account gets one auto-add workflow per Project (Pro gets five). The owner's account is on Free.
 - It only adds items created or updated after it is switched on. That is why the existing items were added by hand.
 - It can't be created through the API.
 
-Recommended setup on Free: one auto-add workflow for `karen-os` with filter `is:issue,pr is:open`. Macropad items are added with `gh project item-add` (or by #21's script) until the plan allows a second workflow. Auto-add only adds cards. It never changes labels or authorises work.
+Setup on Free: one auto-add workflow for `karen-os` with filter `is:issue,pr is:open`. New Macropad items are added with `gh project item-add` (or by #21's script). Auto-add only adds cards. It never changes labels or authorises work.
 
 ## Owner steps in the GitHub UI
 
 These need the owner signed in to GitHub. Agent tools can't do them: the API has no mutation for them, and the agent's browser is not signed in.
 
 1. **Workflows → Auto-close issue → turn off.**
-2. **Workflows → Auto-add to project → karen-os, filter `is:issue,pr is:open` → turn on.** If the account is on Pro, duplicate it for `macropad`.
-3. **Roadmap view → Date fields → choose Target date** for both start and target, then save the view.
+2. **Workflows → Auto-add to project → karen-os, filter `is:issue,pr is:open` → turn on.** The account is on Free, so there is no second workflow for `macropad`.
+3. **Roadmap view → Date fields → Start date: Start date, Target date: Target date**, then save the view.
 4. Optional: drag **Board** to be the first view tab, so it opens on phones by default.
 
 Until these are done, this document does not claim auto-add or the Roadmap bars work.
@@ -167,7 +167,7 @@ The SVG embeds real product logos inline, because GitHub's Mermaid can't show im
 
 - [x] Owner-owned Project exists: <https://github.com/users/AbhiramYanamandra/projects/1>.
 - [x] Issues and PRs from both repositories appear; the repositories are unchanged.
-- [x] Board, All Work and Needs My Attention work; Roadmap filters work but needs owner step 3 for bars.
+- [x] Board, All Work and Needs My Attention work; Roadmap filters work but needs owner step 3 and agreed dates for bars.
 - [x] Card moves don't authorise work: stated here, on the Project's readme, in the engineering standard and in the diagrams.
 - [x] The digest design (#24) reads GitHub directly and doesn't depend on the Project.
 - [x] No paid plan, personal access token, new secret or new Action.
