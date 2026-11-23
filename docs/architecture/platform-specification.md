@@ -757,6 +757,8 @@ The context foundation exists as local utilities and procedures, and the public 
 
 Personal-first ordering (owner direction, 22 November 2026). The phases describe a capability progression, not a rule that personal usefulness waits for Phase 6. The near-term sequence is: state the personal-first direction in project documents, add lightweight deterministic CI, make the shared core usable from independent project repositories (Phase 2b), select one personally useful pilot, then deliver it through this workflow while measuring manual coordination, reusable agent work, elapsed time and output reliability. A small personal workflow, such as a daily review, may arrive before Phases 4 and 5 when it needs no new infrastructure. Basic scripts and supported scheduling for bounded tasks do not wait for Phase 7.
 
+Daily review (owner direction, 23 November 2026). The daily review epic (#17) pulls bounded parts of Phases 5 to 7 forward: the owner's assistant as chief of staff, briefings and goals, Notion as the personal layer, and local usage-aware dispatch. Remote execution, model routing, always-on services and custom dashboards stay in Phase 7. Design: `docs/proposals/daily-review.md`.
+
 ## 23 Open decisions for review
 
 OPEN decisions with proposed defaults and editable dispositions
@@ -768,20 +770,21 @@ Review the architecture as a baseline, then resolve only the decisions needed fo
 | D01 | Pilot: choose one bounded feature from a workflow the owner actually uses. Personal usefulness now guides selection; the navigation pattern is an example, not committed scope. | Resolved 22 November 2026: the Macropad (plan 009 layer switching and the first Porcelain app slice). See `docs/reviews/pilot-macropad.md`. The daily review is the next personal feature (issue #17). |
 | D02 | Knowledge: review public platform authority and separate private-instance storage; choose operator-controlled private location without building a new service now. | Partly resolved. The public repository is canonical for platform engineering; the earlier working source is a frozen private archive. The private instance location is still pending. |
 | D03 | Authority: review section 8, including owner approval for merge and release, the fast path, and material-change rules. | Pending |
-| D04 | Muse: identify exact product, account, channel, and available connectors. Start with intake and read-only status. | Pending |
+| D04 | Muse: identify exact product, account, channel, and available connectors. Start with intake and read-only status. | Resolved 23 November 2026 by the owner, on merge of PR #20: Muse (Meta AI, free plan) is the chief of staff for the daily review, connected to Notion, Google Calendar, Gmail and GitHub. It briefs the owner and labels owner-chosen issues for dispatch. It stays swappable. See `docs/proposals/daily-review.md`. |
 | D05 | Resources: inventory existing subscriptions, API billing, permitted automation, and tool entitlements. Keep added spend at zero. | Pending |
-| D06 | Briefings: choose times, days, channel, quiet hours, and urgency rules in the instance-configured timezone. No schedule assumed. | Pending |
+| D06 | Briefings: choose times, days, channel, quiet hours, and urgency rules in the instance-configured timezone. No schedule assumed. | Partly resolved 23 November 2026, on merge of PR #20: morning and evening, every day, delivered by the owner's assistant on their phone. The plan is written as time blocks to a separate KAREN plan calendar, under a standing authority limited to that calendar. Exact times live in the owner's assistant settings. Quiet hours and urgency rules are still pending. |
 | D07 | Retention: review proposed 30-day detailed logs, 90-day summaries, encrypted backups, and recovery targets. | Pending |
-| D08 | Personal data: select storage, classification, provider destinations, and task-specific access. No bulk ingestion. | Pending |
+| D08 | Personal data: select storage, classification, provider destinations, and task-specific access. No bulk ingestion. | Partly resolved 23 November 2026, on merge of PR #20: the personal layer (goals, tasks, daily plans, digests, drafts) lives in the owner's Notion on the free plan. Calendar and email stay in Google. Approved destinations are Notion, Google, GitHub, Muse, and Composio for LinkedIn only. Health data is limited to what the owner reports. Retention and classification are still pending. |
 | D09 | Capacity: choose interactive reserve, freshness windows, and behaviour when provider data is unknown. | Pending |
 | D10 | Remote work: choose approved devices and whether intake and review are sufficient or local execution access is needed. | Pending |
 | D11 | Design: accept Figma as preferred and an explicitly approved browser prototype as the fallback. | Pending |
-| D12 | Gateway: defer OmniRoute by default. Authorise a later bounded evaluation only if native workflow evidence shows a need. | Pending |
+| D12 | Gateway: defer OmniRoute by default. Authorise a later bounded evaluation only if native workflow evidence shows a need. | Resolved 23 November 2026, on merge of PR #20: not adopted. Usage-aware choice between local agents is a KAREN OS script that never falls back to a paid API (issue #26). |
 | D13 | Documentation: approve canonical ownership, acceptance evidence, supersession, and extraction procedure in section 6. | Pending |
 | D14 | Publication: review the intended public account, licence, author identity, clean history, visibility and access. No remote creation or push is authorised by this document. | Resolved 22 November 2026. Published at github.com/AbhiramYanamandra/karen-os under Apache-2.0 from a single clean commit. Later pushes still need owner approval. |
 | D15 | Context: select and validate supported ChatGPT conversation and Work mechanisms, pack freshness checks, and local runtime discovery. Manual packs are the proposed fallback. | Pending |
 | D16 | Phase 1 structure: accept the minimal tree and defer additional records and adapters until separately scoped work needs them. | Pending |
 | D17 | Delivery pipeline: adopt GitHub issues as the work queue, pull requests as review, CI as the gate and the owner's merge as code approval, with standing agent authority for branches, pull requests and issue updates. | Resolved 23 November 2026 by the owner. Rules in `docs/organisation/engineering.md`; branch protection is an owner-configured repository setting. |
+| D18 | Daily review: the owner's brief → decide → dispatch → notify → approve loop, with scripts for facts, AI for judgement, Notion as the dashboard, usage-aware local dispatch to Claude Code or Codex, and LinkedIn posts only after owner approval through Composio. | Approved by the owner on merge of PR #20 (proposal revision 3). Build tracked in epic #17, issues #23 to #28. |
 
 ### Review disposition
 

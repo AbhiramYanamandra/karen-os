@@ -17,7 +17,7 @@
     {
       "id": "architecture",
       "path": "docs/architecture/platform-specification.md",
-      "sha256": "c3e84ed00948e6b836d1f8b4929cde0d0dbe1fcbdf43b26c675fcf1f26d01236",
+      "sha256": "491481fe5d4f2c6ab2c42075af511d52dc65e5d42dc2097a23b530d26846aa70",
       "required": true,
       "load_when": "Design, implementation, security, consequential action, or policy detail",
       "startup_read": "on-demand"
@@ -25,7 +25,7 @@
     {
       "id": "acceptance",
       "path": "docs/architecture/design-status.md",
-      "sha256": "0e5295b70395dd796b19f4e2342c288bed5fba772ce942567262a172e4821963",
+      "sha256": "a90f6078c1682fe23aacbd4ffefedd84c51c7a94e197bc0cac26a641a3a45874",
       "required": true,
       "load_when": "Baseline change, approval scope ambiguity, or consequential action",
       "startup_read": "on-demand"
@@ -57,7 +57,7 @@
     {
       "id": "engineering",
       "path": "docs/organisation/engineering.md",
-      "sha256": "2d4aa8c0410ad20d410a5b1d50ea6109baf8b73184a4ec38b953f9715bf94b81",
+      "sha256": "db59ffffdcb284778381b175052a33164b9a8e5799a00c5bb76fc090f518fe75",
       "required": true,
       "load_when": "Every startup; read completely. Governs issues, branches, commits, pull requests, CI and releases",
       "startup_read": "complete"
