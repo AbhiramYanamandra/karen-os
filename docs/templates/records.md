@@ -40,6 +40,9 @@ proposal_id: <stable-id>
 revision: 1
 state: proposed
 task_id: <id>
+approved_baseline: <exact commit SHA from the last approved plan revision>
+baseline_approval: <owner decision reference and approved plan revision>
+expected_paths: []
 problem_and_current_behaviour: <evidence>
 intended_outcome: <behaviour>
 constraints: []
@@ -52,6 +55,8 @@ risks_and_failure_handling: []
 acceptance_and_verification: []
 rollout_and_rollback: <plan>
 ```
+
+For plans that use drift checks, follow the engineering standard's [baseline guidance](../organisation/engineering.md#plans). Keep the approved baseline separate from the task's starting `base_commit`; use `not applicable` when no drift baseline is needed.
 
 Record approval separately after owner review, so the proposal hash does not include its own hash:
 
