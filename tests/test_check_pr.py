@@ -217,6 +217,8 @@ class ProfileTests(unittest.TestCase):
         self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=no_runtime))), "code-review has no runtime")
         optional = FEATURE["skills"] + [dict(skill("tdd", "implement"), evidence="")]
         self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=optional))), "tdd has no load evidence")
+        incompatible = [dict(s, runtime="cursor") if s["id"] == "code-review" else s for s in FEATURE["skills"]]
+        self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=incompatible))), "code-review is not approved for runtime cursor")
 
     def test_rename_out_of_a_guarded_folder_still_needs_its_flag(self):
         # Regression for the Codex re-review of #46 (session 01a20c1a).

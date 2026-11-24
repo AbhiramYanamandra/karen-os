@@ -565,6 +565,7 @@ karen-os/
 │   │   ├── skill-candidates.json     Audited skill candidates awaiting owner decisions
 │   │   ├── skill-catalogue-audit.md  Provenance, risks and proposed minimal skill set
 │   │   ├── ponytail.md               Ponytail plugin review and install plan
+│   │   ├── skill-onboarding.md       Skill discovery, review, grants, quarantine, revocation
 │   │   └── startup-coverage.md       What startup loading does and doesn't prove
 │   ├── projects/karen-os/
 │   │   └── instructions.md           Project-level instructions, read at startup
@@ -586,6 +587,7 @@ karen-os/
 │   ├── check_context.py              Verifies manifest, hashes and entry files
 │   ├── pipeline.py                   Claim, PR, ready, cleanup and board sync
 │   ├── check_pr.py                   CI check: branch name, issue link, no secrets
+│   ├── skill_review.py               Read-only skill package scanner: tree hash and risk flags
 │   ├── daily_digest.py               Read-only engineering digest across repositories
 │   ├── linkedin_post.py              Drafts, owner approval and approved-only posting
 │   ├── prepare_startup_fixtures.py   Builds isolated read-only probe fixtures

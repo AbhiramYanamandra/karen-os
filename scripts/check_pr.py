@@ -158,7 +158,7 @@ def load_project_profile(root: Path | None = None) -> dict | None:
 
 
 def check_profile(branch: str, body: str, diff: str, repo: str | None = None, pr_merged=gh_pr_merged,
-                  data=None, registry=None, pinned=None, project=None) -> list[str]:
+                  data=None, registry=None, pinned=None, project=None, runtimes=None) -> list[str]:
     """Checks 1 to 10 of the PR-enforcement proposal against the PR's karen-profile block."""
     match = PROFILE_RE.search(body or "")
     if not match:
@@ -170,9 +170,12 @@ def check_profile(branch: str, body: str, diff: str, repo: str | None = None, pr
     if not isinstance(block, dict):
         return ["karen-profile block must be a JSON object"]
     data = data if data is not None else json.loads(profiles.PROFILES.read_text(encoding="utf-8"))
-    if registry is None:
+    if registry is None or runtimes is None:
         entries = json.loads(profiles.REGISTRY.read_text(encoding="utf-8")).get("entries", [])
-        registry = {e["id"]: e.get("sha256") for e in entries if e.get("approval_status") == "approved"}
+        if registry is None:
+            registry = {e["id"]: e.get("sha256") for e in entries if e.get("approval_status") == "approved"}
+        if runtimes is None:
+            runtimes = {e["id"]: e.get("compatible_runtimes") or [] for e in entries}
     problems = ["karen-profile has unknown fields: %s" % ", ".join(sorted(block.keys() - PROFILE_KEYS))] if block.keys() - PROFILE_KEYS else []
 
     kind = branch.split("/", 1)[0]
@@ -203,6 +206,8 @@ def check_profile(branch: str, body: str, diff: str, repo: str | None = None, pr
             problems.append("skill %s has no valid stage" % name)
         if name in registry and entry.get("sha256") != registry[name]:
             problems.append("skill %s sha256 is not the registry version" % name)
+        if name in runtimes and _filled(entry.get("runtime")) and entry["runtime"] not in runtimes[name]:
+            problems.append("skill %s is not approved for runtime %s" % (name, entry["runtime"]))
         for field in ("runtime", "evidence"):
             if not _filled(entry.get(field)):
                 problems.append("skill %s has no %s" % (name, "load evidence" if field == "evidence" else field))

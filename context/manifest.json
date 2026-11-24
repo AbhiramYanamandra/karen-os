@@ -79,6 +79,14 @@
       "startup_read": "on-demand"
     },
     {
+      "id": "skill_onboarding",
+      "path": "docs/organisation/skill-onboarding.md",
+      "sha256": "53c96685141ebd1cd5712fb706f5c079838f52db8c391606fe9485626715e709",
+      "required": true,
+      "load_when": "Skill discovery, review, install, activation, update, quarantine or revocation",
+      "startup_read": "on-demand"
+    },
+    {
       "id": "templates",
       "path": "docs/templates/records.md",
       "sha256": "332759cfd152376fdd7d0a0415317f610df17c5c31aceb065b1d6db4d40ee6aa",
