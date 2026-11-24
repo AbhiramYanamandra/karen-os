@@ -35,7 +35,7 @@ No skill was invoked, installed, updated or given credentials. No local skill co
 
 ## Follow-up findings (#51, 24 November 2026)
 
-**Ponytail.** The source is `DietrichGebert/ponytail` (MIT). The owner chose the **full plugin**: hooks, ledger, cost and token tracking, transcript import, board, extra skills and webhook. The catalogue entry `ponytail-plugin` pins the 30 runtime files at `ebd8654c` (recommended) and records `v5.3.3` as the alternative. [`ponytail.md`](ponytail.md) holds the data inventory, precedence rules, install, verification and rollback plan, and the nine owner decisions. It is not installed.
+**Ponytail.** The source is `DietrichGebert/ponytail` (MIT). The owner chose the **full plugin**: hooks, ledger, cost and token tracking, transcript import, board, extra skills and webhook. The catalogue entry `ponytail-plugin` pins the 30 runtime files at the official release `v5.3.3` (owner decision, 24 November). [`ponytail.md`](ponytail.md) holds the data inventory, precedence rules, install, verification and rollback plan, and the owner decisions (one decided, eight open). It is not installed.
 
 **ui-ux-pro-max.** Both variants come from `nextlevelbuilder/ui-ux-pro-max-skill` v2.15.0 (`a38d04c3`, MIT). Their 67 non-SKILL files are byte-identical to that release. Each SKILL.md is the upstream installer's render of one template for a different target: Claude (55 KB, quick reference inlined) or generic (28 KB). Both stay on hold, because one name resolves to different content in each runtime. Proposal: one copy of the generic render, symlinked into the Claude user folder.
 
@@ -75,7 +75,7 @@ Proposals only. Each one needs your approval of the pinned hash before it become
 |---|---|---|---|
 | All managed work | KAREN core: startup, engineering standard, project rules (already enforced) | | |
 | UI design | Figma connector plus a UI/UX guide, **on hold** until source, licence and a runtime test exist | `ui-styling` per project that uses shadcn | `design`. Both `ui-ux-pro-max` variants are unresolved, not chosen or excluded. |
-| Implementation | Ponytail full plugin, **under review**: pinned, not installed, nine owner decisions open ([ponytail.md](ponytail.md)) | Project and language conventions | |
+| Implementation | Ponytail full plugin, **under review**: pinned, not installed, eight owner decisions open ([ponytail.md](ponytail.md)) | Project and language conventions | |
 | Bugs and tests | | `diagnosing-bugs`, `tdd` | `ecc:tdd-workflow` (duplicate, heavier) |
 | Verification | `principle-prove-it-works` after pinning | Project test and lint commands | `ecc:verification-loop` (npm-only, weaker secret scan) |
 | Review | `code-review` with the GitHub issue as its spec | | |
@@ -123,7 +123,7 @@ Proposed protocol for #46. None of it has been run here.
 ## Decisions for the owner
 
 1. Approve, reject or change each recommendation in `skill-candidates.json`. Each decision is recorded in that entry's `owner_decision` using the schema above, ideally in an owner-signed commit.
-2. ~~Name Ponytail's source repository.~~ Answered: `DietrichGebert/ponytail`, full plugin. Its nine remaining decisions are in [ponytail.md](ponytail.md).
+2. ~~Name Ponytail's source repository.~~ Answered: `DietrichGebert/ponytail`, full plugin. Its pin is decided (`v5.3.3`); eight decisions remain in [ponytail.md](ponytail.md).
 3. ~~Say where each `ui-ux-pro-max` variant came from.~~ Answered by the #51 follow-up (v2.15.0, MIT). Remaining decision: approve one copy of the generic render, with the Claude user folder symlinked to it.
 4. Decide whether Figma's write tools are allowed for design work, and in which projects. Figma is already enabled in Claude Code and Codex desktop, so no new connection is needed.
 4a. unslop: keep `182f2ce4` (with examples) or move to `2f87c854` (shorter). principle-prove-it-works: move to `2f87c854` (recommended).

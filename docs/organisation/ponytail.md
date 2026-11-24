@@ -2,15 +2,19 @@
 
 **Issue:** [#51](https://github.com/AbhiramYanamandra/karen-os/issues/51), part of [epic #43](https://github.com/AbhiramYanamandra/karen-os/issues/43). **Catalogue entry:** `ponytail-plugin` in [`skill-candidates.json`](skill-candidates.json).
 **Status:** under review. Nothing is installed. The owner chose the **full plugin** on 23 November 2026, keeping every capability, including features that read session metadata, run hooks or send telemetry. Installation waits for the decisions at the end of this document.
-**Review:** agent self-review on 24 November 2026, from the upstream source read at both candidate commits. No plugin code was run.
+**Review:** agent self-review on 24 November 2026, from the upstream source read at both candidate commits. The owner chose `v5.3.3`. No plugin code was run.
 
 ## Source and pin
 
-| | Recommended | Alternative |
+**Owner decision, 24 November 2026: pin the official release `v5.3.3`, unmodified, so the plugin runs as its developer released it.**
+
+| | Pinned (owner-chosen) | Not chosen |
 |---|---|---|
-| Ref | `main` at `ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10` | release `v5.3.3`, `7801d061243d7b753bad0e0b3c057cd250b11755` |
-| Runtime tree SHA-256 | `5a294a24abd1728d3cd401d6e405d91bdbb3e898a7314fd8c4a80df96ff67c2f` | `5d64c155b77430005b735aa0d0348125a16ac2ae0e6d452bce81b4b497090395` |
-| Difference | Two hook fixes: stdin decoded as UTF-8 across chunk boundaries (upstream #1495), and subagent usage kept readable during partial imports (#1461). No new network calls, files or permissions | |
+| Ref | release `v5.3.3`, `7801d061243d7b753bad0e0b3c057cd250b11755` | `main` at `ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10` |
+| Runtime tree SHA-256 | `5d64c155b77430005b735aa0d0348125a16ac2ae0e6d452bce81b4b497090395` | `5a294a24abd1728d3cd401d6e405d91bdbb3e898a7314fd8c4a80df96ff67c2f` |
+| Difference | | Four commits later, with two hook fixes: stdin decoded as UTF-8 across chunk boundaries (upstream #1495), and subagent usage kept readable during partial imports (#1461) |
+
+Known upstream issues in `v5.3.3`, fixed only after the release: hooks can garble non-ASCII input split across stdin chunks, and one unreadable subagent log can stop a transcript import. Moving to a later release is a new owner decision.
 
 Repository: `DietrichGebert/ponytail`, MIT. The runtime tree is the 30 files in `.claude-plugin/`, `.codex-plugin/`, `hooks/` and `skills/`. Each file's hash is in the catalogue's `pinned_files`. The other folders hold other hosts' adapters, benchmarks, docs and tests, which neither runtime loads. `skills/ponytail/SKILL.md` is `9badd22a…a509` at both refs.
 
@@ -163,7 +167,7 @@ Ponytail doesn't talk to GitHub. These are options for a follow-up issue:
 
 ## Owner decisions
 
-1. Pinned ref: `ebd8654c` (recommended) or `v5.3.3`.
+1. ~~Pinned ref.~~ **Decided 24 November 2026: `v5.3.3`, the official release, unmodified.**
 2. Install from the upstream marketplace in Claude Code and in Codex, including trusting the Codex hooks.
 3. Transcript import across **all** local Claude Code projects. Upstream has no project filter.
 4. Ledger location, `chmod 700`, and a retention period (for example 180 days).
