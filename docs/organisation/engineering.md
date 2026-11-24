@@ -12,7 +12,7 @@ GitHub holds the queue, the review and the history. The work happens in a local 
 2. **Pick.** Work on the issue the owner names. Otherwise take the open `status:ready` issue with the highest priority (`P0` first), then the oldest. Skip `status:blocked`, `status:needs-owner` and anything already claimed.
 3. **Claim.** Replace `status:ready` with `status:in-progress` and comment with the agent, the session or machine, and the branch name. One worker per issue. Check for an existing claim before starting.
 4. **Branch.** From the current default branch, create `<type>/<issue>-<short-description>`.
-5. **Work.** Run the KAREN OS startup check, read the issue and any linked plan completely, and follow drift checks and STOP conditions. Commit in small, logical steps.
+5. **Work.** Run the KAREN OS startup check and follow [Context retrieval](policy.md#context-retrieval) for the issue, linked plan and any additional reads. Follow drift checks and STOP conditions. Commit in small, logical steps.
 6. **Pull request.** Push the branch and open a PR using the template, with `Closes #<issue>`. Open it as a draft until CI passes and the self-check is done, then mark it ready and move the issue to `status:in-review`.
 7. **Review and merge.** The owner reviews, tests and merges. Merging is the code approval and closes the issue. Agents never merge.
 8. **After merge.** GitHub deletes the branch automatically. The agent runs `git fetch --prune` and deletes its local copy of the branch. File deferred or follow-up work as new issues.
