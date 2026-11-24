@@ -107,9 +107,9 @@ CANDIDATES = "docs/organisation/skill-candidates.json"
 def check_quarantine(base: dict | None, head: dict | None) -> list[str]:
     """Compare skill-candidates.json before and after: a quarantine record never disappears or
     changes, except by gaining an owner `lifted`, and an entry leaves quarantine only once lifted."""
-    if not base or not head:
+    if not base:
         return []
-    after = {e.get("id"): e for e in head.get("candidates", [])}
+    after = {e.get("id"): e for e in (head or {}).get("candidates", [])}  # a deleted file drops every record
     problems = []
     for old in base.get("candidates", []):
         record = old.get("quarantine")
