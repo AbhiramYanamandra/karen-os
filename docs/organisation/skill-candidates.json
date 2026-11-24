@@ -377,7 +377,7 @@
       "stage": "implementation",
       "state": "under-review",
       "recommendation": "approve-with-conditions",
-      "rationale": "Owner decision 2026-11-23: full plugin, not skill-only, with every capability kept and subordinate to KAREN OS policy. Owner decision 2026-11-24: pin release v5.3.3, unmodified. Conditions are the remaining owner decisions in docs/organisation/ponytail.md: pinned ref, marketplace install in both runtimes, transcript scope, ledger location and retention, webhook destination, payload, token, status-line edit and the Engineering HQ option.",
+      "rationale": "Owner decision 2026-11-23: full plugin, not skill-only, with every capability kept and subordinate to KAREN OS policy. Owner decisions 2026-11-24: pin release v5.3.3, unmodified; install in both runtimes with Codex hooks trusted; transcript import allowed; upstream-default ledger with no KAREN retention; no webhook; status line allowed; Engineering HQ option C (board only). Install still needs an owner approval bound to tree_sha256. Earlier conditions were the owner decisions in docs/organisation/ponytail.md: pinned ref, marketplace install in both runtimes, transcript scope, ledger location and retention, webhook destination, payload, token, status-line edit and the Engineering HQ option.",
       "owner_decision": null,
       "pinned_files": {
         "hooks/ponytail-mode-tracker.js": "ab2a7d89a71fdbecd5ea4d12ffe980c2213b80fe112d623ca13ceac0258307e7",

@@ -88,10 +88,7 @@ None are required. `webhookToken` is optional and is stored in the system keycha
 | Startup and status | `PONYTAIL_QUIET_STARTUP`, `PONYTAIL_HIDE_STATUS` |
 | Band display | `/ponytail band off`. It hides the band, but recording continues |
 
-KAREN OS adds three controls of its own:
-- `chmod 700` on the `ponytail/band` folder.
-- An owner-chosen retention period, enforced by deleting rows older than that, manually or on a schedule. Ponytail has no pruning.
-- The folder stays out of every repository and every backup the owner doesn't control.
+KAREN OS adds no controls of its own (decision 4a): the ledger uses upstream's location, permissions and unlimited retention. It is outside every repository because it lives in the user config folder.
 
 ## Precedence
 
@@ -99,7 +96,7 @@ Ponytail is a coding-stage aid, subordinate to KAREN OS:
 
 1. **KAREN first.** Startup, the engineering standard, project rules, the task and its lifecycle profile (#45) all win over Ponytail's mode text. Ponytail's own rule, never cut validation, data-loss handling, security, accessibility or anything the user asked for, is consistent with this. Where the two differ, KAREN wins.
 2. **Level.** `full` by default. `ultra` only per task when the profile allows it. Ponytail's `review` mode never replaces KAREN review stages.
-3. **No silent configuration.** The status-line nudge asks the model to edit `settings.json`. Agents decline it unless the owner approves it (decision 8). Ponytail never changes repository settings, labels or Engineering HQ.
+3. **No silent configuration.** The status-line nudge asks the model to edit `settings.json`. The owner approved it (decision 8), so agents may accept that one edit. Ponytail never changes repository settings, labels or Engineering HQ.
 4. **Usage is not quality.** Ledger data is evidence of usage. It never replaces tests, verification or review receipts.
 5. **Approval binds to content.** Approval covers the pinned runtime tree hash. Any plugin update returns the entry to `under-review`.
 
@@ -117,9 +114,8 @@ This runs only after the owner's decisions are recorded.
 
 **2. Claude Code.**
 - Add the marketplace at the pinned ref, then run `/plugin install ponytail@ponytail`, as two separate prompts.
-- Set `ledger`, `sendNames` and `webhookUrl` per the decisions.
-- The owner enters `webhookToken`, so only the keychain holds it.
-- Apply `chmod 700` to the ledger folder.
+- Leave `ledger` on and `webhookUrl` empty (decisions 4a and 5). No token is entered.
+- Accept the status-line offer once (decision 8).
 
 **3. Codex.**
 - `codex plugin marketplace add DietrichGebert/ponytail` at the same ref, then `codex plugin add ponytail@ponytail`.
@@ -131,11 +127,8 @@ This runs only after the owner's decisions are recorded.
 - Installed files hash to the approved values.
 - A new session shows the SessionStart injection.
 - One turn writes exactly one ledger row in the expected CSV, and `board.html` rebuilds.
-- With a webhook:
-  - Check against a local `http://127.0.0.1` receiver first, then the approved destination.
-  - One POST per turn, with exactly the payload fields above.
-  - `name` is empty when `sendNames` is false.
-  - The bearer token is present.
+- `webhookUrl` is empty, and no POST is made after a turn (decision 5).
+- The status line appears in `settings.json` after the one accepted offer (decision 8).
 - A subagent receives the injection, or doesn't, per the matcher.
 - Negative control: with `ledger: false`, no row is written.
 
@@ -168,14 +161,18 @@ Ponytail doesn't talk to GitHub. These are options for a follow-up issue:
 ## Owner decisions
 
 1. ~~Pinned ref.~~ **Decided 24 November 2026: `v5.3.3`, the official release, unmodified.**
-2. Install from the upstream marketplace in Claude Code and in Codex, including trusting the Codex hooks.
-3. Transcript import across **all** local Claude Code projects. Upstream has no project filter.
-4. Ledger location, `chmod 700`, and a retention period (for example 180 days).
-5. Webhook destination URL and its operator, or no webhook for now.
-6. Webhook payload: whether to send task names (`sendNames`), and acceptance that the full session id is sent.
-7. Webhook token: whether to issue one, held only in the keychain.
-8. Whether to allow Ponytail's status line in `settings.json`.
-9. Engineering HQ option A, B or C, including approval of any new Project fields or automation.
+All decided by the owner on 24 November 2026. The principle: run Ponytail as its developer released it.
+
+2. **Install: both runtimes.** Upstream marketplace in Claude Code (full plugin) and in Codex (skills and mode hooks), with both Codex hooks trusted.
+3. **Transcript import: allowed** across all local Claude Code projects, on `/ponytail band import`. Data stays on this Mac.
+4. **Ledger: upstream default (4a).** Default location, default file permissions, no retention limit. KAREN adds no `chmod`, pruning or backup rule.
+5. **Webhook: none.** `webhookUrl` stays empty, so nothing leaves the Mac.
+6. Webhook payload: not applicable while there is no webhook.
+7. Webhook token: not applicable. None is issued.
+8. **Status line: allowed.** Agents may accept Ponytail's one-time offer to add its status line to Claude Code `settings.json`.
+9. **Engineering HQ: option C, board only.** `board.html` stays local. No new Project fields or automation. Option A can be proposed later as its own issue.
+
+Remaining before install: the owner's go-ahead to install, recorded as an approval bound to the pinned tree hash, and the install and verification work below under its own authorised task.
 
 ## Not verified
 
