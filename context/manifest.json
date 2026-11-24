@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_id": "karen-os",
-  "revision": "engineering-6",
+  "revision": "engineering-7",
   "reviewed_on": "2026-11-24",
   "architecture_disposition": "published-personal-first-architecture-review-pending",
   "freshness": "Compare hashes on every startup and before consequential action. Check current owner directions for revocation. Drift requires review, not automatic repinning.",
