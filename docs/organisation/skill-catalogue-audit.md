@@ -137,7 +137,7 @@ The registry records the approved content and scope. [`workflow-profiles.json`](
 | High-impact review | `thermo-nuclear-code-quality-review`, alongside a correctness and security review | | |
 | Security-sensitive work | `ecc:security-review` as a checklist | | `ecc:security-scan`, `ecc:security-bounty-hunter` |
 | LinkedIn writing | Approved `unslop` | | `watermarks-remover:clean-user-facing-text` overlaps it (not reviewed) |
-| Skill discovery | Not yet implemented. PR D is tracked in #47 | | `find-skills` is not approved |
+| Skill discovery | The [onboarding procedure](skill-onboarding.md) (#47): search-only discovery, isolated review with `scripts/skill_review.py`, owner grants, quarantine | | `find-skills` is not approved |
 
 ## Owner decisions: approve, reject, revoke
 

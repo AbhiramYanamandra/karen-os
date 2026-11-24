@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_id": "karen-os",
-  "revision": "engineering-6",
+  "revision": "engineering-7",
   "reviewed_on": "2026-11-24",
   "architecture_disposition": "published-personal-first-architecture-review-pending",
   "freshness": "Compare hashes on every startup and before consequential action. Check current owner directions for revocation. Drift requires review, not automatic repinning.",
@@ -76,6 +76,14 @@
       "sha256": "587b4ab2268205cd91532859ab0ff4fc7886b63416d85e25f44ff68f48e1683a",
       "required": true,
       "load_when": "Relevant skill selection; metadata before bodies",
+      "startup_read": "on-demand"
+    },
+    {
+      "id": "skill_onboarding",
+      "path": "docs/organisation/skill-onboarding.md",
+      "sha256": "7f19d915899bb7124e833d42a6d874339ed92635a9fa9e462314fadb4988a9c2",
+      "required": true,
+      "load_when": "Skill discovery, review, install, activation, update, quarantine or revocation",
       "startup_read": "on-demand"
     },
     {

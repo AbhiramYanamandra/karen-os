@@ -1,6 +1,6 @@
 # Proposal: safe skill discovery, onboarding, updates, quarantine and revocation
 
-Revision 1, 24 November 2026. Issue [#47](https://github.com/AbhiramYanamandra/karen-os/issues/47), epic [#43](https://github.com/AbhiramYanamandra/karen-os/issues/43), charter slice **PR D**. Status: **awaiting owner approval** (merging this PR approves this revision). Resolved profile for the implementation: **security, high risk**: threat assessment, owner-approved technical proposal, security tests, thermo-nuclear review.
+Revision 1, 24 November 2026. Issue [#47](https://github.com/AbhiramYanamandra/karen-os/issues/47), epic [#43](https://github.com/AbhiramYanamandra/karen-os/issues/43), charter slice **PR D**. Status: **approved** by the owner's merge of PR #67 on 24 November 2026. The standing rule is [skill-onboarding.md](../organisation/skill-onboarding.md). Resolved profile for the implementation: **security, high risk**: threat assessment, owner-approved technical proposal, security tests, thermo-nuclear review.
 
 ## Summary
 

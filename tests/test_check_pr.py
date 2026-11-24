@@ -217,6 +217,56 @@ class ProfileTests(unittest.TestCase):
         self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=no_runtime))), "code-review has no runtime")
         optional = FEATURE["skills"] + [dict(skill("tdd", "implement"), evidence="")]
         self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=optional))), "tdd has no load evidence")
+        incompatible = [dict(s, runtime="cursor") if s["id"] == "code-review" else s for s in FEATURE["skills"]]
+        self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=incompatible))), "code-review is not approved for runtime cursor")
+
+    def test_quarantine_records_cannot_be_dropped_changed_or_lifted_by_an_agent(self):
+        record = {"by": "agent", "date": "2026-12-02", "reason": "drift", "observed_sha256": None, "evidence": "scan"}
+        lift = {"by": "owner", "date": "2026-12-03", "reference": "https://example.invalid/lift"}
+
+        def data(state, quarantine, entry_id="tdd"):
+            return {"candidates": [{"id": entry_id, "state": state, "quarantine": quarantine}]}
+
+        base = data("quarantined", record)
+        cases = {
+            "removed": (data("approved", None), "was removed"),
+            "nulled": (data("quarantined", None), "was removed"),
+            "moved": (data("approved", record, entry_id="other"), "was removed"),
+            "edited": (data("quarantined", dict(record, reason="")), "was changed"),
+            "agent lift": (data("under-review", dict(record, lifted=dict(lift, by="agent"))), "without `lifted` by the owner"),
+            "no lift": (data("approved", record), "without `lifted` by the owner"),
+        }
+        for name, (head, text) in cases.items():
+            with self.subTest(case=name):
+                self.assertTrue(any(text in p for p in check_pr.check_quarantine(base, head)), check_pr.check_quarantine(base, head))
+        lifted = data("under-review", dict(record, lifted=lift))
+        self.assertEqual(check_pr.check_quarantine(base, lifted), [])
+        self.assertTrue(check_pr.check_quarantine(lifted, data("approved", dict(record, lifted=dict(lift, date="x")))))
+        self.assertEqual(check_pr.check_quarantine(lifted, data("approved", dict(record, lifted=lift))), [])
+        self.assertEqual(check_pr.check_quarantine(None, base), [])
+        self.assertTrue(check_pr.check_quarantine(base, None))
+
+    def test_check_compares_quarantine_records_against_the_base_ref(self):
+        live = json.loads((ROOT / check_pr.CANDIDATES).read_text(encoding="utf-8"))
+        quarantined = json.loads(json.dumps(live))
+        entry = next(e for e in quarantined["candidates"] if e["id"] == "tdd")
+        entry.update(state="quarantined", quarantine={"by": "agent", "date": "2026-12-02", "reason": "drift",
+                                                      "observed_sha256": None, "evidence": "scan"})
+        seen = []
+        original = check_pr.candidates_at
+        check_pr.candidates_at = lambda ref: seen.append(ref) or quarantined
+        try:
+            touched = "diff --git a/{0} b/{0}\n--- a/{0}\n+++ b/{0}\n".format(check_pr.CANDIDATES)
+            problems = check_pr.check("chore/9-x", "Closes #9", touched, base_ref="base-sha",
+                                      pr_merged=lambda *_: True, pinned=self.PINNED)
+            self.assertEqual(seen, ["base-sha"])
+            self.assertTrue(any("quarantine record for tdd was removed" in p for p in problems), problems)
+            seen.clear()
+            check_pr.check("chore/9-x", "Closes #9", diff_adding("x"), base_ref="base-sha",
+                           pr_merged=lambda *_: True, pinned=self.PINNED)
+            self.assertEqual(seen, [])  # not consulted when the file is untouched
+        finally:
+            check_pr.candidates_at = original
 
     def test_rename_out_of_a_guarded_folder_still_needs_its_flag(self):
         # Regression for the Codex re-review of #46 (session 01a20c1a).
