@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_id": "karen-os",
-  "revision": "engineering-5",
+  "revision": "engineering-6",
   "reviewed_on": "2026-11-24",
   "architecture_disposition": "published-personal-first-architecture-review-pending",
   "freshness": "Compare hashes on every startup and before consequential action. Check current owner directions for revocation. Drift requires review, not automatic repinning.",
@@ -57,7 +57,7 @@
     {
       "id": "engineering",
       "path": "docs/organisation/engineering.md",
-      "sha256": "0fab1b9034d7dc180c97d513ac02d6df56600f187aed9063bd87c5dc1db6f557",
+      "sha256": "33901979beaf358fa976c76296fcf04aac144913e2d2e429b793392364188007",
       "required": true,
       "load_when": "Every startup; read completely. Governs issues, branches, commits, pull requests, CI and releases",
       "startup_read": "complete"

@@ -63,7 +63,7 @@ Conventional Commits: `type(scope): summary`, imperative, 72 characters or fewer
 
 One issue per PR. Split large plans into slices, each with its own issue and PR. Prefer PRs under about 400 changed lines, excluding generated files and assets, and explain larger ones. The PR title follows the commit rule: it names what the diff contains, not results that were not observed. The PR body has:
 
-- **Summary** of what changed, and any decisions needed from the owner.
+- **Summary** of what changed.
 - **Why**, with `Closes #<issue>` and the plan or design link.
 - **How to test**, as steps the owner can follow, including device or manual checks.
 - **Evidence**: commands run and their results.
