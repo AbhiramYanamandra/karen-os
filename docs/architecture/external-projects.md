@@ -66,7 +66,7 @@ A Level 2 project gets at most three small additions. Nothing it already has is 
   "integration_level": 2,
   "karen_os_path": "~/Desktop/Personal_Projects/karen-os",
   "karen_os_repository": "AbhiramYanamandra/karen-os",
-  "karen_manifest_revision": "engineering-2",
+  "karen_manifest_revision": "engineering-3",
   "project_instructions": "AGENTS.md",
   "task_location": "plans",
   "pipeline": {

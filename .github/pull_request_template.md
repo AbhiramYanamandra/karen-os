@@ -2,6 +2,12 @@
 
 <!-- What changed, in a few lines. Say so here if CI workflows changed. -->
 
+## Profile
+
+<!-- `scripts/pipeline.py pr` pre-fills a karen-profile block here from the resolver. Set the real risk and flags, list each
+     required skill with its runtime and load evidence, the reviewer, the tests run, and how many times the owner stepped in.
+     CI's PR metadata job checks it (docs/proposals/pr-enforcement.md). -->
+
 ## Why
 
 Closes #
@@ -26,4 +32,5 @@ Closes #
 
 <!-- CI checks the branch name, the issue link, and that no home-directory paths or secrets were added. Answer these only where they apply:
      Docs updated where behaviour, formats or setup changed? Follow-up work filed as issues (link them)?
-     Label any review you did yourself as a self-review. -->
+     Label any review you did yourself as a self-review.
+     Who reviewed, and in which session or provider? Medium and high risk need a different session or provider, with its findings. -->

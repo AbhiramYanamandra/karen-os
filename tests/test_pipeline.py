@@ -336,5 +336,27 @@ class SyncTests(unittest.TestCase):
         self.assertIn("AbhiramYanamandra/karen-os", config["repositories"])
 
 
+
+class ProfileBlockTests(unittest.TestCase):
+    """`pr` pre-fills a karen-profile block from the resolver; the agent completes it."""
+
+    def block(self, body):
+        return json.loads(body.split("```karen-profile\n", 1)[1].split("\n```", 1)[0])
+
+    def test_prefill_lists_required_skills_at_registry_hashes(self):
+        body = pipeline.with_profile("## Summary\n\nx\n", "feat/46-x")
+        block = self.block(body)
+        self.assertEqual((block["type"], block["risk"]), ("feat", "low"))
+        registry = {e["id"]: e["sha256"] for e in json.loads((ROOT / "docs/organisation/skills.json").read_text())["entries"]}
+        self.assertEqual({s["id"]: s["sha256"] for s in block["skills"]},
+                         {k: registry[k] for k in ("ponytail-plugin", "principle-prove-it-works")})
+        self.assertTrue(all(s["evidence"] == "" for s in block["skills"]))
+
+    def test_prefill_goes_under_the_profile_heading_once(self):
+        body = pipeline.with_profile("## Profile\n\n<!-- note -->\n\n## Why\n", "docs/9-x")
+        self.assertLess(body.index("```karen-profile"), body.index("## Why"))
+        self.assertEqual(pipeline.with_profile(body, "docs/9-x"), body)
+
+
 if __name__ == "__main__":
     unittest.main()
