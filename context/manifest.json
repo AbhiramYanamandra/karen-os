@@ -57,7 +57,7 @@
     {
       "id": "engineering",
       "path": "docs/organisation/engineering.md",
-      "sha256": "3747b06c6fe606f92158c2836dba20e3136eee2300c12853c72431e8fc768e6b",
+      "sha256": "0fab1b9034d7dc180c97d513ac02d6df56600f187aed9063bd87c5dc1db6f557",
       "required": true,
       "load_when": "Every startup; read completely. Governs issues, branches, commits, pull requests, CI and releases",
       "startup_read": "complete"
@@ -81,7 +81,7 @@
     {
       "id": "templates",
       "path": "docs/templates/records.md",
-      "sha256": "de2f11e7cfa2ef42123ddd3355fd0a90904439235766aac8e178afff22a73be0",
+      "sha256": "332759cfd152376fdd7d0a0415317f610df17c5c31aceb065b1d6db4d40ee6aa",
       "required": true,
       "load_when": "Creating task, proposal, approval, or handoff",
       "startup_read": "on-demand"

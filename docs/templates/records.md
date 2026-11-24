@@ -1,10 +1,12 @@
 # Durable record templates
 
-Public template. Copy only the applicable template into its authorised destination. Personal and private-instance records belong outside this public source tree; public examples must be synthetic. Replace placeholders with evidence or an explicit `unknown` or `not applicable` reason. A template never grants authority. Use UTC timestamps and show owner-facing times in the instance-configured timezone.
+Public template. Copy only the applicable template into its authorised destination. Personal and private-instance records belong outside this public source tree; public examples must be synthetic. Replace placeholders with evidence or an explicit `unknown` or `not applicable` reason. Task, proposal and handoff records lead with a summary and the decisions needed from the owner. A template never grants authority. Use UTC timestamps and show owner-facing times in the instance-configured timezone.
 
 ## Task
 
 ```yaml
+summary: <what this record says, in one or two lines>
+decisions_needed: [] # owner decisions, or none
 task_id: <stable-id>
 project_id: karen-os
 record_revision: 1
@@ -36,6 +38,8 @@ next_safe_action: <bounded action>
 ## Proposal and approval
 
 ```yaml
+summary: <what this record says, in one or two lines>
+decisions_needed: [] # owner decisions, or none
 proposal_id: <stable-id>
 revision: 1
 state: proposed
@@ -77,6 +81,8 @@ state: <pending|approved|rejected|revoked|expired>
 ## Handoff
 
 ```yaml
+summary: <what this record says, in one or two lines>
+decisions_needed: [] # owner decisions, or none
 handoff_id: <task-id/sequence>
 project_id: karen-os
 task_record: <path and revision>
