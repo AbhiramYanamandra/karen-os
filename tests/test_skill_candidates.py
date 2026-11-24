@@ -47,10 +47,10 @@ def approval_errors(entry, decision, data):
     errors = []
     commit = decision.get('source_commit', '')
     if commit is None:
-        legacy = str(decision.get('date')) <= data['source_commit_required_after']
+        legacy = entry['id'] in data['source_commit_grandfathered']
         if not decision.get('source_commit_note') or not (legacy or entry['tree_sha256'] is None):
-            errors.append('source_commit may be null only with a note, for a remote connector or an approval '
-                          'dated on or before %s' % data['source_commit_required_after'])
+            errors.append('source_commit may be null only with a note, for a remote connector or a '
+                          'grandfathered pre-#47 approval')
     elif not COMMIT.match(str(commit)):
         errors.append('source_commit must be a full 40-character commit SHA')
     grants = decision.get('grants')
@@ -58,6 +58,11 @@ def approval_errors(entry, decision, data):
             or not all(isinstance(v, list) and all(isinstance(x, str) for x in v) for v in grants.values())):
         errors.append('grants must hold exactly %s, each a list of strings' % ', '.join(data['grant_fields']))
     return errors
+
+
+def duplicate_approved_names(entries):
+    names = [e['id'].split('@')[0] for e in entries if e['state'] == 'approved']
+    return {n for n in names if names.count(n) > 1}
 
 
 def decision_errors(entry, data):
@@ -183,9 +188,24 @@ class SkillCandidates(unittest.TestCase):
                 self.assertTrue(decided[entry['id']]['grants']['activate'])
 
     def test_one_approved_entry_per_skill_name(self):
-        # A lookalike or second copy under the same name cannot be approved alongside the first.
-        names = [e['id'].split('@')[0] for e in self.entries if e['state'] == 'approved']
-        self.assertEqual(len(names), len(set(names)))
+        # A second copy under the same name cannot be approved alongside the first. Lookalike
+        # spellings are a review finding, not something this check can catch.
+        self.assertEqual(duplicate_approved_names(self.entries), set())
+        second = dict(next(e for e in self.entries if e['id'] == 'tdd'), id='tdd@claude-user-skills')
+        self.assertEqual(duplicate_approved_names(self.entries + [second]), {'tdd'})
+
+    def test_registry_stays_within_its_grants(self):
+        decided = {e['id']: e['owner_decision'] for e in self.entries if e['state'] == 'approved'}
+        for entry in json.loads(REGISTRY.read_text(encoding='utf-8'))['entries']:
+            install = decided[entry['id']]['grants']['install']
+            for runtime in entry['compatible_runtimes']:
+                with self.subTest(entry=entry['id'], runtime=runtime):
+                    self.assertTrue(any(runtime.replace('-', ' ') in g.replace('-', ' ') for g in install))
+
+    def test_grandfathered_list_is_closed(self):
+        # Only approvals recorded before #47 may lack a commit; the list never grows.
+        self.assertEqual(self.data['source_commit_grandfathered'],
+                         ['tdd', 'diagnosing-bugs', 'thermo-nuclear-code-quality-review', 'code-review', 'ecc:security-review'])
 
 
 class OwnerDecisionSchema(unittest.TestCase):
@@ -249,9 +269,12 @@ class OwnerDecisionSchema(unittest.TestCase):
                 self.assertIn('source_commit must be a full 40-character commit SHA',
                               self.errors('approved', dict(self.approve, source_commit=ref)))
         unpinned = dict(self.approve, source_commit=None, source_commit_note='no commit recorded')
-        self.assertTrue(self.errors('approved', unpinned))  # dated after the cutoff
-        self.assertEqual(self.errors('approved', dict(unpinned, date='2026-11-24')), [])
-        self.assertTrue(self.errors('approved', dict(unpinned, date='2026-11-24', source_commit_note='')))
+        self.entry['id'] = 'new-skill'
+        self.assertTrue(self.errors('approved', unpinned))  # not grandfathered, whatever its date
+        self.assertTrue(self.errors('approved', dict(unpinned, date='1999-01-01')))
+        self.entry['id'] = 'tdd'
+        self.assertEqual(self.errors('approved', unpinned), [])
+        self.assertTrue(self.errors('approved', dict(unpinned, source_commit_note='')))
 
 
 class Quarantine(unittest.TestCase):

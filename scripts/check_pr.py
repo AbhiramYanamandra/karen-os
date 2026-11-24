@@ -5,6 +5,8 @@ Fails when:
 - the head branch is not `<type>/<issue>-<short-description>`;
 - the PR body links no issue with `Closes #<n>` or `Refs #<n>`;
 - the diff adds a home-directory path or a common secret pattern;
+- the diff drops a skill quarantine record, or moves a skill out of quarantine without
+  an owner lift (docs/organisation/skill-onboarding.md; attested: CI can't prove who lifted);
 - the `karen-profile` block is missing or fails the workflow-profile checks
   (docs/proposals/pr-enforcement.md, revision 1). Each check is labelled there as
   verified (CI really checks it) or attested (CI only sees that the claim exists).
@@ -96,6 +98,33 @@ def check_diff(diff: str) -> list[str]:
         for label, pattern in FORBIDDEN:
             if pattern.search(line):
                 problems.append("%s added in %s: %s" % (label, path, line.strip()[:80]))
+    return problems
+
+
+CANDIDATES = "docs/organisation/skill-candidates.json"
+
+
+def check_quarantine(diff: str) -> list[str]:
+    """Quarantine records stay on their entry; leaving quarantine needs a `lifted` record in the same diff."""
+    counts = {"-q": 0, "+q": 0, "-state": 0, "+lifted": 0}
+    current = None
+    for line in diff.split("\n"):
+        if line.startswith(("--- ", "+++ ")):
+            path = git_path(line[4:])
+            current = path if path != "/dev/null" else current
+        elif current == CANDIDATES and line[:1] in ("+", "-"):
+            sign, text = line[0], line[1:]
+            if '"quarantine"' in text:
+                counts[sign + "q"] += 1
+            if sign == "-" and '"state": "quarantined"' in text:
+                counts["-state"] += 1
+            if sign == "+" and '"lifted"' in text:
+                counts["+lifted"] += 1
+    problems = []
+    if counts["-q"] > counts["+q"]:
+        problems.append("%s: a quarantine record was removed; records stay after an owner lift" % CANDIDATES)
+    if counts["-state"] > counts["+lifted"]:
+        problems.append("%s: a skill left quarantine without an owner `lifted` record" % CANDIDATES)
     return problems
 
 
@@ -252,7 +281,7 @@ def check_profile(branch: str, body: str, diff: str, repo: str | None = None, pr
 
 
 def check(branch: str, body: str, diff: str, **profile_options) -> list[str]:
-    return check_branch(branch) + check_body(body) + check_diff(diff) + check_profile(branch, body, diff, **profile_options)
+    return check_branch(branch) + check_body(body) + check_diff(diff) + check_quarantine(diff) + check_profile(branch, body, diff, **profile_options)
 
 
 def from_github_event(event_path: str) -> tuple[str, str, str, str]:

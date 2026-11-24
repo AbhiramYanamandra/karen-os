@@ -220,6 +220,17 @@ class ProfileTests(unittest.TestCase):
         incompatible = [dict(s, runtime="cursor") if s["id"] == "code-review" else s for s in FEATURE["skills"]]
         self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=incompatible))), "code-review is not approved for runtime cursor")
 
+    def test_quarantine_cannot_be_dropped_or_lifted_without_an_owner_record(self):
+        head = "diff --git a/{0} b/{0}\n--- a/{0}\n+++ b/{0}\n@@ -1,4 +1,4 @@\n".format(check_pr.CANDIDATES)
+        dropped = head + '-      "state": "quarantined",\n+      "state": "approved",\n-      "quarantine": {"by": "agent"},\n'
+        self.assertEqual(len(check_pr.check_quarantine(dropped)), 2)
+        lifted = head + ('-      "state": "quarantined",\n+      "state": "under-review",\n'
+                         '-      "quarantine": {"by": "agent"},\n'
+                         '+      "quarantine": {"by": "agent", "lifted": {"by": "owner"}},\n')
+        self.assertEqual(check_pr.check_quarantine(lifted), [])
+        elsewhere = dropped.replace(check_pr.CANDIDATES, "docs/other.json") + "\n"
+        self.assertEqual(check_pr.check_quarantine(elsewhere), [])
+
     def test_rename_out_of_a_guarded_folder_still_needs_its_flag(self):
         # Regression for the Codex re-review of #46 (session 01a20c1a).
         rename = ("diff --git a/.github/workflows/checks.yml b/old/checks.yml\nsimilarity index 100%\n"

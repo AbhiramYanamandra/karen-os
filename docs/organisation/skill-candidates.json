@@ -11,7 +11,7 @@
     "approve": {
       "sets_state": "approved",
       "required": ["decision", "by", "date", "reference", "approved_sha256", "scope", "grants"],
-      "rules": "approved_sha256 must equal the entry's tree_sha256. The approval covers that exact content and the stated scope (stages or projects) only. Any content change returns the entry to under-review. A remote connector has no local package (tree_sha256 null): its approval omits approved_sha256 and binds to the scope only, because the content cannot be pinned. source_commit is the full 40-character commit SHA the package was reviewed at; it may be null only with a source_commit_note, for a remote connector or an approval dated on or before source_commit_required_after. grants holds exactly the grant_fields, each a list; an empty list grants nothing. Only an approval with a non-empty activate grant may appear in the registry."
+      "rules": "approved_sha256 must equal the entry's tree_sha256. The approval covers that exact content and the stated scope (stages or projects) only. Any content change returns the entry to under-review. A remote connector has no local package (tree_sha256 null): its approval omits approved_sha256 and binds to the scope only, because the content cannot be pinned. source_commit is the full 40-character commit SHA the package was reviewed at; it may be null only with a source_commit_note, for a remote connector or an entry listed in source_commit_grandfathered (the approvals recorded before #47). grants holds exactly the grant_fields, each a list; an empty list grants nothing. Only an approval with a non-empty activate grant may appear in the registry."
     },
     "reject": {
       "sets_state": "rejected",
@@ -25,7 +25,7 @@
     }
   },
   "grant_fields": ["install", "activate", "permissions", "external_access"],
-  "source_commit_required_after": "2026-11-24",
+  "source_commit_grandfathered": ["tdd", "diagnosing-bugs", "thermo-nuclear-code-quality-review", "code-review", "ecc:security-review"],
   "grants_migration": "#47 added grants and source_commit to the ten approvals recorded before it, using only each approval's scope, tools and privileges and the numbered decisions in ponytail.md. The owner confirms them by merging that PR.",
   "quarantine_schema": {
     "sets_state": "quarantined",
@@ -520,9 +520,9 @@
         "scope": "Implementation (coding) stage, all KAREN-managed projects, Claude Code (full plugin) and Codex (skills and mode hooks), with owner decisions 1 to 9 as recorded in docs/organisation/ponytail.md",
         "source_commit": "7801d061243d7b753bad0e0b3c057cd250b11755",
         "grants": {
-          "install": ["claude-code: full plugin v5.3.3 from the upstream marketplace", "codex: skills and mode hooks, hooks trusted"],
+          "install": ["claude-code: full plugin v5.3.3 from the upstream marketplace", "codex: skills and mode hooks, hooks trusted, from the local marketplace pinned to the approved commit"],
           "activate": ["implement stage, all KAREN-managed projects"],
-          "permissions": ["SessionStart, SubagentStart and UserPromptSubmit hooks", "local ledger and board.html in the user config folder (ponytail.md decision 4a)", "one status-line edit to Claude Code settings.json (decision 8)", "transcript import across local Claude Code projects on request (decision 3)"],
+          "permissions": ["SessionStart, SubagentStart and UserPromptSubmit hooks", "mode-flag writes in the Claude Code config folder", "git ls-files repository map, up to 2,000 characters", "local ledger and board.html in the user config folder (ponytail.md decision 4a)", "one status-line edit to Claude Code settings.json (decision 8)", "transcript import across local Claude Code projects on request (decision 3)"],
           "external_access": []
         }
       },

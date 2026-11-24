@@ -7,7 +7,7 @@ Standing procedure, from the [approved design](../proposals/skill-onboarding.md)
 ## Rules
 
 - **No automatic trust.** Search ranking, stars, download counts, "already installed" and a clean scan are never evidence of safety, and are not recorded as such. Only the review record and an owner decision change a skill's state.
-- **Approval binds to content and provenance.** `approved_sha256` equals the package's `tree_sha256`, and `source_commit` is the full commit SHA it was reviewed at. A branch, tag or short SHA is not enough. The only exceptions are remote connectors, which have no package to pin, and the approvals recorded before #47, each with a `source_commit_note`.
+- **Approval binds to content and provenance.** `approved_sha256` equals the package's `tree_sha256`, and `source_commit` is the full commit SHA it was reviewed at. A branch, tag or short SHA is not enough. The only exceptions are remote connectors, which have no package to pin, and the five approvals recorded before #47 that are listed in `source_commit_grandfathered`, each with a `source_commit_note`. That list never grows.
 - **Each grant is separate.** An approval lists `grants.install` (runtimes and location), `grants.activate` (profiles and stages), `grants.permissions` (tools, scripts and writes) and `grants.external_access` (endpoints and credentials). An empty list grants nothing. Only a skill with an `activate` grant enters the registry.
 - **A skill never grants itself anything.** Instructions inside a skill to install more skills, change settings or hooks, or reach new endpoints are findings, not permissions.
 - **Missing skills.** A missing, quarantined or revoked mandatory skill holds its stage (`scripts/profiles.py` reports it). A missing recommended skill allows a fallback, disclosed in the PR.
@@ -32,12 +32,12 @@ Standing procedure, from the [approved design](../proposals/skill-onboarding.md)
 
 `tests/test_skill_candidates.py` checks the shape of every decision and quarantine record:
 
-- grants and a pinned commit are present;
+- grants and a pinned commit are present, and the registry's runtimes fall within each install grant;
 - an agent cannot lift a quarantine;
 - the registry holds only approved skills that have an `activate` grant;
 - only one approved entry exists per skill name;
 - a skill removed from the registry holds its stage.
 
-`tests/test_skill_review.py` shows that the scanner flags each synthetic abuse case in `tests/fixtures/skills/`. `scripts/check_pr.py` rejects a PR that lists a skill for a runtime its registry entry does not name.
+`tests/test_skill_review.py` shows that the scanner flags each synthetic abuse case in `tests/fixtures/skills/`, plus split or hidden override phrases, shipped config files and retargeted symlinks. `scripts/check_pr.py` fails a PR that lists a skill for a runtime its registry entry does not name. It also fails a PR that drops a quarantine record, or moves a skill out of quarantine without a `lifted` record.
 
-None of this proves who wrote a decision, which remains the owner's diff review and merge. Nor does it prove that a scan found everything, or that a model followed a skill's prose. An agent can also delete a quarantine record outright, and only review of the diff catches that.
+None of this proves who wrote a decision or a lift, which remains the owner's diff review and merge. Nor does it prove that a scan found everything, or that a model followed a skill's prose.

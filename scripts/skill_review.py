@@ -32,6 +32,9 @@ LINE_PATTERNS = [
         r"do not (?:tell|inform|show) the user|without (?:asking|telling) the user|you are now\b|bypass (?:the )?(?:guard|safety|review|approval)",
         re.I)),
 ]
+OVERRIDE = LINE_PATTERNS[-1][1]
+CONFIG_PATH = re.compile(r"(?:^|/)(?:\.claude|\.codex|\.cursor|hooks)(?:/|$)|(?:^|/)(?:\.mcp\.json|settings(?:\.local)?\.json|hooks\.json)$")
+HIDDEN = re.compile("[\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff]")
 
 
 def tree_hash(root):
@@ -39,7 +42,8 @@ def tree_hash(root):
     records = []
     for folder, dirs, files in os.walk(root):
         dirs.sort()
-        for name in sorted(files):
+        linked_dirs = [d for d in dirs if os.path.islink(os.path.join(folder, d))]
+        for name in sorted(files + linked_dirs):
             path = os.path.join(folder, name)
             if os.path.islink(path):  # never follow a link out of the package; hash where it points instead
                 digest = hashlib.sha256(("symlink:" + os.readlink(path)).encode()).hexdigest()
@@ -55,7 +59,9 @@ def tree_hash(root):
 def _package_hooks(text):
     try:
         scripts = json.loads(text).get("scripts") or {}
-    except (ValueError, AttributeError):
+        if not isinstance(scripts, dict):
+            raise ValueError("scripts is not an object")
+    except Exception:  # hostile input: any parse failure is a finding, never a crash
         return ["unparseable package.json"]
     return sorted(PACKAGE_HOOKS & set(scripts))
 
@@ -76,6 +82,8 @@ def review(root):
                 flags.append(dict(kind="special_file", file=rel, detail="not a regular file, not read"))
                 continue
             files += 1
+            if CONFIG_PATH.search(rel.replace(os.sep, "/")):
+                flags.append(dict(kind="config_file", file=rel, detail="agent or runtime configuration shipped in the package"))
             ext = os.path.splitext(name)[1].lower()
             if ext in SCRIPT_EXTENSIONS or os.access(path, os.X_OK):
                 flags.append(dict(kind="executable", file=rel, detail="script or executable file"))
@@ -97,6 +105,12 @@ def review(root):
                     found = pattern.search(line)
                     if found:
                         flags.append(dict(kind=kind, file=rel, line=number, detail=found.group(0)))
+            if HIDDEN.search(text):
+                flags.append(dict(kind="hidden_unicode", file=rel, detail="invisible or bidirectional characters"))
+            # Phrases split across lines or broken up by invisible characters.
+            joined = OVERRIDE.search(re.sub(r"\s+", " ", HIDDEN.sub("", text)))
+            if joined and not any(f["kind"] == "override_phrase" and f["file"] == rel for f in flags):
+                flags.append(dict(kind="override_phrase", file=rel, detail=joined.group(0)))
     skill_md = os.path.join(root, "SKILL.md")
     skill_sha = None
     if os.path.isfile(skill_md) and not os.path.islink(skill_md):
