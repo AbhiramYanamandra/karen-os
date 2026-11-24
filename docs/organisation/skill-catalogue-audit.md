@@ -63,14 +63,29 @@ Recorded in each entry's `owner_decision` in [`skill-candidates.json`](skill-can
 
 | Entry | Decision |
 |---|---|
-| `ui-ux-pro-max@shared-agents-skills` | Approved: one shared copy of the v2.15.0 generic render. Install pending: symlink the Claude user folder to it. |
+| `ui-ux-pro-max@shared-agents-skills` | Approved: one shared copy of the v2.15.0 generic render. Installed: the Claude user folder links to it. |
 | `ui-ux-pro-max@claude-user-skills` | Rejected: superseded by the shared copy. |
 | `unslop` | Approved at `182f2ce4`, with examples. Mandatory for LinkedIn drafts. |
-| `principle-prove-it-works` | Approved at `2f87c854`. Install pending: the local copy is still `182f2ce4`. |
+| `principle-prove-it-works` | Approved at `2f87c854`. Installed. |
 | `tdd`, `diagnosing-bugs`, `code-review` | Approved. `code-review` takes the GitHub issue as its spec. |
 | `thermo-nuclear-code-quality-review` | Approved for high-impact review only, alongside a correctness and security review. |
 | `ecc:security-review` | Approved as a checklist only. Its dependency-changing steps need their own approval. |
 | `figma` | Approved: read and write tools in **all** Figma projects, broader than the named-projects recommendation. Remote and unpinned, so the approval binds to scope only. |
+
+### Install record (24 November 2026)
+
+| Step | Result |
+|---|---|
+| Backups | The Claude render of `ui-ux-pro-max` and the `182f2ce4` prove-it-works SKILL.md were copied, byte-identical, to a backup folder under the Claude config folder (outside every skill folder) |
+| `ui-ux-pro-max` | The Claude user-folder directory was replaced by a relative symlink to the shared copy, the same style as the other shared skills |
+| `principle-prove-it-works` | The shared SKILL.md was replaced with the read-only upstream fetch at `2f87c854`, after its SHA-256 matched |
+| Hashes | All seven approved local skills hash to their `approved_sha256` through both the Claude user folder and the shared folder. The Codex user folder holds no copies under the same names |
+| Codex resolution | `codex debug prompt-input` (Codex 0.171.0) lists both skills from the shared folder |
+| Rollback | Remove the symlink and copy both backups back. Not rehearsed |
+
+**Risk: the Skills CLI lock does not pin a ref.** The home-level lock records `cursor/plugins` with no commit, so `npx skills update` would move `unslop` and `principle-prove-it-works` to upstream's default branch and break their approved hashes. Don't run it for these skills until a pinning method is chosen. `ui-ux-pro-max` has no lock entry.
+
+Not verified: an actual skill load in a new Claude Code or Codex session, and Claude Code's resolution beyond the filesystem symlink.
 
 The registry [`skills.json`](skills.json) is still empty. Promoting these entries into it is the separately reviewed repin described above.
 
