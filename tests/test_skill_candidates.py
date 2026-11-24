@@ -47,7 +47,7 @@ def approval_errors(entry, decision, data):
     errors = []
     commit = decision.get('source_commit', '')
     if commit is None:
-        legacy = entry['id'] in data['source_commit_grandfathered']
+        legacy = {'id': entry['id'], 'approved_sha256': decision.get('approved_sha256')} in data['source_commit_grandfathered']
         if not decision.get('source_commit_note') or not (legacy or entry['tree_sha256'] is None):
             errors.append('source_commit may be null only with a note, for a remote connector or a '
                           'grandfathered pre-#47 approval')
@@ -200,12 +200,15 @@ class SkillCandidates(unittest.TestCase):
             install = decided[entry['id']]['grants']['install']
             for runtime in entry['compatible_runtimes']:
                 with self.subTest(entry=entry['id'], runtime=runtime):
-                    self.assertTrue(any(runtime.replace('-', ' ') in g.replace('-', ' ') for g in install))
+                    self.assertTrue(any(re.search(r'(?<![\w-])%s(?![\w-])' % re.escape(runtime), g.split(':')[0]) for g in install))
 
     def test_grandfathered_list_is_closed(self):
         # Only approvals recorded before #47 may lack a commit; the list never grows.
-        self.assertEqual(self.data['source_commit_grandfathered'],
-                         ['tdd', 'diagnosing-bugs', 'thermo-nuclear-code-quality-review', 'code-review', 'ecc:security-review'])
+        listed = {g['id']: g['approved_sha256'] for g in self.data['source_commit_grandfathered']}
+        self.assertEqual(sorted(listed), sorted(['tdd', 'diagnosing-bugs', 'thermo-nuclear-code-quality-review', 'code-review', 'ecc:security-review']))
+        for entry in self.entries:
+            if entry['id'] in listed:
+                self.assertEqual(listed[entry['id']], entry['owner_decision']['approved_sha256'])
 
 
 class OwnerDecisionSchema(unittest.TestCase):
@@ -274,6 +277,9 @@ class OwnerDecisionSchema(unittest.TestCase):
         self.assertTrue(self.errors('approved', dict(unpinned, date='1999-01-01')))
         self.entry['id'] = 'tdd'
         self.assertEqual(self.errors('approved', unpinned), [])
+        self.entry['tree_sha256'] = 'd' * 64  # re-approval of new content is not grandfathered
+        self.assertTrue(self.errors('approved', dict(unpinned, approved_sha256='d' * 64)))
+        self.entry['tree_sha256'] = self.hash
         self.assertTrue(self.errors('approved', dict(unpinned, source_commit_note='')))
 
 

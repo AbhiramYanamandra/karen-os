@@ -81,7 +81,7 @@
     {
       "id": "skill_onboarding",
       "path": "docs/organisation/skill-onboarding.md",
-      "sha256": "10841ae6cc9f2bdb20629dd16ca44a8c9bf59154477ef23959d9a408c8708be2",
+      "sha256": "7f19d915899bb7124e833d42a6d874339ed92635a9fa9e462314fadb4988a9c2",
       "required": true,
       "load_when": "Skill discovery, review, install, activation, update, quarantine or revocation",
       "startup_read": "on-demand"

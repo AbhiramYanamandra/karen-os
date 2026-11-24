@@ -11,7 +11,7 @@
     "approve": {
       "sets_state": "approved",
       "required": ["decision", "by", "date", "reference", "approved_sha256", "scope", "grants"],
-      "rules": "approved_sha256 must equal the entry's tree_sha256. The approval covers that exact content and the stated scope (stages or projects) only. Any content change returns the entry to under-review. A remote connector has no local package (tree_sha256 null): its approval omits approved_sha256 and binds to the scope only, because the content cannot be pinned. source_commit is the full 40-character commit SHA the package was reviewed at; it may be null only with a source_commit_note, for a remote connector or an entry listed in source_commit_grandfathered (the approvals recorded before #47). grants holds exactly the grant_fields, each a list; an empty list grants nothing. Only an approval with a non-empty activate grant may appear in the registry."
+      "rules": "approved_sha256 must equal the entry's tree_sha256. The approval covers that exact content and the stated scope (stages or projects) only. Any content change returns the entry to under-review. A remote connector has no local package (tree_sha256 null): its approval omits approved_sha256 and binds to the scope only, because the content cannot be pinned. source_commit is the full 40-character commit SHA the package was reviewed at; it may be null only with a source_commit_note, for a remote connector or an approval listed in source_commit_grandfathered by id and approved_sha256 (the approvals recorded before #47; a re-approval of new content needs a commit). grants holds exactly the grant_fields, each a list; an empty list grants nothing. Only an approval with a non-empty activate grant may appear in the registry."
     },
     "reject": {
       "sets_state": "rejected",
@@ -25,13 +25,19 @@
     }
   },
   "grant_fields": ["install", "activate", "permissions", "external_access"],
-  "source_commit_grandfathered": ["tdd", "diagnosing-bugs", "thermo-nuclear-code-quality-review", "code-review", "ecc:security-review"],
+  "source_commit_grandfathered": [
+    {"id": "tdd", "approved_sha256": "c0e3c506e8021b5682189e16a81287779b3da1eb2ba77d5803f64dc059bfe5f4"},
+    {"id": "diagnosing-bugs", "approved_sha256": "3314cd62e50cf688d13abdc4eb4cedcbcfdfe6f053fe3331f4a79928a0fe3c7f"},
+    {"id": "thermo-nuclear-code-quality-review", "approved_sha256": "cd5c56b63ea879a4c8fc2f48de61578760c75bfb6619364585fb764e014c288d"},
+    {"id": "code-review", "approved_sha256": "5cf1a4aca73fc2fc8eaeab0dbddf280b0a4e355d2243fab96abf549414789702"},
+    {"id": "ecc:security-review", "approved_sha256": "3e8de125b7177d6319aa237726f11b21c82894c275bd15ef58bd2f1a3e9b909d"}
+  ],
   "grants_migration": "#47 added grants and source_commit to the ten approvals recorded before it, using only each approval's scope, tools and privileges and the numbered decisions in ponytail.md. The owner confirms them by merging that PR.",
   "quarantine_schema": {
     "sets_state": "quarantined",
     "required": ["by", "date", "reason", "observed_sha256", "evidence"],
     "lift_required": ["by", "date", "reference"],
-    "rules": "Any agent or the owner may quarantine an entry from any state; this only lowers trust. The entry keeps its earlier owner_decision for the record, must leave the registry, and the profile resolver then treats the skill as missing. observed_sha256 is the hash seen, or null with the evidence explaining why. Only the owner lifts it: quarantine.lifted records by 'owner', date and reference, and the entry returns to under-review. A quarantine record stays on the entry after it is lifted."
+    "rules": "Any agent or the owner may quarantine an entry from any state; this only lowers trust. The entry keeps its earlier owner_decision for the record, must leave the registry, and the profile resolver then treats the skill as missing. observed_sha256 is the hash seen, or null with the evidence explaining why. Only the owner lifts it: quarantine.lifted records by 'owner', date and reference, and the entry leaves quarantine, normally to under-review. A lifted entry can return to approved only through an owner approve decision. A quarantine record stays on the entry after it is lifted."
   },
   "locations": {
     "shared-agents-skills": "User-level shared skill folder installed by the Skills CLI. Claude Code reaches it through symlinks in its user skill folder.",
@@ -42,7 +48,7 @@
     "codex-desktop-plugin": "Codex desktop curated plugin, enabled in the desktop app. Not listed by the Codex CLI's MCP configuration, which does not prove absence.",
     "plugin:ponytail@5.3.3": "Ponytail plugin, release v5.3.3, commit 7801d061. Installed on 2026-11-24 in Claude Code (user scope, upstream marketplace at tag v5.3.3) and in Codex (local one-entry marketplace pointing at upstream at that commit)."
   },
-  "hash_method": "skill_md_sha256 is SHA-256 of SKILL.md. tree_sha256 is SHA-256 over lines 'relative-path NUL file-sha256' in os.walk order: each directory's files sorted, then its subdirectories in sorted order. For a flat package this equals plain sorted order. upstream_match compares SKILL.md with the source repository's default branch on 2026-11-23. For a plugin, tree_sha256 covers its runtime files only: the .claude-plugin, .codex-plugin, hooks and skills folders, listed in pinned_files.",
+  "hash_method": "skill_md_sha256 is SHA-256 of SKILL.md. tree_sha256 is SHA-256 over lines 'relative-path NUL file-sha256' in os.walk order: each directory's files sorted, then its subdirectories in sorted order. scripts/skill_review.py never follows a symlink: a symlinked file or directory is hashed as 'symlink:' plus its target, a special file as 'special-file'. File modes are not hashed. For a flat package this equals plain sorted order. upstream_match compares SKILL.md with the source repository's default branch on 2026-11-23. For a plugin, tree_sha256 covers its runtime files only: the .claude-plugin, .codex-plugin, hooks and skills folders, listed in pinned_files.",
   "candidates": [
     {
       "id": "unslop",

@@ -91,8 +91,9 @@ class SkillReview(unittest.TestCase):
                 (pathlib.Path(tmp) / "SKILL.md").write_text(text, encoding="utf-8")
                 self.assertIn("override_phrase", skill_review.review(tmp)["flag_kinds"])
         with tempfile.TemporaryDirectory() as tmp:
-            (pathlib.Path(tmp) / "SKILL.md").write_text("safe\u202etext", encoding="utf-8")
-            self.assertIn("hidden_unicode", skill_review.review(tmp)["flag_kinds"])
+            for hidden in ("\u202e", "\u00ad", "\U000e0041"):
+                (pathlib.Path(tmp) / "SKILL.md").write_text("safe" + hidden + "text", encoding="utf-8")
+                self.assertIn("hidden_unicode", skill_review.review(tmp)["flag_kinds"], repr(hidden))
 
     def test_missing_folder_is_an_error(self):
         with self.assertRaises(ValueError):

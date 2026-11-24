@@ -5,8 +5,8 @@ Fails when:
 - the head branch is not `<type>/<issue>-<short-description>`;
 - the PR body links no issue with `Closes #<n>` or `Refs #<n>`;
 - the diff adds a home-directory path or a common secret pattern;
-- the diff drops a skill quarantine record, or moves a skill out of quarantine without
-  an owner lift (docs/organisation/skill-onboarding.md; attested: CI can't prove who lifted);
+- a skill quarantine record is removed or changed, or a skill leaves quarantine without
+  an owner `lifted` (docs/organisation/skill-onboarding.md; attested: CI can't prove who lifted);
 - the `karen-profile` block is missing or fails the workflow-profile checks
   (docs/proposals/pr-enforcement.md, revision 1). Each check is labelled there as
   verified (CI really checks it) or attested (CI only sees that the claim exists).
@@ -104,28 +104,38 @@ def check_diff(diff: str) -> list[str]:
 CANDIDATES = "docs/organisation/skill-candidates.json"
 
 
-def check_quarantine(diff: str) -> list[str]:
-    """Quarantine records stay on their entry; leaving quarantine needs a `lifted` record in the same diff."""
-    counts = {"-q": 0, "+q": 0, "-state": 0, "+lifted": 0}
-    current = None
-    for line in diff.split("\n"):
-        if line.startswith(("--- ", "+++ ")):
-            path = git_path(line[4:])
-            current = path if path != "/dev/null" else current
-        elif current == CANDIDATES and line[:1] in ("+", "-"):
-            sign, text = line[0], line[1:]
-            if '"quarantine"' in text:
-                counts[sign + "q"] += 1
-            if sign == "-" and '"state": "quarantined"' in text:
-                counts["-state"] += 1
-            if sign == "+" and '"lifted"' in text:
-                counts["+lifted"] += 1
+def check_quarantine(base: dict | None, head: dict | None) -> list[str]:
+    """Compare skill-candidates.json before and after: a quarantine record never disappears or
+    changes, except by gaining an owner `lifted`, and an entry leaves quarantine only once lifted."""
+    if not base or not head:
+        return []
+    after = {e.get("id"): e for e in head.get("candidates", [])}
     problems = []
-    if counts["-q"] > counts["+q"]:
-        problems.append("%s: a quarantine record was removed; records stay after an owner lift" % CANDIDATES)
-    if counts["-state"] > counts["+lifted"]:
-        problems.append("%s: a skill left quarantine without an owner `lifted` record" % CANDIDATES)
+    for old in base.get("candidates", []):
+        record = old.get("quarantine")
+        if not isinstance(record, dict):
+            continue
+        new = after.get(old.get("id"))
+        name = old.get("id")
+        if not isinstance(new, dict) or not isinstance(new.get("quarantine"), dict):
+            problems.append("%s: quarantine record for %s was removed; records stay after an owner lift" % (CANDIDATES, name))
+            continue
+        changed = new["quarantine"]
+        # An unlifted record may gain `lifted` and nothing else; a lifted record never changes.
+        unchanged = changed == record if record.get("lifted") else {k: v for k, v in changed.items() if k != "lifted"} == record
+        if not unchanged:
+            problems.append("%s: quarantine record for %s was changed; it may only gain an owner `lifted`" % (CANDIDATES, name))
+        lifted = changed.get("lifted")
+        if old.get("state") == "quarantined" and new.get("state") != "quarantined" and not (
+                isinstance(lifted, dict) and lifted.get("by") == "owner"):
+            problems.append("%s: %s left quarantine without `lifted` by the owner" % (CANDIDATES, name))
     return problems
+
+
+def candidates_at(ref: str) -> dict | None:
+    """skill-candidates.json at a git ref, or None when it doesn't exist there."""
+    shown = subprocess.run(["git", "show", "%s:%s" % (ref, CANDIDATES)], capture_output=True, text=True)
+    return json.loads(shown.stdout) if shown.returncode == 0 else None
 
 
 GIT_HEADER = re.compile(r'^diff --git ("(?:[^"\\]|\\.)*"|a/.*?) ("(?:[^"\\]|\\.)*"|b/.*)$')
@@ -280,18 +290,22 @@ def check_profile(branch: str, body: str, diff: str, repo: str | None = None, pr
     return problems
 
 
-def check(branch: str, body: str, diff: str, **profile_options) -> list[str]:
-    return check_branch(branch) + check_body(body) + check_diff(diff) + check_quarantine(diff) + check_profile(branch, body, diff, **profile_options)
+def check(branch: str, body: str, diff: str, base_ref: str | None = None, **profile_options) -> list[str]:
+    problems = check_branch(branch) + check_body(body) + check_diff(diff)
+    if base_ref and CANDIDATES in changed_files(diff):
+        head = Path(CANDIDATES)
+        problems += check_quarantine(candidates_at(base_ref), json.loads(head.read_text(encoding="utf-8")) if head.is_file() else None)
+    return problems + check_profile(branch, body, diff, **profile_options)
 
 
-def from_github_event(event_path: str) -> tuple[str, str, str, str]:
+def from_github_event(event_path: str) -> tuple[str, str, str, str, str]:
     with open(event_path, encoding="utf-8") as handle:
         event = json.load(handle)
     pr = event["pull_request"]
     base = pr["base"]["sha"]
     diff = subprocess.run(["git", "-c", "core.quotePath=false", "diff", "--no-color", base + "...HEAD"],
                           check=True, capture_output=True, text=True).stdout
-    return pr["head"]["ref"], pr.get("body") or "", diff, event["repository"]["full_name"]
+    return pr["head"]["ref"], pr.get("body") or "", diff, event["repository"]["full_name"], base
 
 
 def main(argv=None) -> int:
@@ -300,6 +314,7 @@ def main(argv=None) -> int:
     parser.add_argument("--body-file")
     parser.add_argument("--diff-file")
     parser.add_argument("--repo", help="OWNER/NAME, so a design approval must be a PR in this repository")
+    parser.add_argument("--base", help="base git ref, to compare skill quarantine records (CI uses the PR base)")
     args = parser.parse_args(argv)
     if args.branch is not None:
         def read(path):
@@ -307,15 +322,15 @@ def main(argv=None) -> int:
                 return ""
             with open(path, encoding="utf-8") as handle:
                 return handle.read()
-        body, diff, branch, repo = read(args.body_file), read(args.diff_file), args.branch, args.repo
+        body, diff, branch, repo, base = read(args.body_file), read(args.diff_file), args.branch, args.repo, args.base
         project = load_project_profile()
     else:
         event_path = os.environ.get("GITHUB_EVENT_PATH")
         if not event_path:
             parser.error("pass --branch, or run in GitHub Actions on a pull_request event")
-        branch, body, diff, repo = from_github_event(event_path)
+        branch, body, diff, repo, base = from_github_event(event_path)
         project = load_project_profile()
-    problems = check(branch, body, diff, repo=repo, project=project)
+    problems = check(branch, body, diff, base_ref=base, repo=repo, project=project)
     for problem in problems:
         print("::error::" + problem if os.environ.get("GITHUB_ACTIONS") else "error: " + problem)
     if not problems:

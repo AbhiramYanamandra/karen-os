@@ -34,7 +34,7 @@ LINE_PATTERNS = [
 ]
 OVERRIDE = LINE_PATTERNS[-1][1]
 CONFIG_PATH = re.compile(r"(?:^|/)(?:\.claude|\.codex|\.cursor|hooks)(?:/|$)|(?:^|/)(?:\.mcp\.json|settings(?:\.local)?\.json|hooks\.json)$")
-HIDDEN = re.compile("[\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff]")
+HIDDEN = re.compile("[\u00ad\u200b-\u200f\u202a-\u202e\u2060-\u2064\ufeff\U000e0000-\U000e007f]")
 
 
 def tree_hash(root):

@@ -25,7 +25,7 @@ Standing procedure, from the [approved design](../proposals/skill-onboarding.md)
    - upstream reports a compromise;
    - a load caused an unexpected side effect.
 
-   The skill also leaves `skills.json`, so its mandatory stages hold. Nothing is uninstalled automatically. Only the owner lifts a quarantine: `quarantine.lifted` records `by: owner`, the date and a reference, and the entry returns to `under-review`.
+   The skill also leaves `skills.json`, so its mandatory stages hold. Nothing is uninstalled automatically. Only the owner lifts a quarantine: `quarantine.lifted` records `by: owner`, the date and a reference, and the entry leaves quarantine, normally to `under-review`. Returning to `approved` needs its own owner approval.
 7. **Revoke.** The owner cites the earlier approval and its hash. The skill leaves the registry. Removing it from the owner's machine is a separate owner action.
 
 ## What the checks prove
@@ -40,4 +40,4 @@ Standing procedure, from the [approved design](../proposals/skill-onboarding.md)
 
 `tests/test_skill_review.py` shows that the scanner flags each synthetic abuse case in `tests/fixtures/skills/`, plus split or hidden override phrases, shipped config files and retargeted symlinks. `scripts/check_pr.py` fails a PR that lists a skill for a runtime its registry entry does not name. It also fails a PR that drops a quarantine record, or moves a skill out of quarantine without a `lifted` record.
 
-None of this proves who wrote a decision or a lift, which remains the owner's diff review and merge. Nor does it prove that a scan found everything, or that a model followed a skill's prose.
+The tree hash does not include file modes, so a file made executable after approval is not hash drift. The scanner flags executables at review time. None of this proves who wrote a decision or a lift, which remains the owner's diff review and merge. Nor does it prove that a scan found everything, or that a model followed a skill's prose.

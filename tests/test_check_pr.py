@@ -220,16 +220,30 @@ class ProfileTests(unittest.TestCase):
         incompatible = [dict(s, runtime="cursor") if s["id"] == "code-review" else s for s in FEATURE["skills"]]
         self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=incompatible))), "code-review is not approved for runtime cursor")
 
-    def test_quarantine_cannot_be_dropped_or_lifted_without_an_owner_record(self):
-        head = "diff --git a/{0} b/{0}\n--- a/{0}\n+++ b/{0}\n@@ -1,4 +1,4 @@\n".format(check_pr.CANDIDATES)
-        dropped = head + '-      "state": "quarantined",\n+      "state": "approved",\n-      "quarantine": {"by": "agent"},\n'
-        self.assertEqual(len(check_pr.check_quarantine(dropped)), 2)
-        lifted = head + ('-      "state": "quarantined",\n+      "state": "under-review",\n'
-                         '-      "quarantine": {"by": "agent"},\n'
-                         '+      "quarantine": {"by": "agent", "lifted": {"by": "owner"}},\n')
-        self.assertEqual(check_pr.check_quarantine(lifted), [])
-        elsewhere = dropped.replace(check_pr.CANDIDATES, "docs/other.json") + "\n"
-        self.assertEqual(check_pr.check_quarantine(elsewhere), [])
+    def test_quarantine_records_cannot_be_dropped_changed_or_lifted_by_an_agent(self):
+        record = {"by": "agent", "date": "2026-12-02", "reason": "drift", "observed_sha256": None, "evidence": "scan"}
+        lift = {"by": "owner", "date": "2026-12-03", "reference": "https://example.invalid/lift"}
+
+        def data(state, quarantine, entry_id="tdd"):
+            return {"candidates": [{"id": entry_id, "state": state, "quarantine": quarantine}]}
+
+        base = data("quarantined", record)
+        cases = {
+            "removed": (data("approved", None), "was removed"),
+            "nulled": (data("quarantined", None), "was removed"),
+            "moved": (data("approved", record, entry_id="other"), "was removed"),
+            "edited": (data("quarantined", dict(record, reason="")), "was changed"),
+            "agent lift": (data("under-review", dict(record, lifted=dict(lift, by="agent"))), "without `lifted` by the owner"),
+            "no lift": (data("approved", record), "without `lifted` by the owner"),
+        }
+        for name, (head, text) in cases.items():
+            with self.subTest(case=name):
+                self.assertTrue(any(text in p for p in check_pr.check_quarantine(base, head)), check_pr.check_quarantine(base, head))
+        lifted = data("under-review", dict(record, lifted=lift))
+        self.assertEqual(check_pr.check_quarantine(base, lifted), [])
+        self.assertTrue(check_pr.check_quarantine(lifted, data("approved", dict(record, lifted=dict(lift, date="x")))))
+        self.assertEqual(check_pr.check_quarantine(lifted, data("approved", dict(record, lifted=lift))), [])
+        self.assertEqual(check_pr.check_quarantine(None, base), [])
 
     def test_rename_out_of_a_guarded_folder_still_needs_its_flag(self):
         # Regression for the Codex re-review of #46 (session 01a20c1a).
