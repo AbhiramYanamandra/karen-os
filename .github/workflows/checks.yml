@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, edited]  # edited: a changed PR description is checked again
 
 permissions:
   contents: read
@@ -34,6 +35,9 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read  # confirms a design approval PR is merged
     steps:
       - uses: actions/checkout@v5
         with:
@@ -41,5 +45,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Branch name, issue link, no home paths or secrets added
+      - name: Branch name, issue link, no home paths or secrets added, karen-profile checks
         run: python3 -B scripts/check_pr.py
+        env:
+          GH_TOKEN: ${{ github.token }}

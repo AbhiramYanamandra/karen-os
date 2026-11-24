@@ -283,6 +283,32 @@ def template_body(r) -> str:
     return FALLBACK_TEMPLATE.read_text(encoding="utf-8") if FALLBACK_TEMPLATE.is_file() else ""
 
 
+def profile_block(branch: str, project=None) -> str:
+    """A karen-profile block pre-filled from the resolver at low risk. The agent fills risk, flags and evidence."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import profiles
+    data = json.loads(profiles.PROFILES.read_text(encoding="utf-8"))
+    entries = json.loads(profiles.REGISTRY.read_text(encoding="utf-8")).get("entries", [])
+    hashes = {e["id"]: e.get("sha256") for e in entries if e.get("approval_status") == "approved"}
+    kind = branch.split("/", 1)[0]
+    result = profiles.resolve(data, kind, "low", project=project, registry=set(hashes))
+    skills = [{"id": s, "stage": stage, "sha256": hashes.get(s), "runtime": "", "evidence": ""}
+              for stage, info in result["stages"].items() for s, lvl in info["skills"].items() if lvl == "required"]
+    block = {"type": kind, "risk": "low", "flags": [], "design_approval": "", "skills": skills,
+             "review": {"by": "", "session": "", "findings": ""}, "tests": [], "owner_interventions": 0, "exceptions": []}
+    return "```karen-profile\n" + json.dumps(block, indent=2) + "\n```\n"
+
+
+def with_profile(body: str, branch: str, project=None) -> str:
+    """Add a pre-filled karen-profile block under `## Profile`, or as a new section, unless one is there."""
+    if "```karen-profile" in body:
+        return body
+    m = re.search(r"(?m)^## Profile[^\n]*\n", body)
+    if m:
+        return body[:m.end()] + "\n" + profile_block(branch, project) + body[m.end():]
+    return body.rstrip() + "\n\n## Profile\n\n" + profile_block(branch, project)
+
+
 def cmd_pr(r, board, a, **_):
     repo, default = repo_info(r)
     branch = r.run("git", "branch", "--show-current").strip()
@@ -295,6 +321,8 @@ def cmd_pr(r, board, a, **_):
     else:
         body = template_body(r)
     body = with_issue_link(body, a.issue, a.refs)
+    karen = Path(r.run("git", "rev-parse", "--show-toplevel").strip()) / ".karen" / "profile.json"
+    body = with_profile(body, branch, json.loads(karen.read_text(encoding="utf-8")) if karen.is_file() else None)
     body = add_timing(body, "- Started: %s" % (claim_time(issue.get("comments")) or "not recorded"))
     r.run("git", "push", "-u", "origin", branch)
     out = r.run("gh", "pr", "create", "--draft", "--base", default, "--head", branch,
