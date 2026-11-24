@@ -218,6 +218,15 @@ class ProfileTests(unittest.TestCase):
         optional = FEATURE["skills"] + [dict(skill("tdd", "implement"), evidence="")]
         self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=optional))), "tdd has no load evidence")
 
+    def test_rename_out_of_a_guarded_folder_still_needs_its_flag(self):
+        # Regression for the Codex re-review of #46 (session 01a20c1a).
+        rename = ("diff --git a/.github/workflows/checks.yml b/old/checks.yml\nsimilarity index 100%\n"
+                  "rename from .github/workflows/checks.yml\nrename to old/checks.yml\n")
+        self.assertEqual(check_pr.changed_files(rename), {".github/workflows/checks.yml", "old/checks.yml"})
+        self.assertIn("needs flag 'ci_change'", self.check(profile(), branch="chore/9-x", diff=rename)[0])
+        moved = "diff --git a/docs/organisation/engineering.md b/docs/old.md\nrename from x\nrename to y\n"
+        self.assertIn("needs flag 'pinned_policy'", self.check(profile(), branch="chore/9-x", diff=moved)[0])
+
     def test_workflow_rechecks_edited_descriptions(self):
         workflow = (ROOT / ".github/workflows/checks.yml").read_text()
         self.assertRegex(workflow, r"pull_request:\n\s+types: \[[^\]]*\bedited\b")

@@ -12,8 +12,8 @@ import sys
 
 FONT_FAMILY = re.compile(r"font-family\s*:\s*([^;}]+)", re.I)
 FONT_SHORTHAND = re.compile(r"(?<![-\w])font\s*:\s*([^;}]+)", re.I)
-# In the `font` shorthand the family list follows the size, optionally with /line-height.
-SIZE_THEN_FAMILY = re.compile(r"(?:^|\s)[0-9.]+[a-z%]*(?:/\S+)?\s+(.+)$", re.I)
+# In the `font` shorthand the family list follows the size (a length with a unit, so a bare weight like 400 isn't one).
+SIZE_THEN_FAMILY = re.compile(r"(?:^|\s)[0-9.]+(?:px|r?em|%|pt|pc|in|cm|mm|ex|ch|vw|vh|vmin|vmax|q)(?:/\S+)?\s+(.+)$", re.I)
 KEYWORDS = {"inherit", "initial", "unset", "revert", "caption", "icon", "menu", "message-box", "small-caption", "status-bar"}
 
 

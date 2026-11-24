@@ -35,6 +35,7 @@ class FontHookTests(unittest.TestCase):
         self.assertIn("'Times New Roman'", out)
         self.assertEqual(self.run_hook("p { font: 16px Helvetica, sans-serif; } a { font: inherit; }")[0], 0)
         self.assertEqual(self.run_hook("p { font: weird; }")[0], 1)
+        self.assertEqual(self.run_hook("p { font: 400 16px Helvetica; } b { font: bold 1.2em/2 Arial; }")[0], 0)
 
     def test_approved_fonts_pass(self):
         self.assertEqual(self.run_hook("body{font-family:Helvetica, Arial, sans-serif}")[0], 0)

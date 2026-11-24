@@ -99,16 +99,16 @@ def check_diff(diff: str) -> list[str]:
     return problems
 
 
+GIT_HEADER = re.compile(r'^diff --git ("(?:[^"\\]|\\.)*"|a/.*?) ("(?:[^"\\]|\\.)*"|b/.*)$')
+
+
 def changed_files(diff: str) -> set[str]:
+    """Source and destination of every changed file, so a rename out of a guarded folder still counts."""
     files = set()
     for line in diff.splitlines():
-        if not line.startswith("diff --git "):
-            continue
-        rest = line[len("diff --git "):]
-        if rest.endswith('"') and ' "b/' in rest:
-            files.add(git_path(rest[rest.rindex(' "b/') + 1:]))
-        elif " b/" in rest:
-            files.add(rest.split(" b/", 1)[1])
+        found = GIT_HEADER.match(line)
+        if found:
+            files.update(git_path(token) for token in found.groups())
     return files
 
 
