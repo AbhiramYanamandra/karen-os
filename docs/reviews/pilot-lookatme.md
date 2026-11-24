@@ -80,11 +80,11 @@ From claim to three ready PRs took about 23 minutes. Another 6 minutes went on r
 
 ## Proposed follow-ups
 
-1. Make `pipeline.py pr` run `profiles.py resolve` with the declared type, risk and flags, and refuse when the PR profile's risk or required skills fall short. This would have caught both profile mistakes.
-2. Define a design-approval format for Figma: file key, node, version ID where the owner saved one, and the owner's quoted reply. Accept it in `check_pr.py` alongside a merged design PR.
-3. Decide whether reviewer subagents spawned by the implementing session count as "a different session" for medium-risk review, and write the answer into the engineering standard.
-4. Add to the design SOP: read the existing components before recommending a feature.
-5. Make `check_pr.py` and `profiles.resolve` report a malformed `exceptions` entry instead of crashing.
-6. LookAtMe: choose a way to render-test components (for example an existing transform, or a check against the built HTML) before the next UI issue.
+1. Make `pipeline.py pr` run `profiles.py resolve` with the declared type, risk and flags, and refuse when the PR profile's risk or required skills fall short. This would have caught both profile mistakes. Filed as [#70](https://github.com/AbhiramYanamandra/karen-os/issues/70).
+2. Define a design-approval format for Figma: file key, node, version ID where the owner saved one, and the owner's quoted reply. Accept it in `check_pr.py` alongside a merged design PR. Filed as [#71](https://github.com/AbhiramYanamandra/karen-os/issues/71).
+3. Decide whether reviewer subagents spawned by the implementing session count as "a different session" for medium-risk review, and write the answer into the engineering standard. Filed as [#72](https://github.com/AbhiramYanamandra/karen-os/issues/72).
+4. Add to the design SOP: read the existing components before recommending a feature. Filed as [#73](https://github.com/AbhiramYanamandra/karen-os/issues/73).
+5. Make `check_pr.py` and `profiles.resolve` report a malformed `exceptions` entry instead of crashing. Filed as [#74](https://github.com/AbhiramYanamandra/karen-os/issues/74).
+6. LookAtMe: choose a way to render-test components (for example an existing transform, or a check against the built HTML) before the next UI issue. Filed as [LookAtMe #10](https://github.com/AbhiramYanamandra/LookAtMe/issues/10).
 
-None is filed as an issue yet. Each needs the owner's choice.
+Each is filed with `status:needs-owner`, so the owner decides when each is ready.
