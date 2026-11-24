@@ -57,7 +57,7 @@
         "decision": "approve",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "approved_sha256": "5130167c26bf872171c7341470f556389ad035e63a1aea0e19146741212cb0ab",
         "scope": "Writing stage: mandatory for LinkedIn drafts before owner editorial review, in Claude Code and Codex. Pinned at 182f2ce4 (with examples); the exact-text approval for posting still applies."
       }
@@ -84,7 +84,7 @@
         "decision": "approve",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "approved_sha256": "c0e3c506e8021b5682189e16a81287779b3da1eb2ba77d5803f64dc059bfe5f4",
         "scope": "Bugs-and-tests stage, all KAREN-managed projects, Claude Code and Codex."
       }
@@ -131,7 +131,7 @@
         "decision": "approve",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "approved_sha256": "3314cd62e50cf688d13abdc4eb4cedcbcfdfe6f053fe3331f4a79928a0fe3c7f",
         "scope": "Bugs-and-tests stage, all KAREN-managed projects, Claude Code and Codex."
       }
@@ -158,7 +158,7 @@
         "decision": "approve",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "approved_sha256": "ab32f9f23e4c3cb87ad42ddd62d44b08b5b777a576e89456f52d515a2d1abe8b",
         "scope": "Verification stage, all KAREN-managed projects, Claude Code and Codex. Pinned at 2f87c854."
       }
@@ -205,7 +205,7 @@
         "decision": "approve",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "approved_sha256": "cd5c56b63ea879a4c8fc2f48de61578760c75bfb6619364585fb764e014c288d",
         "scope": "High-impact review stage only, paired with a correctness and security review. Claude Code and Codex."
       }
@@ -232,7 +232,7 @@
         "decision": "approve",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "approved_sha256": "5cf1a4aca73fc2fc8eaeab0dbddf280b0a4e355d2243fab96abf549414789702",
         "scope": "Review stage, all KAREN-managed projects, Claude Code and Codex. The spec source is the GitHub issue, not the setup skill's tracker."
       }
@@ -259,7 +259,7 @@
         "decision": "approve",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "approved_sha256": "3e8de125b7177d6319aa237726f11b21c82894c275bd15ef58bd2f1a3e9b909d",
         "scope": "Security stage, as a checklist only, Claude Code (ECC plugin 2.2.3). Its npm audit fix and npm update steps need their own approval."
       }
@@ -346,7 +346,7 @@
         "decision": "reject",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "reason": "Owner chose one shared copy of the v2.15.0 generic render. This Claude render is to be replaced by a symlink to the shared copy, so one name resolves to one hash in both runtimes."
       }
     },
@@ -372,7 +372,7 @@
         "decision": "approve",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "approved_sha256": "266d7be8b1809c2570cd4ab171b250295c7348c918752d71bc39ea0097cc720b",
         "scope": "UI design stage, all KAREN-managed projects, Claude Code and Codex from this one copy. The Claude user folder is to be symlinked to it (#51 install, pending)."
       }
@@ -511,7 +511,7 @@
         "decision": "approve",
         "by": "owner",
         "date": "2026-11-24",
-        "reference": "REF",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
         "scope": "UI design stage, Claude Code (hosted connector) and Codex desktop (curated plugin). Read and write tools in all Figma projects. Remote and unpinned. Substantial UI work still waits for owner approval of an exact design revision."
       }
     }
