@@ -12,7 +12,7 @@ GitHub holds the queue, the review and the history. The work happens in a local 
 2. **Pick.** Work on the issue the owner names. Otherwise take the open `status:ready` issue with the highest priority (`P0` first), then the oldest. Skip `status:blocked`, `status:needs-owner` and anything already claimed.
 3. **Claim.** Replace `status:ready` with `status:in-progress` and comment with the agent, the session or machine, and the branch name. One worker per issue. Check for an existing claim before starting.
 4. **Branch.** From the current default branch, create `<type>/<issue>-<short-description>`.
-5. **Work.** Run the KAREN OS startup check and follow [Context retrieval](policy.md#context-retrieval) for the issue, linked plan and any additional reads. Follow drift checks and STOP conditions. Commit in small, logical steps.
+5. **Work.** Run the KAREN OS startup check and follow [Context retrieval](policy.md#context-retrieval) for the issue, linked plan and any additional reads. Follow the [plan baseline guidance](#plans), drift checks and STOP conditions. Before moving, renaming or deleting files, check whether any open issue or plan's scope or drift check covers them. Reconcile affected references and any required approvals before the change. Commit in small, logical steps.
 6. **Pull request.** Push the branch and open a PR using the template, with `Closes #<issue>`. Open it as a draft until CI passes and the self-check is done, then mark it ready and move the issue to `status:in-review`.
 7. **Review and merge.** The owner reviews, tests and merges. Merging is the code approval and closes the issue. Agents never merge.
 8. **After merge.** GitHub deletes the branch automatically. The agent runs `git fetch --prune` and deletes its local copy of the branch. File deferred or follow-up work as new issues.
@@ -111,6 +111,17 @@ Every project uses the set in `docs/templates/github/labels.json`: priorities `P
 ## Plans
 
 A large piece of work may keep a detailed plan file in the repository. The issue links to it and stays the tracking record for priority, status and discussion.
+
+A plan's drift check uses its **last approved baseline**, with the exact commit SHA, plan revision, approval reference and expected paths recorded together. The task's starting commit and the latest `main` are not substitutes for that baseline. Compare current changes with the recorded baseline, including both paths of a rename and untracked files. Reconcile unexpected changes under the plan's STOP conditions. Update the baseline only after the owner accepts the affected plan revision, retaining the prior baseline and its approval in history.
+
+For example, approved plan revision 2 records `<approved-sha>` and expects changes to `src/widget.py` and `tests/test_widget.py`. Run:
+
+```sh
+git diff --name-status <approved-sha> --
+git status --short
+```
+
+If the output also shows `docs/archive.png` moved, check the open issues and plans that reference it. Reconcile the move before continuing; a passing build does not resolve plan drift. If the owner accepts revision 3, record its approved baseline SHA, approval reference and expected paths instead of silently replacing `<approved-sha>` with the latest commit.
 
 ## Working from anywhere
 
