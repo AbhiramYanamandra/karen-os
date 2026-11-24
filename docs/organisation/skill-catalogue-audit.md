@@ -1,7 +1,7 @@
 # Skill catalogue audit
 
 **Issue:** [#44](https://github.com/AbhiramYanamandra/karen-os/issues/44), part of [epic #43](https://github.com/AbhiramYanamandra/karen-os/issues/43). **Charter slice:** PR A in the [engineering organisation charter](../engineering-organisation-charter.md).
-**Status:** Agent self-review dated 2026-11-23. It is not an independent review. Nothing here approves, installs or revokes a skill.
+**Status:** Agent self-review dated 2026-11-23, updated on 2026-11-24 for [#51](https://github.com/AbhiramYanamandra/karen-os/issues/51) (see "Follow-up findings"). It is not an independent review. Nothing here approves, installs or revokes a skill.
 **Data:** [`skill-candidates.json`](skill-candidates.json) holds one entry per candidate. Each entry records the source, the version, SHA-256 hashes, the licence, dependencies, tools, privileges, compatibility, the state, the recommendation and an empty `owner_decision`.
 
 The approved registry, [`skills.json`](skills.json), is unchanged and still has `entries: []`. It is hash-pinned in the context manifest, so filling it needs a separately reviewed repin once you approve entries.
@@ -31,7 +31,31 @@ No skill was invoked, installed, updated or given credentials. No local skill co
 
 **Invocation.** `unslop`, `tdd`, `thermo-nuclear-code-quality-review` and `principle-prove-it-works` set `disable-model-invocation: true`. The model cannot select them on its own. A stage that makes one of them mandatory must load it explicitly, either from the lifecycle profile in PR B or from the pipeline. Agent judgement can't be relied on to pick them up.
 
-**Not found.** Ponytail is not installed anywhere and appears in no lock file. Figma is available only as a hosted MCP connector. The `/figma-use` skill it names has no local package to inspect.
+**Not found (23 November).** Ponytail is not installed anywhere and appears in no lock file. Figma is available only as a hosted MCP connector. The `/figma-use` skill it names has no local package to inspect. *Superseded on 24 November: see "Follow-up findings". Ponytail's source is now identified, and Figma is also enabled in Codex desktop.*
+
+## Follow-up findings (#51, 24 November 2026)
+
+**Ponytail.** The source is `DietrichGebert/ponytail` (MIT). The owner chose the **full plugin**: hooks, ledger, cost and token tracking, transcript import, board, extra skills and webhook. The catalogue entry `ponytail-plugin` pins the 30 runtime files at `ebd8654c` (recommended) and records `v5.3.3` as the alternative. [`ponytail.md`](ponytail.md) holds the data inventory, precedence rules, install, verification and rollback plan, and the nine owner decisions. It is not installed.
+
+**ui-ux-pro-max.** Both variants come from `nextlevelbuilder/ui-ux-pro-max-skill` v2.15.0 (`a38d04c3`, MIT). Their 67 non-SKILL files are byte-identical to that release. Each SKILL.md is the upstream installer's render of one template for a different target: Claude (55 KB, quick reference inlined) or generic (28 KB). Both stay on hold, because one name resolves to different content in each runtime. Proposal: one copy of the generic render, symlinked into the Claude user folder.
+
+**unslop and principle-prove-it-works.** Both match `cursor/plugins` commit `182f2ce4` byte for byte, with no local edits. Upstream `2f87c854` later shortened both, and for prove-it-works it removed the broken adapter link.
+
+**Figma.** It is enabled in Claude Code as the hosted connector and in **Codex desktop** as the curated plugin. A missing entry in the Codex CLI's MCP list reflects CLI configuration only, and doesn't show the desktop plugin is absent. Figma skills are served remotely and cannot be hash-pinned.
+
+**Runtime resolution** (observed on Claude Code 2.1.330 and Codex 0.171.0):
+
+| | Claude Code | Codex |
+|---|---|---|
+| Skill folders read | Claude user folder (shared skills arrive as symlinks), project `.claude/skills`, plugins (namespaced, such as `ecc:`) | Codex user folder, the shared folder, bundled system skills. It doesn't read the Claude user folder |
+| `ui-ux-pro-max` resolves to | The Claude user-folder copy (Claude render) | The shared copy (generic render) |
+| `disable-model-invocation: true` | Honoured. Hidden from the model and loaded through `/name` | **Ignored.** The rendered prompt (`codex debug prompt-input`) lists the skill as model-selectable |
+| Load evidence | Transcript line `Base directory for this skill: <path>`. It records the symlink path, with no hash | Session log shows a shell read of the SKILL.md path. No hash |
+| ECC plugin skills | Available | Not available |
+| Ponytail (when installed) | Full plugin: hooks, band, skills | Skills and mode hooks only. Hooks need trust |
+| Figma | Hosted connector | Desktop curated plugin |
+
+Neither runtime records a content hash at load time, so the load-receipt step in "Testing that a mandatory skill was loaded" has to hash the resolved file separately.
 
 ## Risky additions
 
@@ -51,7 +75,7 @@ Proposals only. Each one needs your approval of the pinned hash before it become
 |---|---|---|---|
 | All managed work | KAREN core: startup, engineering standard, project rules (already enforced) | | |
 | UI design | Figma connector plus a UI/UX guide, **on hold** until source, licence and a runtime test exist | `ui-styling` per project that uses shadcn | `design`. Both `ui-ux-pro-max` variants are unresolved, not chosen or excluded. |
-| Implementation | Ponytail, **on hold**: not installed | Project and language conventions | |
+| Implementation | Ponytail full plugin, **under review**: pinned, not installed, nine owner decisions open ([ponytail.md](ponytail.md)) | Project and language conventions | |
 | Bugs and tests | | `diagnosing-bugs`, `tdd` | `ecc:tdd-workflow` (duplicate, heavier) |
 | Verification | `principle-prove-it-works` after pinning | Project test and lint commands | `ecc:verification-loop` (npm-only, weaker secret scan) |
 | Review | `code-review` with the GitHub issue as its spec | | |
@@ -99,16 +123,17 @@ Proposed protocol for #46. None of it has been run here.
 ## Decisions for the owner
 
 1. Approve, reject or change each recommendation in `skill-candidates.json`. Each decision is recorded in that entry's `owner_decision` using the schema above, ideally in an owner-signed commit.
-2. Name Ponytail's source repository, or drop it from the charter's coding-stage rule.
-3. Say where each `ui-ux-pro-max` variant came from, so the licence and runtime resolution can be checked before either is considered.
-4. Decide whether the Figma connector's write tools are allowed for design work, and in which projects.
+2. ~~Name Ponytail's source repository.~~ Answered: `DietrichGebert/ponytail`, full plugin. Its nine remaining decisions are in [ponytail.md](ponytail.md).
+3. ~~Say where each `ui-ux-pro-max` variant came from.~~ Answered by the #51 follow-up (v2.15.0, MIT). Remaining decision: approve one copy of the generic render, with the Claude user folder symlinked to it.
+4. Decide whether Figma's write tools are allowed for design work, and in which projects. Figma is already enabled in Claude Code and Codex desktop, so no new connection is needed.
+4a. unslop: keep `182f2ce4` (with examples) or move to `2f87c854` (shorter). principle-prove-it-works: move to `2f87c854` (recommended).
 5. Decide whether to remove or disable the rejected skills locally. That is a change to your own machine, so this PR doesn't do it.
 6. Choose how decisions will be authenticated for #46: signed commits, a separate agent identity, or flagged decision PRs.
 
 ## Not covered
 
 - Of the 106 shared skills and 314 ECC skills, all but the candidates in this inventory were listed and not read. Only the candidates named in #44 were reviewed. They include `ecc:coding-standards` and `create-verification-skill`.
-- Codex runtime resolution was not tested in a Codex session.
+- ~~Codex runtime resolution was not tested in a Codex session.~~ Observed in the #51 follow-up: see the runtime resolution table. Ponytail hook behaviour, timing and the webhook have not been run.
 - The meaning of the lock files' own `computedHash` values was not established. The hashes above are computed independently.
 - Whether a model follows a skill's prose cannot be proved by this inventory.
 - Recorded owner decisions are validated for shape only. Authenticity is left to #46.

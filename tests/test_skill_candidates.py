@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -85,6 +86,16 @@ class SkillCandidates(unittest.TestCase):
         self.assertNotEqual(variants[0]['tree_sha256'], variants[1]['tree_sha256'])
         for entry in variants:
             self.assertEqual((entry['state'], entry['recommendation']), ('under-review', 'hold'))
+
+    def test_pinned_files_reproduce_the_tree_hash(self):
+        for entry in self.entries:
+            files = entry.get('pinned_files')
+            if not files:
+                continue
+            with self.subTest(entry=entry['id']):
+                lines = ''.join('%s\0%s\n' % (path, files[path]) for path in sorted(files))
+                self.assertEqual(hashlib.sha256(lines.encode('utf-8')).hexdigest(), entry['tree_sha256'])
+                self.assertIn(entry['skill_md_sha256'], files.values())
 
     def test_no_private_paths(self):
         self.assertIsNone(HOME_PATH.search(self.text))
