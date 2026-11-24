@@ -1,8 +1,8 @@
 # Ponytail plugin: data, precedence and adoption plan
 
 **Issue:** [#51](https://github.com/AbhiramYanamandra/karen-os/issues/51), part of [epic #43](https://github.com/AbhiramYanamandra/karen-os/issues/43). **Catalogue entry:** `ponytail-plugin` in [`skill-candidates.json`](skill-candidates.json).
-**Status:** under review. Nothing is installed. The owner chose the **full plugin** on 23 November 2026, keeping every capability, including features that read session metadata, run hooks or send telemetry. Installation waits for the decisions at the end of this document.
-**Review:** agent self-review on 24 November 2026, from the upstream source read at both candidate commits. The owner chose `v5.3.3`. No plugin code was run.
+**Status:** **approved and installed** on 24 November 2026 ([approval](https://github.com/AbhiramYanamandra/karen-os/issues/51#issuecomment-7122275188), bound to the `v5.3.3` runtime tree hash). The owner chose the **full plugin** on 23 November 2026, keeping every capability, including features that read session metadata, run hooks or send telemetry. Results are under "Install record". Not yet in the registry (`skills.json`).
+**Review:** agent self-review on 24 November 2026, from the upstream source read at both candidate commits. The owner chose `v5.3.3`. The install and its checks were run on 24 November.
 
 ## Source and pin
 
@@ -56,7 +56,7 @@ Every hook runs Node with a 15-second timeout.
 | Claude config folder: `.ponytail-active`, `.ponytail-band`, `.ponytail-statusline-nudged`, a status-line script copy | Mode and display flags | Hooks |
 | System keychain | `webhookToken`, declared `sensitive` | Claude Code plugin configuration |
 
-Ponytail has **no built-in retention or pruning**. Rows stay until someone deletes them. Files take the default umask, and no permissions are set explicitly.
+Ponytail has **no built-in retention or pruning**. Rows stay until someone deletes them. Upstream creates the `band` folder owner-only (`0700`) and its files owner read and write (`0600`), as observed after install.
 
 ### Transmitted
 
@@ -118,7 +118,7 @@ This runs only after the owner's decisions are recorded.
 - Accept the status-line offer once (decision 8).
 
 **3. Codex.**
-- `codex plugin marketplace add DietrichGebert/ponytail` at the same ref, then `codex plugin add ponytail@ponytail`.
+- Upstream's Codex marketplace file installs `main`, even at the `v5.3.3` tag. To keep the pin (owner decision, 24 November), add a one-entry local marketplace that copies upstream's entry with `ref` set to `7801d061243d7b753bad0e0b3c057cd250b11755`, then `codex plugin add ponytail@ponytail`. Only the download pointer is local; the plugin files are upstream's.
 - The owner trusts both hooks in `/hooks`.
 - Expect skills and mode hooks only.
 
@@ -150,6 +150,24 @@ This runs only after the owner's decisions are recorded.
 - Delete `ponytail/band` only by owner choice: it holds the ledger history.
 - Confirm that no hooks remain in either runtime and that timing returns to the baseline.
 
+## Install record (24 November 2026)
+
+| Check | Result |
+|---|---|
+| Baseline | Claude Code 2.1.330, Codex 0.171.0, Node 24.15.0. No Ponytail marketplace, plugin, config folder or flags. No `statusLine` and no hooks in Claude Code `settings.json` |
+| Claude Code install | `claude plugin marketplace add <upstream git URL>#v5.3.3`. The clone is at `7801d061` (tag `v5.3.3`). `claude plugin install ponytail@ponytail`, user scope, defaults (ledger on, no webhook) |
+| Codex install | Local one-entry marketplace, then `codex plugin add ponytail@ponytail`. `codex plugin list` shows ref `7801d061` |
+| Pin | All 30 runtime files match `pinned_files` in both runtimes, with no extra runtime files |
+| Hook timing (20 runs each, karen-os) | SessionStart p50 69 ms, p95 90 ms. SubagentStart p95 25 ms. UserPromptSubmit p95 27 ms. All exit 0, empty stderr. Pass (p95 ≤ 1 s) |
+| Injection | SessionStart emits "PONYTAIL MODE ACTIVE — level: full" and the repository map. SubagentStart returns the same mode as `additionalContext` |
+| Ledger | One headless turn wrote one row to `karen-os.csv` and rebuilt `board.html`. The board loads no external URLs |
+| Network | No Ponytail plugin configuration is stored, so `webhookUrl` is empty and nothing is sent |
+| Codex skills | `codex debug prompt-input` lists `ponytail:ponytail-*` skills from the pinned install |
+
+Test side effects:
+- The hook runs and the headless turn each set `.ponytail-statusline-nudged` without adding a status line. The agent deleted that flag, so the first interactive session still makes the one offer the owner approved.
+- The ledger keeps the headless test row ("Reply with exactly: ok").
+
 ## Engineering HQ
 
 Ponytail doesn't talk to GitHub. These are options for a follow-up issue:
@@ -176,6 +194,10 @@ Remaining before install: the owner's go-ahead to install, recorded as an approv
 
 ## Not verified
 
-- Hook timing, ledger writes and webhook behaviour come from reading the code. None of it has been run.
-- Codex hook trust prompts and plugin paths come from documentation, and haven't been observed in a session.
-- Upstream `uninstall.js` was read but not run.
+- Codex hook trust: the owner still has to trust the two hooks in `/hooks`. Until then, Codex has the skills but not the mode hooks.
+- The status line: added only when the first interactive Claude Code session accepts Ponytail's offer.
+- Hook timing was measured by running the hook scripts directly, not inside a live session, and only in karen-os, not the largest project repository. No before-install prompt timing was taken.
+- The band was observed in one headless turn. An interactive session's band display was not.
+- Network silence comes from the empty webhook setting and from reading the code. Traffic was not captured.
+- The transcript import (`/ponytail band import`) was not run.
+- The rollback has not been rehearsed. Upstream `uninstall.js` was read but not run.

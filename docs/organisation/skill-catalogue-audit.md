@@ -35,7 +35,7 @@ No skill was invoked, installed, updated or given credentials. No local skill co
 
 ## Follow-up findings (#51, 24 November 2026)
 
-**Ponytail.** The source is `DietrichGebert/ponytail` (MIT). The owner chose the **full plugin**: hooks, ledger, cost and token tracking, transcript import, board, extra skills and webhook. The catalogue entry `ponytail-plugin` pins the 30 runtime files at the official release `v5.3.3` (owner decision, 24 November). [`ponytail.md`](ponytail.md) holds the data inventory, precedence rules, install, verification and rollback plan, and the owner decisions, all decided on 24 November. It is not installed: install needs the owner's go-ahead under its own task.
+**Ponytail.** The source is `DietrichGebert/ponytail` (MIT). The owner chose the **full plugin**: hooks, ledger, cost and token tracking, transcript import, board, extra skills and webhook. The catalogue entry `ponytail-plugin` pins the 30 runtime files at the official release `v5.3.3` (owner decision, 24 November). [`ponytail.md`](ponytail.md) holds the data inventory, precedence rules, install, verification and rollback plan, and the owner decisions, all decided on 24 November. **Approved and installed** on 24 November in both runtimes, hash-verified; see the install record in ponytail.md.
 
 **ui-ux-pro-max.** Both variants come from `nextlevelbuilder/ui-ux-pro-max-skill` v2.15.0 (`a38d04c3`, MIT). Their 67 non-SKILL files are byte-identical to that release. Each SKILL.md is the upstream installer's render of one template for a different target: Claude (55 KB, quick reference inlined) or generic (28 KB). Both stay on hold, because one name resolves to different content in each runtime. Proposal: one copy of the generic render, symlinked into the Claude user folder.
 
@@ -75,7 +75,7 @@ Proposals only. Each one needs your approval of the pinned hash before it become
 |---|---|---|---|
 | All managed work | KAREN core: startup, engineering standard, project rules (already enforced) | | |
 | UI design | Figma connector plus a UI/UX guide, **on hold** until source, licence and a runtime test exist | `ui-styling` per project that uses shadcn | `design`. Both `ui-ux-pro-max` variants are unresolved, not chosen or excluded. |
-| Implementation | Ponytail full plugin, **under review**: pinned (`v5.3.3`), decisions made, not installed ([ponytail.md](ponytail.md)) | Project and language conventions | |
+| Implementation | Ponytail full plugin, **under review**: **approved and installed** (`v5.3.3`), not yet in the registry ([ponytail.md](ponytail.md)) | Project and language conventions | |
 | Bugs and tests | | `diagnosing-bugs`, `tdd` | `ecc:tdd-workflow` (duplicate, heavier) |
 | Verification | `principle-prove-it-works` after pinning | Project test and lint commands | `ecc:verification-loop` (npm-only, weaker secret scan) |
 | Review | `code-review` with the GitHub issue as its spec | | |

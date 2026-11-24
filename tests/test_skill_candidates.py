@@ -69,8 +69,9 @@ class SkillCandidates(unittest.TestCase):
             with self.subTest(entry=entry['id']):
                 self.assertEqual(decision_errors(entry, self.data), [])
 
-    def test_this_audit_records_no_owner_decisions(self):
-        self.assertEqual([e['id'] for e in self.entries if e['owner_decision'] is not None], [])
+    def test_only_the_ponytail_install_is_owner_decided(self):
+        # #51: the owner approved the Ponytail v5.3.3 install on 2026-11-24. Every other entry stays a proposal.
+        self.assertEqual([e['id'] for e in self.entries if e['owner_decision'] is not None], ['ponytail-plugin'])
 
     def test_inspected_packages_carry_full_hashes(self):
         for entry in self.entries:
