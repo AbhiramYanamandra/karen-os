@@ -227,6 +227,18 @@ class ProfileTests(unittest.TestCase):
         moved = "diff --git a/docs/organisation/engineering.md b/docs/old.md\nrename from x\nrename to y\n"
         self.assertIn("needs flag 'pinned_policy'", self.check(profile(), branch="chore/9-x", diff=moved)[0])
 
+    def test_ambiguous_header_cannot_hide_a_rename_into_a_guarded_folder(self):
+        # Regression for the final Codex check of #46 (session 01a20c1e).
+        for verb in ("rename", "copy"):
+            diff = ("diff --git a/old b/name.yml b/.github/workflows/new.yml\nsimilarity index 100%%\n"
+                    "%s from old b/name.yml\n%s to .github/workflows/new.yml\n" % (verb, verb))
+            with self.subTest(verb=verb):
+                self.assertIn(".github/workflows/new.yml", check_pr.changed_files(diff))
+                self.assertIn("needs flag 'ci_change'", self.check(profile(), branch="chore/9-x", diff=diff)[0])
+        pinned = ("diff --git a/x b/y b/docs/organisation/engineering.md\n--- a/x b/y\n"
+                  "+++ b/docs/organisation/engineering.md\n@@ -1 +1 @@\n-a\n+b\n")
+        self.assertIn("needs flag 'pinned_policy'", self.check(profile(), branch="chore/9-x", diff=pinned)[0])
+
     def test_workflow_rechecks_edited_descriptions(self):
         workflow = (ROOT / ".github/workflows/checks.yml").read_text()
         self.assertRegex(workflow, r"pull_request:\n\s+types: \[[^\]]*\bedited\b")

@@ -70,12 +70,12 @@ def check_body(body: str) -> list[str]:
     return ["PR body links no issue: add `Closes #<issue>` (or `Refs #<issue>` for design gates)"]
 
 
-def git_path(token: str) -> str:
+def git_path(token: str, prefixed: bool = True) -> str:
     """A path as git prints it: `b/x`, or C-quoted `"b/caf\\303\\251"` for unusual names. Returns `x`."""
     token = token.strip()
     if token.startswith('"') and token.endswith('"'):
         token = codecs.escape_decode(token[1:-1].encode("utf-8"))[0].decode("utf-8", "replace")
-    return token[2:] if token[:2] in ("a/", "b/") else token
+    return token[2:] if prefixed and token[:2] in ("a/", "b/") else token
 
 
 def added_lines(diff: str):
@@ -102,13 +102,23 @@ def check_diff(diff: str) -> list[str]:
 GIT_HEADER = re.compile(r'^diff --git ("(?:[^"\\]|\\.)*"|a/.*?) ("(?:[^"\\]|\\.)*"|b/.*)$')
 
 
+PATH_LINES = ("rename from ", "rename to ", "copy from ", "copy to ")
+
+
 def changed_files(diff: str) -> set[str]:
-    """Source and destination of every changed file, so a rename out of a guarded folder still counts."""
+    """Source and destination of every changed file, so a rename out of a guarded folder still counts.
+
+    The `diff --git` header is ambiguous when a path contains " b/", so the one-path lines
+    (rename/copy from/to, ---/+++) are read too; the header only adds paths for mode-only changes."""
     files = set()
     for line in diff.splitlines():
         found = GIT_HEADER.match(line)
         if found:
             files.update(git_path(token) for token in found.groups())
+        elif line.startswith(PATH_LINES):
+            files.add(git_path(line.split(" ", 2)[2], prefixed=False))
+        elif line.startswith(("--- ", "+++ ")) and line[4:].strip() != "/dev/null":
+            files.add(git_path(line[4:]))
     return files
 
 
