@@ -4,7 +4,7 @@
 **Status:** Agent self-review dated 2026-11-23, updated on 2026-11-24 for [#51](https://github.com/AbhiramYanamandra/karen-os/issues/51) (see "Follow-up findings"). It is not an independent review. Nothing here approves, installs or revokes a skill.
 **Data:** [`skill-candidates.json`](skill-candidates.json) holds one entry per candidate. Each entry records the source, the version, SHA-256 hashes, the licence, dependencies, tools, privileges, compatibility, the state, the recommendation and an empty `owner_decision`.
 
-The approved registry, [`skills.json`](skills.json), is unchanged and still has `entries: []`. It is hash-pinned in the context manifest, so filling it needs a separately reviewed repin once you approve entries.
+The approved registry, [`skills.json`](skills.json), holds the ten approved entries, promoted on 24 November 2026 under #51 with a manifest repin to revision `engineering-2`.
 
 ## Method
 
@@ -87,7 +87,7 @@ Recorded in each entry's `owner_decision` in [`skill-candidates.json`](skill-can
 
 Not verified: an actual skill load in a new Claude Code or Codex session, and Claude Code's resolution beyond the filesystem symlink.
 
-The registry [`skills.json`](skills.json) is still empty. Promoting these entries into it is the separately reviewed repin described above.
+These entries are promoted into the registry [`skills.json`](skills.json), each with its hash, scope and decision reference. The manifest is repinned to revision `engineering-2`.
 
 ## Risky additions
 

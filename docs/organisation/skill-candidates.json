@@ -3,7 +3,7 @@
   "issue": "https://github.com/AbhiramYanamandra/karen-os/issues/44",
   "reviewed_on": "2026-11-23",
   "reviewer": "Claude Code (agent self-review; not an independent review)",
-  "note": "Candidate inventory only. It is not the approved registry: docs/organisation/skills.json is unchanged and still has no entries. 'state' is where a candidate is in review; 'recommendation' is the agent's proposal. Only an owner_decision may move a candidate to approved, rejected or revoked. A schema-valid owner_decision is not proof that the owner made it: see 'Owner decisions' in skill-catalogue-audit.md.",
+  "note": "Candidate inventory only. It is not the approved registry: docs/organisation/skills.json holds only the entries approved here, copied with their hashes and decision references. 'state' is where a candidate is in review; 'recommendation' is the agent's proposal. Only an owner_decision may move a candidate to approved, rejected or revoked. A schema-valid owner_decision is not proof that the owner made it: see 'Owner decisions' in skill-catalogue-audit.md.",
   "states": ["discovered", "under-review", "approved", "rejected", "revoked"],
   "owner_only_states": ["approved", "rejected", "revoked"],
   "recommendations": ["approve", "approve-with-conditions", "reject", "hold"],
