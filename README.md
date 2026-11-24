@@ -55,7 +55,7 @@ The detailed, durable handoff for this model—including LookAtMe design-first d
 
 ## Engineering HQ (GitHub Projects)
 
-[**KAREN OS | Engineering HQ**](https://github.com/users/AbhiramYanamandra/projects/1) is one public GitHub Project that shows open issues and pull requests from KAREN OS, the Macropad and LookAtMe side by side. Its four views are a status board, an all-work table, a Needs My Attention list and a roadmap. The repositories stay separate: the Project links to their items and never copies them.
+[**KAREN OS | Engineering HQ**](https://github.com/users/AbhiramYanamandra/projects/1) is one public GitHub Project that shows open issues and pull requests from KAREN OS, the Macropad and LookAtMe side by side. Its views are a status board, an all-work table, a roadmap of company initiatives, Ready to Execute, Blocked and Needs CEO Attention, each grouped by a Workstream field. The repositories stay separate: the Project links to their items and never copies them.
 
 ![GitHub Projects architecture: the Project shows issues and PRs from independent repositories; moving a card never starts an agent](docs/assets/github-projects-architecture.svg)
 
