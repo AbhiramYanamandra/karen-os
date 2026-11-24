@@ -581,7 +581,8 @@ karen-os/
 │   │   └── linkedin.md               Approved-only posting: checks, threat model, setup
 │   └── reviews/
 │       ├── candidate-audit.md        Pre-publication privacy and validation audit
-│       └── pilot-macropad.md         First engineering pilot: timeline, measurements, lessons
+│       ├── pilot-macropad.md         First engineering pilot: timeline, measurements, lessons
+│       └── pilot-lookatme.md         Design-to-PR pilot in LookAtMe: results, measurements, follow-ups
 ├── scripts/
 │   ├── startup.py                    Reads core and project context, assesses receipts
 │   ├── check_context.py              Verifies manifest, hashes and entry files
