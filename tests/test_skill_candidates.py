@@ -112,6 +112,17 @@ class SkillCandidates(unittest.TestCase):
     def test_no_private_paths(self):
         self.assertIsNone(HOME_PATH.search(self.text))
 
+    def test_registry_entries_match_their_owner_decisions(self):
+        registry = json.loads(REGISTRY.read_text(encoding='utf-8'))
+        decided = {e['id']: e for e in self.entries if e['state'] == 'approved'}
+        for entry in registry['entries']:
+            with self.subTest(entry=entry['id']):
+                self.assertEqual(set(registry['entry_requirements']) - entry.keys(), set())
+                self.assertEqual(entry['approval_status'], 'approved')
+                decision = decided[entry['id']]['owner_decision']
+                self.assertEqual(entry['sha256'], decision.get('approved_sha256'))
+                self.assertEqual(entry['approval_reference'], decision['reference'])
+
     def test_registry_lists_only_approved_candidates(self):
         approved = {e['id'] for e in self.entries if e['state'] == 'approved'}
         registry = json.loads(REGISTRY.read_text(encoding='utf-8'))

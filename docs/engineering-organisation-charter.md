@@ -93,7 +93,7 @@ A **skill** is a versioned set of instructions, assets, optional scripts and dep
 | Bugs and tests | Approved diagnosing-bugs/TDD/verification **selected by task** | Reproduction, regression evidence, tests and limitations |
 | Security-sensitive work | Risk-appropriate secure engineering and security testing **required** | Threats, checks and documented findings; no unapproved external scans |
 
-Names above are **owner preferences to be operationalised**, not claims of existing approved skill versions. The current `docs/organisation/skills.json` registry has `entries: []`. The provided local inventory lists many shared, Claude and Codex paths, but file names alone cannot establish the contents, licensing or equivalence of these installs.
+Names above are **owner preferences to be operationalised**, not claims of existing approved skill versions. When this charter was written, `docs/organisation/skills.json` had `entries: []`; #51 later promoted the owner-approved entries. The provided local inventory lists many shared, Claude and Codex paths, but file names alone cannot establish the contents, licensing or equivalence of these installs.
 
 **Proposed states:** discovered → under review → approved/pinned → installed/available → selected/loaded → verified in task → retired/revoked. Installed is not necessarily approved; a registered skill is not necessarily installed in a particular runtime; a named skill is not proof it was followed.
 

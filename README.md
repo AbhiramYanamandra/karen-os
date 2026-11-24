@@ -443,7 +443,7 @@ Approvals don't transfer just because a handoff exists. The receiving agent rech
 
 ### Skills and a reusable design system
 
-KAREN OS will keep a curated skills registry. Each entry records its purpose, suitable tasks, required tools, permissions, compatible agents and reviewed version. Agents load only the skills a task needs. They don't load hundreds of instructions or install unreviewed tools. The registry is empty today on purpose. The first audit of locally installed candidates, with proposals awaiting owner approval, is in [docs/organisation/skill-catalogue-audit.md](docs/organisation/skill-catalogue-audit.md). The Ponytail plugin review (data, precedence, install and rollback plan, open owner decisions) is in [docs/organisation/ponytail.md](docs/organisation/ponytail.md).
+KAREN OS will keep a curated skills registry. Each entry records its purpose, suitable tasks, required tools, permissions, compatible agents and reviewed version. Agents load only the skills a task needs. They don't load hundreds of instructions or install unreviewed tools. The registry holds the ten owner-approved, hash-pinned entries promoted in #51. The candidate audit and the owner's decisions are in [docs/organisation/skill-catalogue-audit.md](docs/organisation/skill-catalogue-audit.md). The Ponytail plugin review (data, precedence, install and rollback plan, owner decisions) is in [docs/organisation/ponytail.md](docs/organisation/ponytail.md).
 
 A shared design system of visual principles, tokens, interaction patterns and tested components will grow out of real projects. It won't start as a speculative component library. Web and native desktop apps can share principles without sharing implementation code.
 

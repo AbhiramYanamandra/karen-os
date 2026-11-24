@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "project_id": "karen-os",
-  "revision": "engineering-1",
-  "reviewed_on": "2026-11-23",
+  "revision": "engineering-2",
+  "reviewed_on": "2026-11-24",
   "architecture_disposition": "published-personal-first-architecture-review-pending",
   "freshness": "Compare hashes on every startup and before consequential action. Check current owner directions for revocation. Drift requires review, not automatic repinning.",
   "sources": [
@@ -73,7 +73,7 @@
     {
       "id": "skills",
       "path": "docs/organisation/skills.json",
-      "sha256": "6ef0ce5082faf729d0e7a4a6c8b4600f5452f5873bfcb94b215b8134f65bfe3e",
+      "sha256": "587b4ab2268205cd91532859ab0ff4fc7886b63416d85e25f44ff68f48e1683a",
       "required": true,
       "load_when": "Relevant skill selection; metadata before bodies",
       "startup_read": "on-demand"
