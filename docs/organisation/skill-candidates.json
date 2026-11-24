@@ -30,7 +30,8 @@
     "plugin:ecc@2.2.3": "ECC Claude Code plugin, version 2.2.3, git commit d2ef268059.",
     "remote-connector": "Hosted MCP connector. No local skill package to inspect.",
     "upstream-pinned": "Not installed. Fetched read-only from the upstream repository at a pinned commit for review. Nothing was executed.",
-    "codex-desktop-plugin": "Codex desktop curated plugin, enabled in the desktop app. Not listed by the Codex CLI's MCP configuration, which does not prove absence."
+    "codex-desktop-plugin": "Codex desktop curated plugin, enabled in the desktop app. Not listed by the Codex CLI's MCP configuration, which does not prove absence.",
+    "plugin:ponytail@5.3.3": "Ponytail plugin, release v5.3.3, commit 7801d061. Installed on 2026-11-24 in Claude Code (user scope, upstream marketplace at tag v5.3.3) and in Codex (local one-entry marketplace pointing at upstream at that commit)."
   },
   "hash_method": "skill_md_sha256 is SHA-256 of SKILL.md. tree_sha256 is SHA-256 over sorted lines 'relative-path NUL file-sha256'. upstream_match compares SKILL.md with the source repository's default branch on 2026-11-23. For a plugin, tree_sha256 covers its runtime files only: the .claude-plugin, .codex-plugin, hooks and skills folders, listed in pinned_files.",
   "candidates": [
@@ -357,7 +358,7 @@
     {
       "id": "ponytail-plugin",
       "source": "github:DietrichGebert/ponytail",
-      "location": "upstream-pinned",
+      "location": "plugin:ponytail@5.3.3",
       "version": "release v5.3.3, commit 7801d061243d7b753bad0e0b3c057cd250b11755 (owner-chosen 2026-11-24: the official release, run as upstream intended)",
       "skill_md_sha256": "9badd22a32e19cb884e46dfa8d3aae82bb81dfa5484105b8b4f0262df823a509",
       "tree_sha256": "5d64c155b77430005b735aa0d0348125a16ac2ae0e6d452bce81b4b497090395",
@@ -375,10 +376,17 @@
       "compatibility": "Claude Code: full plugin (two hook files, band, six skills). Codex: skills and claude-codex-hooks.json only, with no band, ledger, board, import or webhook, and each hook must be trusted in /hooks. Network: only the optional webhook (HTTPS, or plain HTTP to localhost), off by default. Credentials: only the optional webhook token, held in the system keychain. Writes outside the task: the ledger and board under the user config folder, plus mode flags in the Claude config folder. node:vm is used only to time-limit a regex test (100 ms). Data inventory and plan: docs/organisation/ponytail.md.",
       "duplicates": [],
       "stage": "implementation",
-      "state": "under-review",
+      "state": "approved",
       "recommendation": "approve-with-conditions",
       "rationale": "Owner decision 2026-11-23: full plugin, not skill-only, with every capability kept and subordinate to KAREN OS policy. Owner decisions 2026-11-24: pin release v5.3.3, unmodified; install in both runtimes with Codex hooks trusted; transcript import allowed; upstream-default ledger with no KAREN retention; no webhook; status line allowed; Engineering HQ option C (board only). Install still needs an owner approval bound to tree_sha256. Earlier conditions were the owner decisions in docs/organisation/ponytail.md: pinned ref, marketplace install in both runtimes, transcript scope, ledger location and retention, webhook destination, payload, token, status-line edit and the Engineering HQ option.",
-      "owner_decision": null,
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/issues/51#issuecomment-7122275188",
+        "approved_sha256": "5d64c155b77430005b735aa0d0348125a16ac2ae0e6d452bce81b4b497090395",
+        "scope": "Implementation (coding) stage, all KAREN-managed projects, Claude Code (full plugin) and Codex (skills and mode hooks), with owner decisions 1 to 9 as recorded in docs/organisation/ponytail.md"
+      },
       "pinned_files": {
         "hooks/ponytail-mode-tracker.js": "ab2a7d89a71fdbecd5ea4d12ffe980c2213b80fe112d623ca13ceac0258307e7",
         "hooks/ponytail-activate.js": "6e492e997aa3e01560046daaed288b1cf68c596cc2b227744ec8b9fbdb5a230a",
