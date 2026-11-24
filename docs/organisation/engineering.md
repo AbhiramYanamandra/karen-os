@@ -57,11 +57,11 @@ Example: `fix/12-combo-layer-cycle`. Where a project already has a different con
 
 ## Commits
 
-Conventional Commits: `type(scope): summary`, imperative, 72 characters or fewer. The body explains why and notes risk. The footer has `Refs #<issue>`. Each commit builds. Never commit secrets, build products or personal data.
+Conventional Commits: `type(scope): summary`, imperative, 72 characters or fewer. The summary says what the commit contains, never a result that was not observed. A commit that adds an empty test checklist is `docs(pad): add pad test checklist`, not `test(pad): record pad checks`. The body explains why and notes risk. The footer has `Refs #<issue>`. Each commit builds. Never commit secrets, build products or personal data.
 
 ## Pull requests
 
-One issue per PR. Split large plans into slices, each with its own issue and PR. Prefer PRs under about 400 changed lines, excluding generated files and assets, and explain larger ones. The PR body has:
+One issue per PR. Split large plans into slices, each with its own issue and PR. Prefer PRs under about 400 changed lines, excluding generated files and assets, and explain larger ones. The PR title follows the commit rule: it names what the diff contains, not results that were not observed. The PR body has:
 
 - **Summary** of what changed.
 - **Why**, with `Closes #<issue>` and the plan or design link.
@@ -70,7 +70,7 @@ One issue per PR. Split large plans into slices, each with its own issue and PR.
 - **Not verified**: anything unproven, such as a hardware check.
 - **Risk and rollback.**
 
-Link long records rather than pasting them. Any review the agent did itself is labelled a self-review.
+Owner-facing documents (proposals, reviews and PR bodies) start with a short summary and the decisions needed, with detail below. Link long records rather than pasting them. Any review the agent did itself is labelled a self-review.
 
 The PR template has no checkboxes for the agent to tick. CI's **PR metadata** job (`scripts/check_pr.py`) checks what a machine can: the branch name, a `Closes #<issue>` or `Refs #<issue>` link, and that the diff adds no home-directory paths or common secret patterns. A line that must show such an example carries `pr-check: allow`. Judgement items (docs updated, follow-ups filed, self-review labelled) are prompts in the template, answered only where they apply.
 

@@ -1,6 +1,6 @@
 ## Summary
 
-<!-- What changed, in a few lines. Say so here if CI workflows changed. -->
+<!-- What changed, in a few lines, then any decisions needed from the owner. Say so here if CI workflows changed. -->
 
 ## Profile
 
