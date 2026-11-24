@@ -11,11 +11,11 @@ KAREN OS can already record that the owner approved, rejected or revoked an exac
 - a **static review script** that hashes a candidate package and flags scripts, install hooks, network endpoints, credential reads and prompt-injection phrases, without executing anything;
 - **synthetic malicious and incompatible fixtures** that the tests prove the validator and resolver reject.
 
-**Decisions needed:**
+**Decisions** (owner answered "Yes, both" in a Claude Code session on 24 November 2026):
 
-1. May any agent quarantine a skill on its own, with only the owner able to lift it? Recommended: yes.
-2. May agents run search-only discovery commands (for example `npx skills find`), which use the network but install nothing? Recommended: yes, with no install or update subcommands.
-3. Approve this revision by merging, or request changes.
+1. Any agent may quarantine a skill on its own. Only the owner may lift it.
+2. Agents may run search-only discovery commands (for example `npx skills find`), which use the network but install nothing. Install and update subcommands are not allowed.
+3. Still open: approve this revision by merging, or request changes.
 
 ## What exists and what is missing
 
