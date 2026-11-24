@@ -17,6 +17,7 @@ Standard library only.
 from __future__ import annotations
 
 import argparse
+import codecs
 import json
 import os
 import re
@@ -69,13 +70,20 @@ def check_body(body: str) -> list[str]:
     return ["PR body links no issue: add `Closes #<issue>` (or `Refs #<issue>` for design gates)"]
 
 
+def git_path(token: str) -> str:
+    """A path as git prints it: `b/x`, or C-quoted `"b/caf\\303\\251"` for unusual names. Returns `x`."""
+    token = token.strip()
+    if token.startswith('"') and token.endswith('"'):
+        token = codecs.escape_decode(token[1:-1].encode("utf-8"))[0].decode("utf-8", "replace")
+    return token[2:] if token[:2] in ("a/", "b/") else token
+
+
 def added_lines(diff: str):
     """Yield (file, line) for each added line of a unified diff."""
     current = None
     for line in diff.splitlines():
         if line.startswith("+++ "):
-            path = line[4:].strip()
-            current = path[2:] if path.startswith("b/") else path
+            current = git_path(line[4:])
         elif line.startswith("+") and not line.startswith("+++"):
             yield current, line[1:]
 
@@ -92,7 +100,16 @@ def check_diff(diff: str) -> list[str]:
 
 
 def changed_files(diff: str) -> set[str]:
-    return {line.split(" b/", 1)[1] for line in diff.splitlines() if line.startswith("diff --git a/") and " b/" in line}
+    files = set()
+    for line in diff.splitlines():
+        if not line.startswith("diff --git "):
+            continue
+        rest = line[len("diff --git "):]
+        if rest.endswith('"') and ' "b/' in rest:
+            files.add(git_path(rest[rest.rindex(' "b/') + 1:]))
+        elif " b/" in rest:
+            files.add(rest.split(" b/", 1)[1])
+    return files
 
 
 def pinned_paths() -> set[str]:
@@ -124,8 +141,14 @@ def _filled(value) -> bool:
     return bool(str(value or "").strip())
 
 
+def load_project_profile(root: Path | None = None) -> dict | None:
+    """The repository's own `.karen/profile.json`, if it has one. Projects can tighten company profiles, never loosen."""
+    path = (root or Path.cwd()) / ".karen" / "profile.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else None
+
+
 def check_profile(branch: str, body: str, diff: str, repo: str | None = None, pr_merged=gh_pr_merged,
-                  data=None, registry=None, pinned=None) -> list[str]:
+                  data=None, registry=None, pinned=None, project=None) -> list[str]:
     """Checks 1 to 10 of the PR-enforcement proposal against the PR's karen-profile block."""
     match = PROFILE_RE.search(body or "")
     if not match:
@@ -155,26 +178,33 @@ def check_profile(branch: str, body: str, diff: str, repo: str | None = None, pr
     try:
         # Resolve with the flags the diff proves, so a missing flag can't also hide its requirements.
         result = profiles.resolve(data, block.get("type"), block.get("risk"), flags + missing_flags,
-                                  exceptions=block.get("exceptions") or [], registry=set(registry))
+                                  project=project, exceptions=block.get("exceptions") or [], registry=set(registry))
     except profiles.InvalidInput as exc:
         return problems + ["karen-profile: %s" % exc]
     problems += ["karen-profile conflict: %s" % c for c in result["conflicts"]]
 
-    listed = {s.get("id"): s for s in block.get("skills") or [] if isinstance(s, dict)}
+    skills = block.get("skills") or []
+    if not isinstance(skills, list) or not all(isinstance(s, dict) for s in skills):
+        return problems + ["karen-profile skills must be a list of objects"]
+    # Every listed skill, required or not, names a stage, runtime and evidence, at its registry hash.
+    for entry in skills:
+        name = entry.get("id") or "(no id)"
+        if entry.get("stage") not in result["stages"]:
+            problems.append("skill %s has no valid stage" % name)
+        if name in registry and entry.get("sha256") != registry[name]:
+            problems.append("skill %s sha256 is not the registry version" % name)
+        for field in ("runtime", "evidence"):
+            if not _filled(entry.get(field)):
+                problems.append("skill %s has no %s" % (name, "load evidence" if field == "evidence" else field))
+    listed = {(s.get("id"), s.get("stage")) for s in skills}
     for stage, info in result["stages"].items():
         for skill, level in info["skills"].items():
             if level != "required" or skill in info["waived"]:
                 continue
-            entry = listed.get(skill)
             if skill not in registry:
                 problems.append("required skill %s (%s) is not in the registry, so that stage holds" % (skill, stage))
-            elif entry is None:
-                problems.append("required skill %s (%s) is not listed in karen-profile skills" % (skill, stage))
-            else:
-                if entry.get("sha256") != registry[skill]:
-                    problems.append("skill %s sha256 is not the registry version" % skill)
-                if not _filled(entry.get("evidence")):
-                    problems.append("skill %s has no load evidence" % skill)
+            elif (skill, stage) not in listed:
+                problems.append("required skill %s (%s) is not listed for that stage in karen-profile skills" % (skill, stage))
 
     if result["stages"]["design"]["gates"]:
         found = DESIGN_PR_RE.fullmatch(str(block.get("design_approval") or "").strip())
@@ -215,7 +245,7 @@ def from_github_event(event_path: str) -> tuple[str, str, str, str]:
         event = json.load(handle)
     pr = event["pull_request"]
     base = pr["base"]["sha"]
-    diff = subprocess.run(["git", "diff", "--no-color", base + "...HEAD"],
+    diff = subprocess.run(["git", "-c", "core.quotePath=false", "diff", "--no-color", base + "...HEAD"],
                           check=True, capture_output=True, text=True).stdout
     return pr["head"]["ref"], pr.get("body") or "", diff, event["repository"]["full_name"]
 
@@ -234,12 +264,14 @@ def main(argv=None) -> int:
             with open(path, encoding="utf-8") as handle:
                 return handle.read()
         body, diff, branch, repo = read(args.body_file), read(args.diff_file), args.branch, args.repo
+        project = load_project_profile()
     else:
         event_path = os.environ.get("GITHUB_EVENT_PATH")
         if not event_path:
             parser.error("pass --branch, or run in GitHub Actions on a pull_request event")
         branch, body, diff, repo = from_github_event(event_path)
-    problems = check(branch, body, diff, repo=repo)
+        project = load_project_profile()
+    problems = check(branch, body, diff, repo=repo, project=project)
     for problem in problems:
         print("::error::" + problem if os.environ.get("GITHUB_ACTIONS") else "error: " + problem)
     if not problems:

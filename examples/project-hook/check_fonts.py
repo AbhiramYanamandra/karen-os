@@ -11,10 +11,21 @@ import re
 import sys
 
 FONT_FAMILY = re.compile(r"font-family\s*:\s*([^;}]+)", re.I)
+FONT_SHORTHAND = re.compile(r"(?<![-\w])font\s*:\s*([^;}]+)", re.I)
+# In the `font` shorthand the family list follows the size, optionally with /line-height.
+SIZE_THEN_FAMILY = re.compile(r"(?:^|\s)[0-9.]+[a-z%]*(?:/\S+)?\s+(.+)$", re.I)
+KEYWORDS = {"inherit", "initial", "unset", "revert", "caption", "icon", "menu", "message-box", "small-caption", "status-bar"}
 
 
 def unapproved(css: str, approved: set[str]) -> list[str]:
-    fonts = (f.strip().strip("'\"") for decl in FONT_FAMILY.findall(css) for f in decl.split(","))
+    lists = FONT_FAMILY.findall(css)
+    for value in FONT_SHORTHAND.findall(css):
+        found = SIZE_THEN_FAMILY.search(value.strip())
+        if found:
+            lists.append(found.group(1))
+        elif value.strip().lower() not in KEYWORDS:
+            lists.append(value)  # unparseable shorthand is reported, not trusted
+    fonts = (f.strip().strip("'\"") for decl in lists for f in decl.split(","))
     return sorted({f for f in fonts if f and f.lower() not in approved})
 
 

@@ -191,6 +191,37 @@ class ProfileTests(unittest.TestCase):
         self.assertOneProblem(self.check(profile(**dict(FEATURE, tests=[]))), "tests is empty")
         self.assertOneProblem(self.check(profile(**dict(FEATURE, owner_interventions=True))), "owner_interventions")
 
+    # Regression tests for the Codex review of #46 (session 01a20c17).
+    def test_quoted_unicode_workflow_path_still_needs_ci_change(self):
+        path = '".github/workflows/caf\\303\\251.yml"'
+        diff = ('diff --git "a/.github/workflows/caf\\303\\251.yml" "b/.github/workflows/caf\\303\\251.yml"\n'
+                '--- /dev/null\n+++ ' + path[:1] + 'b/' + path[1:] + '\n@@ -0,0 +1 @@\n+on: push\n')
+        self.assertEqual(check_pr.changed_files(diff), {".github/workflows/caf\u00e9.yml"})
+        problems = self.check(profile(), branch="chore/9-x", diff=diff)
+        self.assertIn("needs flag 'ci_change'", problems[0])
+
+    def test_project_profile_is_enforced(self):
+        stricter = {"profiles": {"feature": {"stages": {"verify": {"skills": {"tdd": "required"}}}}}}
+        problems = check_pr.check_profile("feat/46-x", profile(**FEATURE), diff_adding("x", path="a.py"), repo="o/r",
+                                          pr_merged=lambda *_: True, pinned=self.PINNED, project=stricter)
+        self.assertOneProblem(problems, "tdd (verify) is not listed")
+        looser = {"profiles": {"feature": {"stages": {"implement": {"skills": {"ponytail-plugin": "optional"}}}}}}
+        problems = check_pr.check_profile("feat/46-x", profile(**FEATURE), diff_adding("x", path="a.py"), repo="o/r",
+                                          pr_merged=lambda *_: True, pinned=self.PINNED, project=looser)
+        self.assertOneProblem(problems, "conflict")
+
+    def test_skill_stage_runtime_and_optional_evidence_are_checked(self):
+        wrong_stage = [dict(s, stage="verify") if s["id"] == "code-review" else s for s in FEATURE["skills"]]
+        self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=wrong_stage))), "code-review (review) is not listed for that stage")
+        no_runtime = [dict(s, runtime="") if s["id"] == "code-review" else s for s in FEATURE["skills"]]
+        self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=no_runtime))), "code-review has no runtime")
+        optional = FEATURE["skills"] + [dict(skill("tdd", "implement"), evidence="")]
+        self.assertOneProblem(self.check(profile(**dict(FEATURE, skills=optional))), "tdd has no load evidence")
+
+    def test_workflow_rechecks_edited_descriptions(self):
+        workflow = (ROOT / ".github/workflows/checks.yml").read_text()
+        self.assertRegex(workflow, r"pull_request:\n\s+types: \[[^\]]*\bedited\b")
+
     def test_unknown_risk_is_reported(self):
         self.assertOneProblem(self.check(profile(**dict(FEATURE, risk="extreme"))), "unknown risk")
 

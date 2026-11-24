@@ -29,6 +29,13 @@ class FontHookTests(unittest.TestCase):
         self.assertIn("'Times New Roman' is not in the approved tokens", out)
         self.assertIn("'serif'", out)
 
+    def test_font_shorthand_is_checked(self):
+        code, out = self.run_hook("p { font: italic 16px/1.4 Times New Roman, serif; }")
+        self.assertEqual(code, 1)
+        self.assertIn("'Times New Roman'", out)
+        self.assertEqual(self.run_hook("p { font: 16px Helvetica, sans-serif; } a { font: inherit; }")[0], 0)
+        self.assertEqual(self.run_hook("p { font: weird; }")[0], 1)
+
     def test_approved_fonts_pass(self):
         self.assertEqual(self.run_hook("body{font-family:Helvetica, Arial, sans-serif}")[0], 0)
 
