@@ -2,7 +2,7 @@
 
 **Issue:** [#44](https://github.com/AbhiramYanamandra/karen-os/issues/44), part of [epic #43](https://github.com/AbhiramYanamandra/karen-os/issues/43). **Charter slice:** PR A in the [engineering organisation charter](../engineering-organisation-charter.md).
 **Status:** Agent self-review dated 2026-11-23, updated on 2026-11-24 for [#51](https://github.com/AbhiramYanamandra/karen-os/issues/51) (see "Follow-up findings"). It is not an independent review. Nothing here approves, installs or revokes a skill.
-**Data:** [`skill-candidates.json`](skill-candidates.json) holds one entry per candidate. Each entry records the source, the version, SHA-256 hashes, the licence, dependencies, tools, privileges, compatibility, the state, the recommendation and an empty `owner_decision`.
+**Data:** [`skill-candidates.json`](skill-candidates.json) holds one entry per candidate. Each entry records the source, version, hashes, licence, dependencies, tools, privileges, compatibility, state, recommendation and any owner decision. The dated findings below retain the review history; the owner decisions and verification follow-up describe the current adoption state.
 
 The approved registry, [`skills.json`](skills.json), holds the ten approved entries, promoted on 24 November 2026 under #51 with a manifest repin to revision `engineering-2`.
 
@@ -16,7 +16,7 @@ The approved registry, [`skills.json`](skills.json), holds the ten approved entr
 
 No skill was invoked, installed, updated or given credentials. No local skill content was copied into this repository.
 
-## What I found
+## Initial findings (23 November 2026)
 
 **Provenance.** 96 shared skills come from two repositories, `cursor/plugins` (60) and `mattpocock/skills` (36). Three more come from `vercel-labs/skills`, `shadcn/improve` and `cursor/plugins` through a second lock file. The ECC plugin is version 2.2.3 from `affaan-m/ECC`. All of these sources are MIT-licensed. The design skills in the Claude Code folder (`ui-ux-pro-max`, `design`, `ui-styling`, `brand`, `banner-design`, `slides`, `design-system`) have no lock entry, and `ui-ux-pro-max` has no licence at all.
 
@@ -37,7 +37,7 @@ No skill was invoked, installed, updated or given credentials. No local skill co
 
 **Ponytail.** The source is `DietrichGebert/ponytail` (MIT). The owner chose the **full plugin**: hooks, ledger, cost and token tracking, transcript import, board, extra skills and webhook. The catalogue entry `ponytail-plugin` pins the 30 runtime files at the official release `v5.3.3` (owner decision, 24 November). [`ponytail.md`](ponytail.md) holds the data inventory, precedence rules, install, verification and rollback plan, and the owner decisions, all decided on 24 November. **Approved and installed** on 24 November in both runtimes, hash-verified; see the install record in ponytail.md.
 
-**ui-ux-pro-max.** Both variants come from `nextlevelbuilder/ui-ux-pro-max-skill` v2.15.0 (`a38d04c3`, MIT). Their 67 non-SKILL files are byte-identical to that release. Each SKILL.md is the upstream installer's render of one template for a different target: Claude (55 KB, quick reference inlined) or generic (28 KB). Both stay on hold, because one name resolves to different content in each runtime. Proposal: one copy of the generic render, symlinked into the Claude user folder.
+**ui-ux-pro-max.** Both variants come from `nextlevelbuilder/ui-ux-pro-max-skill` v2.15.0 (`a38d04c3`, MIT). Their 67 non-SKILL files are byte-identical to that release. Each SKILL.md is the upstream installer's render of one template for a different target: Claude (55 KB, quick reference inlined) or generic (28 KB). The owner approved the generic render and rejected the other variant. The Claude user folder now links to the shared copy.
 
 **unslop and principle-prove-it-works.** Both match `cursor/plugins` commit `182f2ce4` byte for byte, with no local edits. Upstream `2f87c854` later shortened both, and for prove-it-works it removed the broken adapter link.
 
@@ -48,7 +48,7 @@ No skill was invoked, installed, updated or given credentials. No local skill co
 | | Claude Code | Codex |
 |---|---|---|
 | Skill folders read | Claude user folder (shared skills arrive as symlinks), project `.claude/skills`, plugins (namespaced, such as `ecc:`) | Codex user folder, the shared folder, bundled system skills. It doesn't read the Claude user folder |
-| `ui-ux-pro-max` resolves to | The Claude user-folder copy (Claude render) | The shared copy (generic render) |
+| `ui-ux-pro-max` resolves to | The Claude user-folder symlink to the shared generic render | The same shared generic render |
 | `disable-model-invocation: true` | Honoured. Hidden from the model and loaded through `/name` | **Ignored.** The rendered prompt (`codex debug prompt-input`) lists the skill as model-selectable |
 | Load evidence | Transcript line `Base directory for this skill: <path>`. It records the symlink path, with no hash | Session log shows a shell read of the SKILL.md path. No hash |
 | ECC plugin skills | Available | Not available |
@@ -89,6 +89,29 @@ Not verified: an actual skill load in a new Claude Code or Codex session, and Cl
 
 These entries are promoted into the registry [`skills.json`](skills.json), each with its hash, scope and decision reference. The manifest is repinned to revision `engineering-2`.
 
+### Verification follow-up (24 November 2026)
+
+Codex repeated the installed-file checks after the owner returned #51 to `status:ready`. This is a self-review, not an independent review or a claim that the skills were followed.
+
+| Package | Observed result |
+|---|---|
+| `unslop`, `tdd`, `diagnosing-bugs`, `principle-prove-it-works`, `thermo-nuclear-code-quality-review`, `code-review`, `ui-ux-pro-max` | Each SKILL.md and package tree matches its approved catalogue hash. Each Claude user-folder entry resolves to its corresponding shared package |
+| `ecc:security-review` | SKILL.md and package tree match the approved hash in the Claude Code plugin. It remains unavailable in Codex |
+| `ponytail-plugin` | All 30 runtime files match the pin in both runtimes, with no extra runtime files. See [Ponytail verification](ponytail.md#verification-follow-up-24-november-2026) for trust, status-line and isolated-cleanup results |
+| `figma` | Remote connector, unpinned by design. No new connector invocation or editable-design test was performed |
+
+The tree check used the catalogue's `os.walk` ordering, sorted directory and file names, and one `relative-path NUL file-sha256 LF` record per file, including the final newline. It compared package bytes, not just the entry names.
+
+`codex debug prompt-input` lists the seven shared skills and Ponytail skills, and does not list `ecc:security-review`. Discovery does not prove a skill was loaded in a task. No personal paths, configuration contents or session transcripts are published here.
+
+Remaining acceptance gaps for #51:
+
+- Actual skill-load records from fresh Claude Code and Codex sessions, tied to the approved package hashes. Claude Code's name resolution still needs runtime evidence beyond the symlinks.
+- Ponytail live-session checks, the ledger-disabled negative control, transcript import and the outstanding timing measurements in [its verification plan](ponytail.md#install-and-verification-plan).
+- Full host-plugin rollback and restore. Isolated upstream cleanup succeeded, but it does not establish host unregistration or recovery of live-session timing.
+
+The registry promotion criterion is complete. Keep #51 open until the remaining criteria are met or the owner explicitly changes their scope.
+
 ## Risky additions
 
 | Candidate | Problem | Recommendation |
@@ -99,22 +122,22 @@ These entries are promoted into the registry [`skills.json`](skills.json), each 
 | `ecc:security-bounty-hunter` | Targets external bounty programmes, downloads Semgrep rules and builds working exploits. | Reject outside a separately authorised security engagement. |
 | `ecc:security-review` | A good checklist, but it suggests `npm audit fix` and `npm update`. | Use as a checklist only. Dependency changes need their own approval. |
 
-## Proposed minimal set by stage
+## Adopted set by stage
 
-Proposals only. Each one needs your approval of the pinned hash before it becomes mandatory.
+The registry records the approved content and scope. [`workflow-profiles.json`](workflow-profiles.json) defines when each skill is required or recommended. Approval does not establish runtime availability or compliance with the instructions.
 
 | Stage | Required | Selected by task | Not in the set |
 |---|---|---|---|
 | All managed work | KAREN core: startup, engineering standard, project rules (already enforced) | | |
-| UI design | Figma connector plus a UI/UX guide, **on hold** until source, licence and a runtime test exist | `ui-styling` per project that uses shadcn | `design`. Both `ui-ux-pro-max` variants are unresolved, not chosen or excluded. |
-| Implementation | Ponytail full plugin, **under review**: **approved and installed** (`v5.3.3`), not yet in the registry ([ponytail.md](ponytail.md)) | Project and language conventions | |
+| Substantial UI design | Approved Figma connector and shared `ui-ux-pro-max` | `ui-styling` only after separate approval | The rejected Claude render; `design` is not approved |
+| Implementation | Approved, installed and registered Ponytail `v5.3.3` for applicable coding profiles ([ponytail.md](ponytail.md)) | Project and language conventions | |
 | Bugs and tests | | `diagnosing-bugs`, `tdd` | `ecc:tdd-workflow` (duplicate, heavier) |
-| Verification | `principle-prove-it-works` after pinning | Project test and lint commands | `ecc:verification-loop` (npm-only, weaker secret scan) |
-| Review | `code-review` with the GitHub issue as its spec | | |
+| Verification | Approved `principle-prove-it-works` | Project test and lint commands | `ecc:verification-loop` (npm-only, weaker secret scan) |
+| Medium- and high-risk review | Approved `code-review` with the GitHub issue as its spec | Low-risk self-review, labelled as such | |
 | High-impact review | `thermo-nuclear-code-quality-review`, alongside a correctness and security review | | |
 | Security-sensitive work | `ecc:security-review` as a checklist | | `ecc:security-scan`, `ecc:security-bounty-hunter` |
-| LinkedIn writing | `unslop` after pinning | | `watermarks-remover:clean-user-facing-text` overlaps it (not reviewed) |
-| Skill discovery | PR D procedure | | `find-skills` |
+| LinkedIn writing | Approved `unslop` | | `watermarks-remover:clean-user-facing-text` overlaps it (not reviewed) |
+| Skill discovery | Not yet implemented. PR D is tracked in #47 | | `find-skills` is not approved |
 
 ## Owner decisions: approve, reject, revoke
 
@@ -132,7 +155,7 @@ The difference is that approval binds to content, while revocation binds to an e
 
 The tests check only the **shape** of a decision: required fields, a matching hash, and a decision type that agrees with the state. They do **not** prove that the owner made it. Agents act through the owner's GitHub account under the standing authority in the engineering standard, so an agent can write a schema-valid `owner_decision` and push it on a branch. The only control today is procedural: the owner reviews the diff and merges. A decision buried in a large diff could be missed.
 
-Before any decision drives enforcement, #46 (with #45 consuming only approved entries) needs a check an agent cannot satisfy on its own. Options, strongest first:
+The owner chose procedural authentication for now: review and merge of decision changes. The profiles and PR checks consume the approved registry, but do not independently prove who approved it. Stronger controls remain possible follow-ups, not current requirements:
 
 1. **Owner-signed decisions.** Decision changes land only in commits signed with a key agents don't hold. CI verifies each signature against a key fingerprint allowlisted in the repository. This is verifiable today with `git verify-commit`, and needs no new service.
 2. **Separate agent identity.** Agents use their own GitHub identity or app, so the owner's account actions become distinguishable. This changes repository access and needs explicit owner approval, as the charter's Limits section notes.
@@ -142,7 +165,7 @@ Until one of these exists, treat every recorded decision as **procedural**, not 
 
 ## Testing that a mandatory skill was loaded
 
-A skill file existing on disk, or appearing in a listing, does not show that an agent loaded it, still less that it followed it. Four candidates set `disable-model-invocation: true` (`unslop`, `tdd`, `thermo-nuclear-code-quality-review`, `principle-prove-it-works`). In Claude Code that flag stops the model from invoking the skill itself, so a mandatory stage has to load it some other way: the owner types `/<name>`, or the pipeline supplies the body. Reading the file directly would bypass the runtime's own load mechanism and its record of the load. How Codex treats the flag is **unverified**.
+A skill file existing on disk, or appearing in a listing, does not show that an agent loaded it, still less that it followed it. Four candidates set `disable-model-invocation: true` (`unslop`, `tdd`, `thermo-nuclear-code-quality-review`, `principle-prove-it-works`). In Claude Code that flag stops the model from invoking the skill itself, so a mandatory stage has to load it some other way: the owner types `/<name>`, or the pipeline supplies the body. Reading the file directly does not establish Claude Code's native invocation path. Codex 0.171.0 lists these skills as model-selectable despite the flag, as observed in the runtime-resolution table above.
 
 Proposed protocol for #46. None of it has been run here.
 
@@ -165,8 +188,8 @@ Proposed protocol for #46. None of it has been run here.
 ## Not covered
 
 - Of the 106 shared skills and 314 ECC skills, all but the candidates in this inventory were listed and not read. Only the candidates named in #44 were reviewed. They include `ecc:coding-standards` and `create-verification-skill`.
-- ~~Codex runtime resolution was not tested in a Codex session.~~ Observed in the #51 follow-up: see the runtime resolution table. Ponytail hook behaviour, timing and the webhook have not been run.
+- Codex discovery was checked with `codex debug prompt-input`. Fresh-session skill loads remain unverified. Ponytail's earlier direct hook checks and limited timing evidence are recorded in [its install record](ponytail.md#install-record-24-november-2026). No webhook is configured.
 - The meaning of the lock files' own `computedHash` values was not established. The hashes above are computed independently.
 - Whether a model follows a skill's prose cannot be proved by this inventory.
-- Recorded owner decisions are validated for shape only. Authenticity is left to #46.
+- Recorded owner decisions are validated for shape only. The owner chose procedural authentication; #46 does not prove decision authenticity.
 - The explicit-loading protocol is a proposal. No runtime load, negative control or canary was run.

@@ -1,7 +1,7 @@
 # Ponytail plugin: data, precedence and adoption plan
 
 **Issue:** [#51](https://github.com/AbhiramYanamandra/karen-os/issues/51), part of [epic #43](https://github.com/AbhiramYanamandra/karen-os/issues/43). **Catalogue entry:** `ponytail-plugin` in [`skill-candidates.json`](skill-candidates.json).
-**Status:** **approved and installed** on 24 November 2026 ([approval](https://github.com/AbhiramYanamandra/karen-os/issues/51#issuecomment-7122275188), bound to the `v5.3.3` runtime tree hash). The owner chose the **full plugin** on 23 November 2026, keeping every capability, including features that read session metadata, run hooks or send telemetry. Results are under "Install record". Not yet in the registry (`skills.json`).
+**Status:** **approved, installed and registered** on 24 November 2026 ([approval](https://github.com/AbhiramYanamandra/karen-os/issues/51#issuecomment-7122275188), bound to the `v5.3.3` runtime tree hash). The owner chose the full plugin. The installed files match the pin in both runtimes, Codex has persisted hook trust, and Claude Code has the Ponytail status line configured. Live-session and full rollback checks remain open under #51. Results are under "Install record" and "Verification follow-up".
 **Review:** agent self-review on 24 November 2026, from the upstream source read at both candidate commits. The owner chose `v5.3.3`. The install and its checks were run on 24 November.
 
 ## Source and pin
@@ -168,6 +168,21 @@ Test side effects:
 - The hook runs and the headless turn each set `.ponytail-statusline-nudged` without adding a status line. The agent deleted that flag, so the first interactive session still makes the one offer the owner approved.
 - The ledger keeps the headless test row ("Reply with exactly: ok").
 
+## Verification follow-up (24 November 2026)
+
+Codex checked the installed files and configuration after the owner returned #51 to `status:ready`. This is an agent self-review. It does not establish live-session behaviour.
+
+| Check | Observed result |
+|---|---|
+| Installed runtime files | All 30 `pinned_files` match in both Claude Code and Codex, with no extra files in the four runtime folders |
+| Install sources | Claude Code's marketplace uses `v5.3.3`; Codex's local marketplace points to commit `7801d061243d7b753bad0e0b3c057cd250b11755` |
+| Codex hook trust | Persisted trust records exist for SessionStart, UserPromptSubmit and SubagentStart. The plugin is enabled. Configuration alone does not prove execution |
+| Claude Code status line | The enabled plugin's status-line command names `ponytail-statusline`. Rendering was not observed |
+| Codex discovery | `codex debug prompt-input` lists the Ponytail skills. This command renders context, not a live hook run |
+| Isolated cleanup | Upstream `scripts/uninstall.js` removed synthetic mode flags, configuration and status-line files. It preserved unrelated settings, unrelated Cursor hooks and the synthetic ledger. Repeating cleanup succeeded |
+
+The cleanup check used a temporary directory, a synthetic home resolver and temporary configuration paths. It covered both a Ponytail-only status line and one combined with another command. It did not remove either live plugin or alter the owner's configuration. Host unregistration, reinstall and timing recovery remain unverified.
+
 ## Engineering HQ
 
 Ponytail doesn't talk to GitHub. These are options for a follow-up issue:
@@ -190,14 +205,14 @@ All decided by the owner on 24 November 2026. The principle: run Ponytail as its
 8. **Status line: allowed.** Agents may accept Ponytail's one-time offer to add its status line to Claude Code `settings.json`.
 9. **Engineering HQ: option C, board only.** `board.html` stays local. No new Project fields or automation. Option A can be proposed later as its own issue.
 
-Remaining before install: the owner's go-ahead to install, recorded as an approval bound to the pinned tree hash, and the install and verification work below under its own authorised task.
+Installation and registry promotion are complete. The remaining work is verification, not another installation approval.
 
 ## Not verified
 
-- Codex hook trust: the owner still has to trust the two hooks in `/hooks`. Until then, Codex has the skills but not the mode hooks.
-- The status line: added only when the first interactive Claude Code session accepts Ponytail's offer.
+- A fresh Codex session executing the trusted hooks. Persisted trust covers three hook events; the earlier two-hook checklist was incomplete.
+- The status line and band rendering in an interactive Claude Code session. The status line is configured.
 - Hook timing was measured by running the hook scripts directly, not inside a live session, and only in karen-os, not the largest project repository. No before-install prompt timing was taken.
 - The band was observed in one headless turn. An interactive session's band display was not.
 - Network silence comes from the empty webhook setting and from reading the code. Traffic was not captured.
 - The transcript import (`/ponytail band import`) was not run.
-- The rollback has not been rehearsed. Upstream `uninstall.js` was read but not run.
+- Full host removal, absence of registered hooks, reinstall at the approved pin and timing recovery. The isolated cleanup check above covers only upstream's state-cleanup script.
