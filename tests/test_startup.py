@@ -45,6 +45,21 @@ class ReceiptCoverage(unittest.TestCase):
         self.assertNotEqual(p.returncode, 0)
         self.assertIn('explicit task', p.stderr)
 
+    def test_required_on_demand_source_is_not_in_startup_payload(self):
+        detail = self.root / 'context/on-demand-detail.md'
+        detail.write_text('Detail retrieved only when its trigger applies.\n')
+        self.manifest['sources'].append(dict(
+            id='fixture_detail', path='context/on-demand-detail.md', required=True,
+            startup_read='on-demand', load_when='Fixture detail is needed',
+            sha256=startup.sha(detail.read_bytes())))
+        self.save()
+        for task in (None, self.task):
+            with self.subTest(task=task):
+                payload = startup.read(self.root, task)
+                self.assertEqual(payload['context_errors'], [])
+                self.assertNotIn('fixture_detail', {r['id'] for r in payload['sources']})
+                self.assertNotIn(detail.read_text(), json.dumps(payload))
+
     def test_complete_tool_delivered_context_passes(self):
         self.assertEqual(self.assess()['status'], 'PASS')
 

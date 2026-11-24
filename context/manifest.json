@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project_id": "karen-os",
-  "revision": "engineering-3",
+  "revision": "engineering-4",
   "reviewed_on": "2026-11-24",
   "architecture_disposition": "published-personal-first-architecture-review-pending",
   "freshness": "Compare hashes on every startup and before consequential action. Check current owner directions for revocation. Drift requires review, not automatic repinning.",
@@ -19,7 +19,7 @@
       "path": "docs/architecture/platform-specification.md",
       "sha256": "491481fe5d4f2c6ab2c42075af511d52dc65e5d42dc2097a23b530d26846aa70",
       "required": true,
-      "load_when": "Design, implementation, security, consequential action, or policy detail",
+      "load_when": "Substantial design, security or permission boundary, consequential external action, or unresolved architecture/policy detail",
       "startup_read": "on-demand"
     },
     {
@@ -33,7 +33,7 @@
     {
       "id": "policy",
       "path": "docs/organisation/policy.md",
-      "sha256": "f801c19e97d360a830568b682e140b6351e4ab3b2dcf3a8e177312302b38e3c8",
+      "sha256": "89f6d1fad8ef92f3802792dba31cf747389ce9438fe10be0f8d781e541a726c3",
       "required": true,
       "load_when": "Every startup; read completely",
       "startup_read": "complete"
@@ -43,21 +43,21 @@
       "path": "docs/organisation/execution-contract.md",
       "sha256": "b8fcce8b86fc89fce0bce28bf054e231a087b1f63402d82e7eac1eed4babdc4e",
       "required": true,
-      "load_when": "Actionable execution, integration, or handoff",
+      "load_when": "Execution authority or lifecycle uncertainty, integration boundary, handoff, interruption, or recovery",
       "startup_read": "on-demand"
     },
     {
       "id": "sops",
       "path": "docs/organisation/sops.md",
-      "sha256": "4922811a0c877ea3f8f45059e07c60ea3d8b16c57bee28e9eb9fb7a81451616b",
+      "sha256": "172285a4a2d4af93f2f8a8c0aca020aa02e412fd0729d2332f5734c602924fa2",
       "required": true,
-      "load_when": "Task intake, design, execution, verification, or recovery",
+      "load_when": "Intake/risk uncertainty, design approval, verification procedure, handoff, or recovery detail needed beyond the core and task",
       "startup_read": "on-demand"
     },
     {
       "id": "engineering",
       "path": "docs/organisation/engineering.md",
-      "sha256": "57a927cb06356eb9300f6be1241516fa321566062c1e540da51edf76cace63cd",
+      "sha256": "2ab0d3c8f1b81a63fdfc7df3c4b973b5200ec3b9301a77f010b8d3c6fca6c63c",
       "required": true,
       "load_when": "Every startup; read completely. Governs issues, branches, commits, pull requests, CI and releases",
       "startup_read": "complete"
@@ -89,7 +89,7 @@
     {
       "id": "codex_entry",
       "path": "AGENTS.md",
-      "sha256": "f2203ef3465dda52be9dffa87ded1c05750d8a5707137047f6ff77f54e0b2f1b",
+      "sha256": "17597ae4aa0a9f678d6579315de2f8a835efd01121c734138cb2af0c262b0baf",
       "required": true,
       "load_when": "Every startup; read completely",
       "startup_read": "complete"

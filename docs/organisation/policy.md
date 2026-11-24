@@ -20,4 +20,8 @@ Read-only exploration needs no task or claim. Actionable work requires a task st
 
 For exploration, read the entry, manifest, core and project instructions completely and explain limits in ordinary prose. Task-bound machine validation also requires its task and declared format, complete mandatory coverage, verified revisions, correct scenario answers, observed capabilities and the 250-word receipt limit. Missing or conflicting policy blocks dependent work; other gaps remain PARTIAL.
 
-Retrieve the engineering standard for any code, branch, commit, pull request, CI, issue or release work; detailed architecture for design and consequential actions; product vision for priorities and UX; SOPs and contract for execution or recovery; skill metadata only when relevant. Personal instance records stay outside the public source tree and need explicit destination consent before any provider receives them.
+## Context retrieval
+
+For issue or plan-sized work, read the complete startup core, the current issue and its linked plan. These are sufficient for ordinary in-scope work when no detailed-source trigger applies. Retrieve detailed sources at the stage that needs them, using the manifest's `load_when` conditions. Task execution alone is not a reason to load every detailed document. Required design, security, approval, verification and recovery gates still apply. Read skill metadata before selecting relevant bodies, and record missing or conflicting context before dependent work.
+
+Personal instance records stay outside the public source tree and need explicit destination consent before any provider receives them.
