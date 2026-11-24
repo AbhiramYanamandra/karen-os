@@ -11,7 +11,7 @@
     "approve": {
       "sets_state": "approved",
       "required": ["decision", "by", "date", "reference", "approved_sha256", "scope"],
-      "rules": "approved_sha256 must equal the entry's tree_sha256. The approval covers that exact content and the stated scope (stages or projects) only. Any content change returns the entry to under-review."
+      "rules": "approved_sha256 must equal the entry's tree_sha256. The approval covers that exact content and the stated scope (stages or projects) only. Any content change returns the entry to under-review. A remote connector has no local package (tree_sha256 null): its approval omits approved_sha256 and binds to the scope only, because the content cannot be pinned."
     },
     "reject": {
       "sets_state": "rejected",
@@ -33,7 +33,7 @@
     "codex-desktop-plugin": "Codex desktop curated plugin, enabled in the desktop app. Not listed by the Codex CLI's MCP configuration, which does not prove absence.",
     "plugin:ponytail@5.3.3": "Ponytail plugin, release v5.3.3, commit 7801d061. Installed on 2026-11-24 in Claude Code (user scope, upstream marketplace at tag v5.3.3) and in Codex (local one-entry marketplace pointing at upstream at that commit)."
   },
-  "hash_method": "skill_md_sha256 is SHA-256 of SKILL.md. tree_sha256 is SHA-256 over sorted lines 'relative-path NUL file-sha256'. upstream_match compares SKILL.md with the source repository's default branch on 2026-11-23. For a plugin, tree_sha256 covers its runtime files only: the .claude-plugin, .codex-plugin, hooks and skills folders, listed in pinned_files.",
+  "hash_method": "skill_md_sha256 is SHA-256 of SKILL.md. tree_sha256 is SHA-256 over lines 'relative-path NUL file-sha256' in os.walk order: each directory's files sorted, then its subdirectories in sorted order. For a flat package this equals plain sorted order. upstream_match compares SKILL.md with the source repository's default branch on 2026-11-23. For a plugin, tree_sha256 covers its runtime files only: the .claude-plugin, .codex-plugin, hooks and skills folders, listed in pinned_files.",
   "candidates": [
     {
       "id": "unslop",
@@ -50,10 +50,17 @@
       "compatibility": "Instructions only. disable-model-invocation is true, so the model cannot self-invoke it; it must be loaded explicitly.",
       "duplicates": ["watermarks-remover:clean-user-facing-text (plugin, body not reviewed)"],
       "stage": "writing",
-      "state": "under-review",
+      "state": "approved",
       "recommendation": "approve-with-conditions",
-      "rationale": "Pure editing rules, no tools. The local copy matches upstream 182f2ce4 exactly. Upstream 2f87c854fe3e2fcda44ca86b46ede35aad3c46b7 shortened it from 5,827 to 2,380 bytes (SKILL.md 2b823fd0...). Owner decision: keep 182f2ce4, with examples, or move to 2f87c854.",
-      "owner_decision": null
+      "rationale": "Pure editing rules, no tools. The local copy matches upstream 182f2ce4 exactly. Upstream 2f87c854fe3e2fcda44ca86b46ede35aad3c46b7 shortened it from 5,827 to 2,380 bytes (SKILL.md 2b823fd0...). Owner decision 2026-11-24: keep 182f2ce4, with examples.",
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "approved_sha256": "5130167c26bf872171c7341470f556389ad035e63a1aea0e19146741212cb0ab",
+        "scope": "Writing stage: mandatory for LinkedIn drafts before owner editorial review, in Claude Code and Codex. Pinned at 182f2ce4 (with examples); the exact-text approval for posting still applies."
+      }
     },
     {
       "id": "tdd",
@@ -70,10 +77,17 @@
       "compatibility": "Instructions only. disable-model-invocation is true.",
       "duplicates": ["ecc:tdd-workflow"],
       "stage": "bugs-and-tests",
-      "state": "under-review",
+      "state": "approved",
       "recommendation": "approve",
-      "rationale": "Short failing-test-first bug workflow that explicitly allows skipping impractical tests and demands before/after evidence.",
-      "owner_decision": null
+      "rationale": "Short failing-test-first bug workflow that explicitly allows skipping impractical tests and demands before/after evidence. Owner approved 2026-11-24.",
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "approved_sha256": "c0e3c506e8021b5682189e16a81287779b3da1eb2ba77d5803f64dc059bfe5f4",
+        "scope": "Bugs-and-tests stage, all KAREN-managed projects, Claude Code and Codex."
+      }
     },
     {
       "id": "ecc:tdd-workflow",
@@ -110,30 +124,44 @@
       "compatibility": "Model-invocable. Bundled hitl-loop.template.sh only prompts and reads terminal input; it makes no network calls.",
       "duplicates": [],
       "stage": "bugs-and-tests",
-      "state": "under-review",
+      "state": "approved",
       "recommendation": "approve",
-      "rationale": "Requires a reproducible red signal before hypotheses, redacts secrets, and removes debug logs before done.",
-      "owner_decision": null
+      "rationale": "Requires a reproducible red signal before hypotheses, redacts secrets, and removes debug logs before done. Owner approved 2026-11-24.",
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "approved_sha256": "3314cd62e50cf688d13abdc4eb4cedcbcfdfe6f053fe3331f4a79928a0fe3c7f",
+        "scope": "Bugs-and-tests stage, all KAREN-managed projects, Claude Code and Codex."
+      }
     },
     {
       "id": "principle-prove-it-works",
       "source": "github:cursor/plugins harness/pstack/claude-code/skills/principle-prove-it-works",
       "location": "shared-agents-skills",
-      "version": "cursor/plugins commit 182f2ce414e83224915c190d2f63239c1608d0a5 (byte-identical; no local edits)",
-      "skill_md_sha256": "d3912cce868a276ce611eb08178311958e5df929b0a4e5340f1afa4774be81f2",
-      "tree_sha256": "a3c8449ad3d3a0cfcc756d408f103ffcbb8b1914bb9bc8f2c04b4fc8b2959aff",
-      "upstream_match": false,
+      "version": "cursor/plugins commit 2f87c854fe3e2fcda44ca86b46ede35aad3c46b7 (owner-chosen 2026-11-24). Installed copy is still 182f2ce4 (tree a3c8449a...) until the #51 install replaces it.",
+      "skill_md_sha256": "3d6c482e341974cfcb8d19ebf66fb1d4274d8673af35e36d3c231a6aa9e03f25",
+      "tree_sha256": "ab32f9f23e4c3cb87ad42ddd62d44b08b5b777a576e89456f52d515a2d1abe8b",
+      "upstream_match": true,
       "licence": "MIT (pstack LICENSE, Lauren Tan)",
-      "dependencies": ["pstack docs/harness/claude-code.md (not installed)"],
+      "dependencies": [],
       "tools": [],
       "privileges": {"scripts": 0, "network": false, "credentials": false, "writes_outside_task": false, "installs": false},
-      "compatibility": "disable-model-invocation is true. Links to a Claude Code adapter document that the flat install does not include.",
+      "compatibility": "disable-model-invocation is true. Single SKILL.md of 768 bytes; 2f87c854 removed the link to the uninstalled adapter document.",
       "duplicates": ["ecc:verification-loop"],
       "stage": "verification",
-      "state": "under-review",
+      "state": "approved",
       "recommendation": "approve-with-conditions",
-      "rationale": "Matches KAREN's evidence rule: check the real artefact, not a proxy. Upstream 2f87c854fe3e2fcda44ca86b46ede35aad3c46b7 shortened it from 1,559 to 768 bytes and removed the broken adapter link. Recommended: move to 2f87c854, subject to owner decision.",
-      "owner_decision": null
+      "rationale": "Matches KAREN's evidence rule: check the real artefact, not a proxy. Upstream 2f87c854fe3e2fcda44ca86b46ede35aad3c46b7 shortened it from 1,559 to 768 bytes and removed the broken adapter link. Owner decision 2026-11-24: move to 2f87c854.",
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "approved_sha256": "ab32f9f23e4c3cb87ad42ddd62d44b08b5b777a576e89456f52d515a2d1abe8b",
+        "scope": "Verification stage, all KAREN-managed projects, Claude Code and Codex. Pinned at 2f87c854."
+      }
     },
     {
       "id": "ecc:verification-loop",
@@ -170,10 +198,17 @@
       "compatibility": "disable-model-invocation is true. It reviews maintainability only, not correctness or security.",
       "duplicates": ["code-review (mattpocock)", "ecc:code-review command", "built-in /code-review"],
       "stage": "high-impact-review",
-      "state": "under-review",
+      "state": "approved",
       "recommendation": "approve-with-conditions",
-      "rationale": "Strict structural review with clear blockers. Use it only for the substantial or high-impact profile that PR B defines, and pair it with a correctness and security review.",
-      "owner_decision": null
+      "rationale": "Strict structural review with clear blockers. Use it only for the substantial or high-impact profile that PR B defines, and pair it with a correctness and security review. Owner approved 2026-11-24 with that condition.",
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "approved_sha256": "cd5c56b63ea879a4c8fc2f48de61578760c75bfb6619364585fb764e014c288d",
+        "scope": "High-impact review stage only, paired with a correctness and security review. Claude Code and Codex."
+      }
     },
     {
       "id": "code-review",
@@ -190,10 +225,17 @@
       "compatibility": "Model-invocable. Expects a tracker configured by another skill; KAREN uses gh and the GitHub issue instead.",
       "duplicates": ["thermo-nuclear-code-quality-review", "ecc:code-review command", "built-in /code-review"],
       "stage": "review",
-      "state": "under-review",
+      "state": "approved",
       "recommendation": "approve-with-conditions",
-      "rationale": "Separates standards findings from spec findings, which suits issue-based PRs. The spec source must be the GitHub issue, not the setup skill's tracker.",
-      "owner_decision": null
+      "rationale": "Separates standards findings from spec findings, which suits issue-based PRs. The spec source must be the GitHub issue, not the setup skill's tracker. Owner approved 2026-11-24 with that condition.",
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "approved_sha256": "5cf1a4aca73fc2fc8eaeab0dbddf280b0a4e355d2243fab96abf549414789702",
+        "scope": "Review stage, all KAREN-managed projects, Claude Code and Codex. The spec source is the GitHub issue, not the setup skill's tracker."
+      }
     },
     {
       "id": "ecc:security-review",
@@ -210,10 +252,17 @@
       "compatibility": "Model-invocable checklist. Examples target Next.js, Supabase and Solana.",
       "duplicates": ["built-in security-review"],
       "stage": "security",
-      "state": "under-review",
+      "state": "approved",
       "recommendation": "approve-with-conditions",
-      "rationale": "Useful OWASP-style checklist. Use it as a checklist only: 'npm audit fix' and 'npm update' change dependencies and need their own approval.",
-      "owner_decision": null
+      "rationale": "Useful OWASP-style checklist. Use it as a checklist only: 'npm audit fix' and 'npm update' change dependencies and need their own approval. Owner approved 2026-11-24 as a checklist only.",
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "approved_sha256": "3e8de125b7177d6319aa237726f11b21c82894c275bd15ef58bd2f1a3e9b909d",
+        "scope": "Security stage, as a checklist only, Claude Code (ECC plugin 2.2.3). Its npm audit fix and npm update steps need their own approval."
+      }
     },
     {
       "id": "ecc:security-scan",
@@ -290,10 +339,16 @@
       "compatibility": "The 67 non-SKILL files are byte-identical to v2.15.0. SKILL.md is the Claude render of cli/assets/templates/base/skill-content.md (quick reference inlined, 55 KB), produced by the upstream installer, so it has no byte-identical file upstream. Claude Code loads this copy: its transcripts record loads from this folder. Two project repositories hold a third, project-relative render. Scripts import only standard-library modules and read bundled CSV data.",
       "duplicates": ["ui-ux-pro-max@shared-agents-skills", "design", "ui-styling", "ecc:design-system"],
       "stage": "ui-design",
-      "state": "under-review",
+      "state": "rejected",
       "recommendation": "hold",
-      "rationale": "Provenance and licence are now established. Still on hold: one name resolves to different content per runtime. Proposed for owner decision: keep one copy of the v2.15.0 generic render in the shared folder and symlink the Claude user folder to it, so both runtimes load the same hash.",
-      "owner_decision": null
+      "rationale": "Provenance and licence are now established. It was on hold because one name resolved to different content per runtime. Proposed: keep one copy of the v2.15.0 generic render in the shared folder and symlink the Claude user folder to it, so both runtimes load the same hash. Owner decision 2026-11-24: superseded by the shared copy.",
+      "owner_decision": {
+        "decision": "reject",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "reason": "Owner chose one shared copy of the v2.15.0 generic render. This Claude render is to be replaced by a symlink to the shared copy, so one name resolves to one hash in both runtimes."
+      }
     },
     {
       "id": "ui-ux-pro-max@shared-agents-skills",
@@ -310,10 +365,17 @@
       "compatibility": "The 67 non-SKILL files are byte-identical to v2.15.0. SKILL.md is the generic render of cli/assets/templates/base/skill-content.md (28 KB), produced by the upstream installer, so it has no byte-identical file upstream. Codex loads this copy: it reads the shared folder and not the Claude user folder. Two project repositories hold a third, project-relative render. Scripts import only standard-library modules and read bundled CSV data.",
       "duplicates": ["ui-ux-pro-max@claude-user-skills", "design", "ui-styling", "ecc:design-system"],
       "stage": "ui-design",
-      "state": "under-review",
+      "state": "approved",
       "recommendation": "hold",
-      "rationale": "Provenance and licence are now established. Still on hold: one name resolves to different content per runtime. Proposed for owner decision: keep one copy of the v2.15.0 generic render in the shared folder and symlink the Claude user folder to it, so both runtimes load the same hash.",
-      "owner_decision": null
+      "rationale": "Provenance and licence are now established. It was on hold because one name resolved to different content per runtime. Proposed: keep one copy of the v2.15.0 generic render in the shared folder and symlink the Claude user folder to it, so both runtimes load the same hash. Owner decision 2026-11-24: one shared copy of the generic render.",
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "approved_sha256": "266d7be8b1809c2570cd4ab171b250295c7348c918752d71bc39ea0097cc720b",
+        "scope": "UI design stage, all KAREN-managed projects, Claude Code and Codex from this one copy. The Claude user folder is to be symlinked to it (#51 install, pending)."
+      }
     },
     {
       "id": "design",
@@ -442,10 +504,16 @@
       "compatibility": "Enabled in Claude Code as the hosted connector and in Codex desktop as the curated Figma plugin (see location codex-desktop-plugin). A missing entry in the Codex CLI MCP list reflects CLI configuration only. Figma skills are served remotely and cannot be hash-pinned.",
       "duplicates": [],
       "stage": "ui-design",
-      "state": "discovered",
+      "state": "approved",
       "recommendation": "hold",
-      "rationale": "Available in both runtimes, so no new connection is needed. Owner decision: whether write tools are allowed, and for which projects. Plan file limits are unverified.",
-      "owner_decision": null
+      "rationale": "Available in both runtimes, so no new connection is needed. Plan file limits are unverified. Owner decision 2026-11-24: write tools allowed in all Figma projects, broader than the agent's named-projects recommendation.",
+      "owner_decision": {
+        "decision": "approve",
+        "by": "owner",
+        "date": "2026-11-24",
+        "reference": "https://github.com/AbhiramYanamandra/karen-os/pull/56",
+        "scope": "UI design stage, Claude Code (hosted connector) and Codex desktop (curated plugin). Read and write tools in all Figma projects. Remote and unpinned. Substantial UI work still waits for owner approval of an exact design revision."
+      }
     }
   ],
   "updated_by_issue": "https://github.com/AbhiramYanamandra/karen-os/issues/51",

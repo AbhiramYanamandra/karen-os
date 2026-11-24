@@ -57,6 +57,23 @@ No skill was invoked, installed, updated or given credentials. No local skill co
 
 Neither runtime records a content hash at load time, so the load-receipt step in "Testing that a mandatory skill was loaded" has to hash the resolved file separately.
 
+## Owner decisions (#51, 24 November 2026)
+
+Recorded in each entry's `owner_decision` in [`skill-candidates.json`](skill-candidates.json). Every approved hash was recomputed from the files on disk before recording, or from upstream for prove-it-works. Authentication is procedural: the owner merges the PR that records them.
+
+| Entry | Decision |
+|---|---|
+| `ui-ux-pro-max@shared-agents-skills` | Approved: one shared copy of the v2.15.0 generic render. Install pending: symlink the Claude user folder to it. |
+| `ui-ux-pro-max@claude-user-skills` | Rejected: superseded by the shared copy. |
+| `unslop` | Approved at `182f2ce4`, with examples. Mandatory for LinkedIn drafts. |
+| `principle-prove-it-works` | Approved at `2f87c854`. Install pending: the local copy is still `182f2ce4`. |
+| `tdd`, `diagnosing-bugs`, `code-review` | Approved. `code-review` takes the GitHub issue as its spec. |
+| `thermo-nuclear-code-quality-review` | Approved for high-impact review only, alongside a correctness and security review. |
+| `ecc:security-review` | Approved as a checklist only. Its dependency-changing steps need their own approval. |
+| `figma` | Approved: read and write tools in **all** Figma projects, broader than the named-projects recommendation. Remote and unpinned, so the approval binds to scope only. |
+
+The registry [`skills.json`](skills.json) is still empty. Promoting these entries into it is the separately reviewed repin described above.
+
 ## Risky additions
 
 | Candidate | Problem | Recommendation |
@@ -122,13 +139,13 @@ Proposed protocol for #46. None of it has been run here.
 
 ## Decisions for the owner
 
-1. Approve, reject or change each recommendation in `skill-candidates.json`. Each decision is recorded in that entry's `owner_decision` using the schema above, ideally in an owner-signed commit.
+1. ~~Approve, reject or change each recommendation in `skill-candidates.json`.~~ Answered on 24 November for the entries above. The rejection recommendations (`find-skills`, `design`, `ecc:tdd-workflow`, `ecc:verification-loop`, `ecc:security-scan`, `ecc:security-bounty-hunter`) and the `ui-styling` hold are still undecided. Each decision is recorded in that entry's `owner_decision` using the schema above, ideally in an owner-signed commit.
 2. ~~Name Ponytail's source repository.~~ Answered: `DietrichGebert/ponytail`, full plugin. All its decisions are recorded in [ponytail.md](ponytail.md).
-3. ~~Say where each `ui-ux-pro-max` variant came from.~~ Answered by the #51 follow-up (v2.15.0, MIT). Remaining decision: approve one copy of the generic render, with the Claude user folder symlinked to it.
-4. Decide whether Figma's write tools are allowed for design work, and in which projects. Figma is already enabled in Claude Code and Codex desktop, so no new connection is needed.
-4a. unslop: keep `182f2ce4` (with examples) or move to `2f87c854` (shorter). principle-prove-it-works: move to `2f87c854` (recommended).
+3. ~~Say where each `ui-ux-pro-max` variant came from.~~ Answered: v2.15.0, MIT, one shared copy of the generic render.
+4. ~~Figma write tools.~~ Answered: allowed in all projects.
+4a. ~~unslop and principle-prove-it-works versions.~~ Answered: unslop stays at `182f2ce4`, prove-it-works moves to `2f87c854`.
 5. Decide whether to remove or disable the rejected skills locally. That is a change to your own machine, so this PR doesn't do it.
-6. Choose how decisions will be authenticated for #46: signed commits, a separate agent identity, or flagged decision PRs.
+6. ~~Choose how decisions will be authenticated for #46.~~ Answered for now: procedural (the owner's merge). Signed commits remain the stronger option for later.
 
 ## Not covered
 
