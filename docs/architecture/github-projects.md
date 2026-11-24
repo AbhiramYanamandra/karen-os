@@ -44,7 +44,7 @@ flowchart TB
       M["macropad<br/>issues · status labels · PRs · CI"]
       X["future repositories (opt in)"]
     end
-    HQ["GitHub Projects<br/>KAREN OS | Engineering HQ<br/>Board · All Work · Needs My Attention · Roadmap"]
+    HQ["GitHub Projects<br/>KAREN OS | Engineering HQ<br/>Board · All Work · Roadmap · Ready to Execute · Blocked · Needs CEO Attention"]
     RULES["KAREN OS rules<br/>only status:ready issues start"]
     ENG["Engineers<br/>Claude Code · Codex"]
     DIG["Daily digest script (#24)<br/>reads the GitHub API"]
@@ -78,8 +78,9 @@ The digest (#24) reads issues, labels and PRs straight from the GitHub API, so i
 
 **Location and visibility.** Personal account `AbhiramYanamandra`, Project number 1, public. Both source repositories are public too, so the board shows nothing that isn't already visible. Private repositories are not added.
 
-**Fields.** GitHub's built-in fields (Title, Assignees, Status, Labels, Linked pull requests, Milestone, Repository, Reviewers, Parent issue, Sub-issues progress, Created, Updated, Closed) plus two added fields:
+**Fields.** GitHub's built-in fields (Title, Assignees, Status, Labels, Linked pull requests, Milestone, Repository, Reviewers, Parent issue, Sub-issues progress, Created, Updated, Closed) plus three added fields:
 
+- **Workstream** (single select), added by [#52](https://github.com/AbhiramYanamandra/karen-os/issues/52). See "Workstreams and epics" below.
 - **Start date** and **Target date** (dates). The Roadmap uses them for the start and end of each bar; GitHub needs two different fields for that. Both stay empty until the owner agrees dates. There is no Project priority field: `P0`–`P3` labels stay the only priority.
 
 **Status options.** Status is presentation only, set from the issue's label:
@@ -94,14 +95,31 @@ The digest (#24) reads issues, labels and PRs straight from the GitHub API, so i
 
 The original Todo, In Progress and Done options were kept and renamed where needed, so the built-in workflows still point at the right options (Todo became Backlog).
 
-**Views.**
+**Workstreams and epics** (24 November 2026, #52). *Workstream* says what kind of organisational work an item is. The built-in **Repository** field says where it lives, so the two never overlap. A Macropad feature is Product Delivery in `macropad`, and connecting a new repository is Project Integrations in `karen-os`. Workstream is set at triage, and an empty value shows as its own group. Like Status, it never authorises work.
 
-| View | Layout | Filter | Checked |
-| --- | --- | --- | --- |
-| Board | Board, columns by Status | none | 24 Backlog, 2 Ready, 2 In Progress, 2 Review (after #29 was claimed) |
-| All Work | Table: Title, Repository, Status, Labels, Assignees, Linked PRs, Parent issue, Milestone, Target date, Updated (Start date can be shown from the view's field menu) | none | 30 items from both repositories |
-| Needs My Attention | Table: Title, Repository, Labels, Status, Linked PRs, Updated | `is:open label:"status:needs-owner","status:blocked","status:in-review"` | 26 items (20 rows plus 6 sub-issues under #17) |
-| Roadmap | Roadmap | `is:issue no:parent-issue` | 22 top-level issues; no bars until dates are set |
+| Workstream | Use for |
+| --- | --- |
+| Engineering Organisation | Company standards, skills, lifecycle profiles, enforcement (epic #43) |
+| Personal Operations | The owner's daily review and personal tools (epic #17) |
+| Platform Infrastructure | KAREN OS runtime code: startup, pipeline, digest, checks |
+| Process Improvements | Changes to how work is done, from lessons and retrospectives |
+| Project Integrations | Connecting a repository to KAREN OS and Engineering HQ |
+| Product Delivery | Features, fixes and tests inside a product repository (Macropad, LookAtMe and future products) |
+
+**Epic rule.** An epic carries a `status:*` label only when it needs an owner decision itself. Its open decisions otherwise live in its sub-issues, so the epic shows on the Roadmap but not in Needs CEO Attention. With no status label, it shows as Backlog and can never be picked up as work. Its sub-issues and native "blocked by" links show order and progress.
+
+**Views.** Each answers one question (#52). Views can only be created and edited in GitHub's UI. The steps are under "Owner steps in the GitHub UI".
+
+| View | Answers | Layout | Filter | Group by |
+| --- | --- | --- | --- | --- |
+| Roadmap | Company initiatives | Roadmap | `is:open no:parent-issue` | Workstream |
+| Ready to Execute | Work an engineer may pick up or is doing | Table: Title, Repository, Labels, Status, Linked PRs, Parent issue | `is:open label:"status:ready","status:in-progress"` | Workstream |
+| Blocked | Blocked tasks | Table: Title, Repository, Labels, Parent issue, Linked PRs, Updated | `is:open label:"status:blocked"` | Workstream |
+| Needs CEO Attention | Decisions and reviews waiting on the owner | Table: Title, Repository, Labels, Status, Linked PRs, Updated | `is:open label:"status:needs-owner","status:in-review"` | Workstream |
+| Board | Everything by Status | Board, columns by Status | none | — |
+| All Work | Everything | Table: as before, plus Workstream | none | — |
+
+Before #52, the attention view was called Needs My Attention and also included `status:blocked`. On 23 November it held 26 items (20 rows plus 6 sub-issues under #17), and the Roadmap held 22 top-level issues.
 
 **Limits of the attention view.**
 
@@ -147,7 +165,17 @@ Auto-archive items, Code changes requested, Code review approved and Item reopen
 
 Configured on Free: one auto-add workflow for `karen-os` with filter `is:issue,pr is:open` (verified). New Macropad items are added with `gh project item-add`, from the issue's Projects sidebar, or later by #21's script. Auto-add only adds cards. It never changes labels or authorises work.
 
-## Owner steps in the GitHub UI (done)
+## Owner steps in the GitHub UI
+
+**Views for #52** (GitHub's API can't create or edit views). In the Project, for each view, set the filter in the filter bar, choose **Group by → Workstream** from the view menu, then **Save view** and confirm **Save**. Using "Save changes to new view" instead creates an extra tab.
+
+1. **Needs My Attention:** rename it to **Needs CEO Attention** (double-click the tab name). Set the filter to `is:open label:"status:needs-owner","status:in-review"`. Group by Workstream. Save.
+2. **Roadmap:** set the filter to `is:open no:parent-issue`. Group by Workstream. Save.
+3. **Ready to Execute:** choose **+ New view → Table** and name it. Set the filter to `is:open label:"status:ready","status:in-progress"`. Show Title, Repository, Labels, Status, Linked PRs and Parent issue. Group by Workstream. Save.
+4. **Blocked:** choose **+ New view → Table** and name it. Set the filter to `is:open label:"status:blocked"`. Show Title, Repository, Labels, Parent issue, Linked PRs and Updated. Group by Workstream. Save.
+5. **All Work:** add the Workstream column. Save.
+
+**Earlier steps (done):**
 
 These had to be done in GitHub's web UI because the API has no mutation for them. All were checked in the signed-in UI on 23 November 2026.
 
