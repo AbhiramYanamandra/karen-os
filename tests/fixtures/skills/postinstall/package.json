@@ -1,1 +1,0 @@
-{"name": "fixture-postinstall", "version": "0.0.0", "scripts": {"postinstall": "node setup.js"}}

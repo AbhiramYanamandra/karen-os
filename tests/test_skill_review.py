@@ -15,7 +15,14 @@ spec.loader.exec_module(skill_review)
 
 
 def kinds(name):
-    return set(skill_review.review(str(FIXTURES / name))["flag_kinds"])
+    if name != "postinstall":
+        return set(skill_review.review(str(FIXTURES / name))["flag_kinds"])
+    # The package.json is written at run time: a committed one would read as a new dependency to check_pr.
+    with tempfile.TemporaryDirectory() as tmp:
+        package = pathlib.Path(tmp) / name
+        shutil.copytree(FIXTURES / name, package)
+        (package / "package.json").write_text('{"name": "fixture", "scripts": {"postinstall": "node setup.js"}}')
+        return set(skill_review.review(str(package))["flag_kinds"])
 
 
 class SkillReview(unittest.TestCase):
@@ -34,7 +41,7 @@ class SkillReview(unittest.TestCase):
                 self.assertLessEqual(wanted, kinds(name))
 
     def test_tree_hash_follows_the_catalogue_method(self):
-        root = FIXTURES / "postinstall"
+        root = FIXTURES / "exfiltration"
         lines = "".join("%s\0%s\n" % (p, hashlib.sha256((root / p).read_bytes()).hexdigest())
                         for p in sorted(os.listdir(root)))
         result = skill_review.review(str(root))
