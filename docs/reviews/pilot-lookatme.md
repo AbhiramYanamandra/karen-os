@@ -66,9 +66,17 @@ From claim to three ready PRs took about 23 minutes. Another 6 minutes went on r
    - PR #9 declared `low` risk, but the resolver raises `ui` + `substantial_ui` to `medium`, which requires `code-review`. The agent didn't run `profiles.py resolve` before opening the PR.
 
    Both were found by running the resolver by hand and fixed in the PR bodies. LookAtMe's CI runs `npm run check` only.
+
+   Running `check_pr.py` locally against the LookAtMe bodies found three more:
+   - PRs #8 and #9 used `exceptions` for disclosed gaps, but that field holds only owner waivers of required skills.
+   - PR #9 gave `figma` an empty hash where the registry has `null`.
+   - PR #9's Figma approval fails the design gate, as item 3 below explains.
+
+   The first two are fixed. The design gate is expected to fail until follow-up 2.
 3. **The design approval can't name an immutable revision.** `check_pr.py` accepts only a merged design PR for `design_approval`, and the Figma API can't save a version. The approval is recorded as text in the PR profile.
 4. **No rendering test.** The issue asked for tests "for validation and rendering". Only validation is tested.
-5. **The first validation was looser than intended.** Reviewers found that a bare `\r` passed the one-line check, that length was counted in UTF-16 units, and that a date gave a misleading message. All were fixed in `9543650`.
+5. **`check_pr.py` crashes on a string exception.** A plain string in `exceptions` raises `AttributeError` in `profiles.resolve` instead of producing a problem message.
+6. **The first validation was looser than intended.** Reviewers found that a bare `\r` passed the one-line check, that length was counted in UTF-16 units, and that a date gave a misleading message. All were fixed in `9543650`.
 
 ## Proposed follow-ups
 
@@ -76,6 +84,7 @@ From claim to three ready PRs took about 23 minutes. Another 6 minutes went on r
 2. Define a design-approval format for Figma: file key, node, version ID where the owner saved one, and the owner's quoted reply. Accept it in `check_pr.py` alongside a merged design PR.
 3. Decide whether reviewer subagents spawned by the implementing session count as "a different session" for medium-risk review, and write the answer into the engineering standard.
 4. Add to the design SOP: read the existing components before recommending a feature.
-5. LookAtMe: choose a way to render-test components (for example an existing transform, or a check against the built HTML) before the next UI issue.
+5. Make `check_pr.py` and `profiles.resolve` report a malformed `exceptions` entry instead of crashing.
+6. LookAtMe: choose a way to render-test components (for example an existing transform, or a check against the built HTML) before the next UI issue.
 
 None is filed as an issue yet. Each needs the owner's choice.
