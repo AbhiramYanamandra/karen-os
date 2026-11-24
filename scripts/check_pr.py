@@ -81,7 +81,7 @@ def git_path(token: str, prefixed: bool = True) -> str:
 def added_lines(diff: str):
     """Yield (file, line) for each added line of a unified diff."""
     current = None
-    for line in diff.splitlines():
+    for line in diff.split("\n"):  # not splitlines(): git keeps U+2028 and friends raw in paths
         if line.startswith("+++ "):
             current = git_path(line[4:])
         elif line.startswith("+") and not line.startswith("+++"):
@@ -111,7 +111,7 @@ def changed_files(diff: str) -> set[str]:
     The `diff --git` header is ambiguous when a path contains " b/", so the one-path lines
     (rename/copy from/to, ---/+++) are read too; the header only adds paths for mode-only changes."""
     files = set()
-    for line in diff.splitlines():
+    for line in diff.split("\n"):  # not splitlines(): git keeps U+2028 and friends raw in paths
         found = GIT_HEADER.match(line)
         if found:
             files.update(git_path(token) for token in found.groups())

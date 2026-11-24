@@ -239,6 +239,15 @@ class ProfileTests(unittest.TestCase):
                   "+++ b/docs/organisation/engineering.md\n@@ -1 +1 @@\n-a\n+b\n")
         self.assertIn("needs flag 'pinned_policy'", self.check(profile(), branch="chore/9-x", diff=pinned)[0])
 
+    def test_unicode_line_separator_in_a_path_cannot_hide_it(self):
+        # Regression for the Codex confirmation pass of #46 (session 01a20c21).
+        name = ".github/workflows/a\u2028b.yml"
+        for extra in ("old mode 100644\nnew mode 100755\n", "Binary files a/%s and b/%s differ\n" % (name, name)):
+            diff = "diff --git a/%s b/%s\n%s" % (name, name, extra)
+            with self.subTest(extra=extra[:10]):
+                self.assertIn(name, check_pr.changed_files(diff))
+                self.assertIn("needs flag 'ci_change'", self.check(profile(), branch="chore/9-x", diff=diff)[0])
+
     def test_workflow_rechecks_edited_descriptions(self):
         workflow = (ROOT / ".github/workflows/checks.yml").read_text()
         self.assertRegex(workflow, r"pull_request:\n\s+types: \[[^\]]*\bedited\b")
