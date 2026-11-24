@@ -33,7 +33,11 @@ def decision_errors(entry, data):
     errors = []
     if schema[kind]['sets_state'] != entry['state']:
         errors.append('decision %r does not set state %r' % (kind, entry['state']))
-    errors += ['missing %s' % f for f in schema[kind]['required'] if not decision.get(f)]
+    required = schema[kind]['required']
+    if kind == 'approve' and entry['tree_sha256'] is None:
+        # A remote connector has no local content to pin; its approval binds to scope only.
+        required = [f for f in required if f != 'approved_sha256']
+    errors += ['missing %s' % f for f in required if not decision.get(f)]
     if kind == 'approve' and decision.get('approved_sha256') != entry['tree_sha256']:
         errors.append('approved_sha256 does not match tree_sha256')
     if kind == 'revoke' and not SHA256.match(str(decision.get('revoked_sha256', ''))):
@@ -69,24 +73,31 @@ class SkillCandidates(unittest.TestCase):
             with self.subTest(entry=entry['id']):
                 self.assertEqual(decision_errors(entry, self.data), [])
 
-    def test_only_the_ponytail_install_is_owner_decided(self):
-        # #51: the owner approved the Ponytail v5.3.3 install on 2026-11-24. Every other entry stays a proposal.
-        self.assertEqual([e['id'] for e in self.entries if e['owner_decision'] is not None], ['ponytail-plugin'])
+    def test_only_the_owner_decided_entries_carry_decisions(self):
+        # #51: owner decisions of 2026-11-24. Every other entry stays a proposal.
+        decided = {e['id']: e['state'] for e in self.entries if e['owner_decision'] is not None}
+        self.assertEqual(decided, {
+            'unslop': 'approved', 'tdd': 'approved', 'diagnosing-bugs': 'approved',
+            'principle-prove-it-works': 'approved', 'thermo-nuclear-code-quality-review': 'approved',
+            'code-review': 'approved', 'ecc:security-review': 'approved',
+            'ui-ux-pro-max@shared-agents-skills': 'approved', 'ui-ux-pro-max@claude-user-skills': 'rejected',
+            'ponytail-plugin': 'approved', 'figma': 'approved',
+        })
 
     def test_inspected_packages_carry_full_hashes(self):
         for entry in self.entries:
             with self.subTest(entry=entry['id']):
-                if entry['state'] == 'discovered':
+                if entry['state'] == 'discovered' or entry['location'] == 'remote-connector':
                     continue
                 self.assertRegex(entry['skill_md_sha256'], SHA256)
                 self.assertRegex(entry['tree_sha256'], SHA256)
 
-    def test_ui_ux_pro_max_variants_stay_unresolved(self):
-        variants = [e for e in self.entries if e['id'].startswith('ui-ux-pro-max')]
-        self.assertEqual(len(variants), 2)
-        self.assertNotEqual(variants[0]['tree_sha256'], variants[1]['tree_sha256'])
-        for entry in variants:
-            self.assertEqual((entry['state'], entry['recommendation']), ('under-review', 'hold'))
+    def test_ui_ux_pro_max_resolves_to_one_approved_copy(self):
+        variants = {e['id']: e for e in self.entries if e['id'].startswith('ui-ux-pro-max')}
+        self.assertEqual(variants['ui-ux-pro-max@shared-agents-skills']['state'], 'approved')
+        self.assertEqual(variants['ui-ux-pro-max@claude-user-skills']['state'], 'rejected')
+        self.assertEqual([e for e in variants.values() if e['state'] == 'approved'],
+                         [variants['ui-ux-pro-max@shared-agents-skills']])
 
     def test_pinned_files_reproduce_the_tree_hash(self):
         for entry in self.entries:
@@ -145,6 +156,12 @@ class OwnerDecisionSchema(unittest.TestCase):
 
     def test_decision_kind_must_match_state(self):
         self.assertIn("decision 'approve' does not set state 'revoked'", self.errors('revoked', self.approve))
+
+    def test_unpinned_approval_only_for_unpinnable_content(self):
+        unpinned = {k: v for k, v in self.approve.items() if k != 'approved_sha256'}
+        self.assertIn('missing approved_sha256', self.errors('approved', unpinned))
+        self.entry['tree_sha256'] = None
+        self.assertEqual(self.errors('approved', unpinned), [])
 
     def test_decision_on_a_non_owner_state_fails(self):
         self.assertTrue(self.errors('under-review', self.approve))
