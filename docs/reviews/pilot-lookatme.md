@@ -2,7 +2,7 @@
 
 The second engineering pilot of KAREN OS ([#48](https://github.com/AbhiramYanamandra/karen-os/issues/48)), run on 24 November 2026 in the LookAtMe portfolio repository. One real feature went from issue to spec, then to an editable Figma design, exact owner approval, Ponytail-guided implementation, tests, review and a PR with CI. Two supporting changes went alongside it: repinning the project to the current core, and a typography check.
 
-**Status: waiting for the owner.** All three LookAtMe PRs are open, pass CI and are marked ready. None is merged. PR #9 has an open decision about a rendering test.
+**Status: waiting for the owner.** All three LookAtMe PRs are open, pass CI and are marked ready. None is merged. The owner waived the rendering test on PR #9.
 
 | Change | Issue | PR | Profile |
 |---|---|---|---|
@@ -38,7 +38,7 @@ From claim to three ready PRs took about 23 minutes. Another 6 minutes went on r
 | Correct company and project policy load, skill versions and gaps | **Met.** Startup read showed `stale` before the repin and `ok` after. Installed tree hashes matched the registry for `ponytail-plugin`, `principle-prove-it-works`, `code-review` and `ui-ux-pro-max@shared-agents-skills`. **Gaps:** `figma` is a remote connector with no hash. The `testing` profile recommends `tdd`, which wasn't used; that is disclosed in PR #8. |
 | Owner approval bound to the reviewed design revision, no UI code before it | **Met, with a weak binding.** No #6 code existed before the approval. Figma's plugin API could not save a named version (`saveVersionHistoryAsync` is not supported). So the approval is pinned to the file, section node `1:110` and date, not to an immutable version. |
 | Deliberate wrong typography and missing-stage checks caught or flagged | **Met.** Setting `home.css:85` to `"Times New Roman", serif` failed the new test with `src/styles/home.css:85: "Times New Roman", serif`. Removing `figma` from a copy of the registry made `profiles.py resolve --type ui --flag substantial_ui` report `design: hold ["figma"]`. |
-| Behavioural, accessibility and visual tests, shortcomings, independently reviewed evidence | **Partly met.** Validation tests: 78 pass. The browser check gave measurements at both widths, and a project without an outcome stays unchanged. **Shortcomings:** there is no QuickFacts render test, because LookAtMe tests run plain `node --test` with no JSX transform; that is an owner decision on PR #9. The PR has no screenshots, and keyboard and reduced-motion were not tested separately. Reviews came from subagents of the implementing session, not an independent top-level session. |
+| Behavioural, accessibility and visual tests, shortcomings, independently reviewed evidence | **Partly met.** Validation tests: 78 pass. The browser check gave measurements at both widths, and a project without an outcome stays unchanged. **Shortcomings:** there is no QuickFacts render test, because LookAtMe tests run plain `node --test` with no JSX transform; the owner waived it on PR #9. The PR has no screenshots, and keyboard and reduced-motion were not tested separately. Reviews came from subagents of the implementing session, not an independent top-level session. |
 | Elapsed time, token and context load, interventions, quality versus the current pipeline | **Met, except that main-session tokens were not metered.** See the next section. |
 | No default-branch writes, deployment, publishing or merge by an agent | **Met.** All work is on issue branches through PRs. Vercel preview builds ran automatically from the PRs; that is the repository's own setup, not an agent deployment. |
 
@@ -51,7 +51,7 @@ From claim to three ready PRs took about 23 minutes. Another 6 minutes went on r
 | Size | PR #7: +13 −9. PR #8: +62. PR #9: two commits, about +56 −10 across 6 files. |
 | CI | Green on all three PRs, including after the review fixes |
 | Reviewer load | About 96k, 98k and 102k tokens for the three reviewer subagents |
-| Owner interventions | 4. (1) Picked the feature. (2) Picked again after the agent's first recommendation turned out to exist already as Quick facts. (3) Marked three issues ready. (4) Approved design revision 1. Merges are still to come. |
+| Owner interventions | 5. (1) Picked the feature. (2) Picked again after the agent's first recommendation turned out to exist already as Quick facts. (3) Marked three issues ready. (4) Approved design revision 1. (5) Waived the rendering test. Merges are still to come. |
 
 **Compared with the Macropad pilot:**
 - Every change had its own issue, branch and PR with a profile, and CI passed before each was marked ready. In the Macropad pilot, one PR merged 14 seconds after opening, with an empty body.
@@ -74,7 +74,7 @@ From claim to three ready PRs took about 23 minutes. Another 6 minutes went on r
 
    The first two are fixed. The design gate is expected to fail until follow-up 2.
 3. **The design approval can't name an immutable revision.** `check_pr.py` accepts only a merged design PR for `design_approval`, and the Figma API can't save a version. The approval is recorded as text in the PR profile.
-4. **No rendering test.** The issue asked for tests "for validation and rendering". Only validation is tested.
+4. **No rendering test.** The issue asked for tests "for validation and rendering". Only validation is tested. The owner waived the rendering part.
 5. **`check_pr.py` crashes on a string exception.** A plain string in `exceptions` raises `AttributeError` in `profiles.resolve` instead of producing a problem message.
 6. **The first validation was looser than intended.** Reviewers found that a bare `\r` passed the one-line check, that length was counted in UTF-16 units, and that a date gave a misleading message. All were fixed in `9543650`.
 
