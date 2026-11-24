@@ -140,7 +140,7 @@
       "id": "principle-prove-it-works",
       "source": "github:cursor/plugins harness/pstack/claude-code/skills/principle-prove-it-works",
       "location": "shared-agents-skills",
-      "version": "cursor/plugins commit 2f87c854fe3e2fcda44ca86b46ede35aad3c46b7 (owner-chosen 2026-11-24). Installed copy is still 182f2ce4 (tree a3c8449a...) until the #51 install replaces it.",
+      "version": "cursor/plugins commit 2f87c854fe3e2fcda44ca86b46ede35aad3c46b7 (owner-chosen 2026-11-24). Installed 2026-11-24 in the shared folder, which Claude Code reaches through its symlink and Codex reads directly. The replaced 182f2ce4 copy (tree a3c8449a...) is backed up outside the repository.",
       "skill_md_sha256": "3d6c482e341974cfcb8d19ebf66fb1d4274d8673af35e36d3c231a6aa9e03f25",
       "tree_sha256": "ab32f9f23e4c3cb87ad42ddd62d44b08b5b777a576e89456f52d515a2d1abe8b",
       "upstream_match": true,
@@ -341,7 +341,7 @@
       "stage": "ui-design",
       "state": "rejected",
       "recommendation": "hold",
-      "rationale": "Provenance and licence are now established. It was on hold because one name resolved to different content per runtime. Proposed: keep one copy of the v2.15.0 generic render in the shared folder and symlink the Claude user folder to it, so both runtimes load the same hash. Owner decision 2026-11-24: superseded by the shared copy.",
+      "rationale": "Provenance and licence are now established. It was on hold because one name resolved to different content per runtime. Proposed: keep one copy of the v2.15.0 generic render in the shared folder and symlink the Claude user folder to it, so both runtimes load the same hash. Owner decision 2026-11-24: superseded by the shared copy. Replaced on 2026-11-24 by a symlink to it; this render is backed up outside the repository.",
       "owner_decision": {
         "decision": "reject",
         "by": "owner",
@@ -367,7 +367,7 @@
       "stage": "ui-design",
       "state": "approved",
       "recommendation": "hold",
-      "rationale": "Provenance and licence are now established. It was on hold because one name resolved to different content per runtime. Proposed: keep one copy of the v2.15.0 generic render in the shared folder and symlink the Claude user folder to it, so both runtimes load the same hash. Owner decision 2026-11-24: one shared copy of the generic render.",
+      "rationale": "Provenance and licence are now established. It was on hold because one name resolved to different content per runtime. Proposed: keep one copy of the v2.15.0 generic render in the shared folder and symlink the Claude user folder to it, so both runtimes load the same hash. Owner decision 2026-11-24: one shared copy of the generic render. Installed 2026-11-24: the Claude user folder now links to this copy, and both runtimes resolve the name to tree 266d7be8....",
       "owner_decision": {
         "decision": "approve",
         "by": "owner",
