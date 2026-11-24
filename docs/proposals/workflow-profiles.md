@@ -1,6 +1,6 @@
 # Proposal: stage-aware workflow profiles
 
-Revision 1, 24 November 2026. Issue [#45](https://github.com/AbhiramYanamandra/karen-os/issues/45), epic [#43](https://github.com/AbhiramYanamandra/karen-os/issues/43), charter slice **PR B**. Status: **awaiting owner approval** (merging this PR approves this revision). Change type: policy and tooling design. No code or policy changes in this PR.
+Revision 1, 24 November 2026. Issue [#45](https://github.com/AbhiramYanamandra/karen-os/issues/45), epic [#43](https://github.com/AbhiramYanamandra/karen-os/issues/43), charter slice **PR B**. Status: **approved** by the owner's merge of PR #58 on 24 November 2026, and implemented in `docs/organisation/workflow-profiles.json`, `scripts/profiles.py` and `tests/test_profiles.py`. Change type: policy and tooling design.
 
 ## Summary
 

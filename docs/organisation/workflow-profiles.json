@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "source": "docs/proposals/workflow-profiles.md, revision 1, approved by the owner's merge of PR #58 on 2026-11-24",
+  "levels": ["optional", "recommended", "required"],
+  "risks": ["low", "medium", "high"],
+  "stages": ["spec", "design", "implement", "verify", "review"],
+  "always": [
+    "KAREN core startup loaded",
+    "issue with status:ready",
+    "one worker claims it",
+    "work on a <type>/<issue>-<short-description> branch",
+    "pull request with evidence",
+    "CI passes",
+    "owner merges"
+  ],
+  "type_aliases": {
+    "feat": "feature",
+    "fix": "bug",
+    "hotfix": "bug",
+    "test": "testing",
+    "refactor": "chore",
+    "ci": "chore",
+    "release": "chore"
+  },
+  "review_by_risk": {
+    "low": {"gates": ["self-review, labelled as such in the PR"], "skills": {}},
+    "medium": {
+      "gates": ["review by a different session or provider before the owner, with its findings and identity in the PR"],
+      "skills": {"code-review": "required"}
+    },
+    "high": {
+      "gates": ["review by a different session or provider before the owner, with its findings and identity in the PR"],
+      "skills": {"code-review": "required", "thermo-nuclear-code-quality-review": "required"}
+    }
+  },
+  "profiles": {
+    "feature": {
+      "risk_floor": "low",
+      "stages": {
+        "spec": {"gates": ["acceptance criteria in an issue comment"]},
+        "implement": {"skills": {"ponytail-plugin": "required", "tdd": "recommended"}},
+        "verify": {"gates": ["tests for new logic"], "skills": {"principle-prove-it-works": "required"}}
+      }
+    },
+    "ui": {
+      "risk_floor": "low",
+      "stages": {
+        "spec": {"gates": ["current UI, untouched behaviour and measurable criteria recorded"]},
+        "implement": {"skills": {"ponytail-plugin": "required"}},
+        "verify": {"gates": ["project style, accessibility and visual checks"], "skills": {"principle-prove-it-works": "required"}}
+      }
+    },
+    "bug": {
+      "risk_floor": "low",
+      "stages": {
+        "spec": {"gates": ["reproduction first: a failing signal before hypotheses"]},
+        "implement": {"gates": ["fix the root cause once, in the shared code"], "skills": {"ponytail-plugin": "required", "diagnosing-bugs": "recommended", "tdd": "recommended"}},
+        "verify": {"gates": ["regression test, or a written reason it is impractical"], "skills": {"principle-prove-it-works": "required"}}
+      }
+    },
+    "chore": {
+      "risk_floor": "low",
+      "stages": {
+        "spec": {"gates": ["one-line intent"]},
+        "implement": {"gates": ["Ponytail applies to code changes only"], "skills": {"ponytail-plugin": "required"}},
+        "verify": {"gates": ["build and tests pass"], "skills": {"principle-prove-it-works": "required"}}
+      }
+    },
+    "docs": {
+      "risk_floor": "low",
+      "stages": {
+        "verify": {"gates": ["links, commands and claims checked against the real artefact"], "skills": {"principle-prove-it-works": "required"}}
+      }
+    },
+    "security": {
+      "risk_floor": "high",
+      "stages": {
+        "spec": {"gates": ["threat assessment: assets, boundaries, attacker and abuse cases"]},
+        "design": {"gates": ["technical proposal with data flow and threat boundaries, owner-approved revision"]},
+        "implement": {"skills": {"ponytail-plugin": "required"}},
+        "verify": {"gates": ["security tests", "no external scans without owner approval"], "skills": {"principle-prove-it-works": "required", "ecc:security-review": "required"}},
+        "review": {"skills": {"thermo-nuclear-code-quality-review": "required"}}
+      }
+    },
+    "testing": {
+      "risk_floor": "low",
+      "stages": {
+        "spec": {"gates": ["the behaviour the tests pin down"]},
+        "implement": {"skills": {"tdd": "recommended"}},
+        "verify": {"gates": ["tests fail without the behaviour they cover", "never weaken or skip a check to pass"], "skills": {"principle-prove-it-works": "required"}}
+      }
+    }
+  },
+  "flags": {
+    "substantial_ui": {
+      "profiles": ["ui"],
+      "risk_floor": "medium",
+      "stages": {
+        "design": {
+          "gates": ["editable design revision with device variants and states, owner-approved"],
+          "skills": {"ui-ux-pro-max@shared-agents-skills": "required", "figma": "required"}
+        }
+      }
+    },
+    "design_required": {
+      "risk_floor": "medium",
+      "stages": {"design": {"gates": ["technical proposal, owner-approved revision"]}}
+    },
+    "security_sensitive": {"profiles": ["security"]},
+    "ci_change": {
+      "risk_floor": "medium",
+      "stages": {"review": {"gates": ["PR summary says CI workflows changed"]}}
+    },
+    "pinned_policy": {
+      "risk_floor": "medium",
+      "stages": {"verify": {"gates": ["reviewed repin of context/manifest.json"]}}
+    },
+    "new_dependency": {
+      "risk_floor": "high",
+      "stages": {"implement": {"gates": ["owner approval to install the dependency"]}}
+    },
+    "unknown_cause": {
+      "stages": {"implement": {"skills": {"diagnosing-bugs": "required"}}}
+    },
+    "public_text": {
+      "risk_floor": "high",
+      "stages": {
+        "implement": {
+          "gates": ["owner approves the exact final text; a merge never authorises posting"],
+          "skills": {"unslop": "required"}
+        }
+      }
+    }
+  }
+}
